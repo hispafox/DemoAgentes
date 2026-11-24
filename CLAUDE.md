@@ -110,7 +110,7 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 - [x] Inicializar repositorio Git en local (rama `main`) y definir estrategia de ramas (`main`, `feature/<nº-issue>-descripcion`)
 - [x] Crear el repositorio remoto en GitHub y enlazarlo (`origin`)
 - [ ] Configurar el MCP de GitHub y comprobar lectura/escritura de issues y PRs (alternativa: CLI `gh`)
-- [ ] Crear el tablero en GitHub Projects y las etiquetas base (`backend`, `frontend`, `test`, `docs`)
+- [ ] Crear el tablero en GitHub Projects (las etiquetas base `backend`, `frontend`, `test`, `docs` ya están creadas)
 - [x] Definir la estructura de carpetas (ver sección "Estructura de carpetas")
 - [ ] Crear las carpetas que faltan a medida que avance cada fase
 - [ ] Definir entorno local (Docker Compose: PHP-FPM, Nginx, base de datos, Node)
@@ -134,10 +134,10 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 - [x] **CRITERIO:** revisión del análisis por el equipo técnico
 
 ### Fase 3 — Backlog en GitHub Issues (DOC → ISSUES)
-- [ ] Crear un milestone por bloque funcional (épica) vía MCP
-- [ ] Crear issues de historia de usuario con criterios de aceptación (Dado/Cuando/Entonces)
-- [ ] Desglosar en issues de tarea técnica (backend, frontend, tests), con etiquetas y sub-issues o checklists
-- [ ] Enlazar cada issue con la sección correspondiente del análisis
+- [x] Crear un milestone por bloque funcional (épica) vía MCP
+- [x] Crear issues de historia de usuario con criterios de aceptación (Dado/Cuando/Entonces)
+- [x] Desglosar en issues de tarea técnica (backend, frontend, tests), con etiquetas y sub-issues o checklists
+- [x] Enlazar cada issue con la sección correspondiente del análisis
 - [ ] Añadir los issues al tablero de GitHub Projects
 - [ ] **CRITERIO:** refinamiento y priorización del backlog
 
@@ -197,6 +197,7 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 
 | Entregable | Fase | Desde |
 |---|---|---|
+| Backlog v0.1: issues #1 a #12 y milestones en GitHub | 3 | 2026-11-24 |
 
 ### Registro de firmas
 

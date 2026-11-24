@@ -351,3 +351,25 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Decisión:** suspender no es borrar. Mientras dure, el agente avanza sin esperar firmas, pero marca cada entregable como `pendiente de firma` y lo anota en la tabla, para firmarlo todo junto al reactivarla. Siguen vigentes las reglas que no son firmas: nada de PR con tests en rojo, nada de merge sin una persona y nada de implementar sin issue.
 
 **Ficheros:** `CLAUDE.md` (modificado), `docs/bitacora.md` (modificado).
+
+## Paso 25 — Backlog de la versión 0.1 en GitHub (2026-11-24)
+
+**Qué hicimos:** creamos en GitHub el backlog de la 0.1 a partir de la documentación funcional y el análisis. Como la regla de firmas está suspendida (paso 24), el backlog queda en "Pendientes de firma" del CLAUDE.md.
+
+**Cambios:**
+- Etiquetas: `backend`, `frontend`, `test`, `docs`, `ci`, `historia` y `v0.1`.
+- Milestones (uno por bloque funcional, como pide el CLAUDE.md): `Infraestructura`, `Bloque A — Tareas` y `Bloque B — Plantillas`.
+- 12 issues, cada uno con objetivo o historia, enlaces a la documentación funcional y al análisis, criterios de aceptación Dado/Cuando/Entonces y checklist de tareas:
+  - Infraestructura: #1 proyecto Symfony con SQLite, #2 PHPUnit, #3 proyecto Angular, #4 CI y plantilla de PR.
+  - Bloque A: #5 gestionar tareas, #6 completar y recurrencia, #7 papelera (backend); #10 pantallas de tareas y #11 pantalla de papelera (frontend).
+  - Bloque B: #8 gestionar plantillas, #9 instanciar plantilla (backend); #12 pantallas de plantillas (frontend).
+- `CLAUDE.md`: marcadas cuatro tareas de la Fase 3; la de etiquetas de la Fase 0 indica que ya están creadas.
+
+**Decisión:** la versión se marca con la etiqueta `v0.1`, porque los milestones se reservan para los bloques funcionales según el CLAUDE.md.
+
+**Pendiente:**
+- El tablero de GitHub Projects no se pudo crear: al token de `gh` le falta el permiso `project`. El usuario tiene que ejecutar `gh auth refresh -s project,read:project`.
+- Composer no está instalado y hace falta para el issue #1.
+- CRITERIO de la Fase 3 (refinamiento del backlog), pendiente de firma.
+
+**Ficheros:** `CLAUDE.md` (modificado), `docs/bitacora.md` (modificado).
