@@ -144,6 +144,20 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 
 **Decisión:** el `description` del frontmatter va en bloque YAML (`>-`) desde el principio, para no repetir el error de parseo del paso 9. Validado con un parser YAML.
 
-**Pendiente:** commit de estos cambios.
+**Pendiente:** commit de estos cambios. *(Resuelto en el paso 12.)*
 
 **Ficheros:** `.claude/skills/bitacora/SKILL.md` (nuevo), `CLAUDE.md` (modificado), `docs/bitacora.md` (modificado).
+
+## Paso 12 — Commit del skill bitacora y repositorio remoto en GitHub (2026-11-24)
+
+**Qué hicimos:** commiteamos el skill `bitacora`, con lo que queda resuelto el pendiente del paso 11, y creamos el repositorio remoto en GitHub, enlazado como `origin`. Subimos `main`.
+
+**Cambios:**
+- Commit `fc2ac40 chore: añadir skill bitacora para registrar pasos y retomar en otro chat`.
+- Repositorio creado con `gh repo create --source=. --remote=origin --push`: https://github.com/hispafox/DemoAgentes
+- `main` sigue a `origin/main`.
+- Tarea de la Fase 0 "Crear el repositorio remoto en GitHub y enlazarlo" marcada como hecha en el CLAUDE.md.
+
+**Decisión:** el repositorio se creó **privado**. Se puede hacer público más adelante desde GitHub o con `gh repo edit --visibility public`.
+
+**Ficheros:** `CLAUDE.md` (modificado), `docs/bitacora.md` (modificado).

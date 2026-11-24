@@ -72,7 +72,7 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 
 ### Fase 0 — Preparación del entorno
 - [x] Inicializar repositorio Git en local (rama `main`) y definir estrategia de ramas (`main`, `feature/<nº-issue>-descripcion`)
-- [ ] Crear el repositorio remoto en GitHub y enlazarlo (`origin`)
+- [x] Crear el repositorio remoto en GitHub y enlazarlo (`origin`)
 - [ ] Configurar el MCP de GitHub y comprobar lectura/escritura de issues y PRs (alternativa: CLI `gh`)
 - [ ] Crear el tablero en GitHub Projects y las etiquetas base (`backend`, `frontend`, `test`, `docs`)
 - [x] Definir la estructura de carpetas (ver sección "Estructura de carpetas")
