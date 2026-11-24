@@ -20,7 +20,8 @@ DemoAgentes/
 ├── docker-compose.yml               Entorno local: PHP-FPM, Nginx, BD, Node (Fase 0)
 ├── .claude/
 │   └── skills/                   ✅ Skills del proyecto
-│       └── mensaje-commit/       ✅ Redacta los mensajes de commit
+│       ├── mensaje-commit/       ✅ Redacta los mensajes de commit
+│       └── bitacora/             ✅ Registra pasos y retoma el proyecto en un chat nuevo
 ├── .github/
 │   ├── workflows/                   GitHub Actions: lint, PHPStan, tests (Fase 7)
 │   └── pull_request_template.md     Plantilla de PR con "Closes #<nº>" (Fase 7)
@@ -135,7 +136,7 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 ## Reglas para el agente
 
 - Este CLAUDE.md es el candado: ninguna implementación puede salirse de lo que define.
-- Documentar cada paso que se dé en `docs/bitacora.md` (qué se hizo, por qué, ficheros afectados).
+- Documentar cada paso que se dé en `docs/bitacora.md` con el skill `bitacora` (qué se hizo, por qué, ficheros afectados). En un chat nuevo, empezar con `/bitacora retomar`.
 - Añadir a `docs/aprendizajes.md` lo aprendido solo cuando el usuario lo pida.
 - No implementar nada sin issue de GitHub asociado.
 - No abrir PR si los tests no pasan.
