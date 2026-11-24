@@ -51,9 +51,11 @@ Registro de cada paso que damos, en orden. Cada entrada indica qué se hizo, por
 - Añadimos un `.gitignore` para Symfony (`vendor/`, `var/`, `.env.local`, cachés de PHPUnit) y Angular (`node_modules/`, `dist/`, `.angular/`), además de ficheros del IDE, del sistema y la configuración local de Claude Code.
 - Marcada la tarea en la Fase 0 del CLAUDE.md y añadida otra pendiente: crear el remoto y enlazarlo.
 
-**Pendiente:** primer commit (todavía no hay ninguno).
+**Pendiente:** primer commit (todavía no hay ninguno). *(Resuelto en el paso 10.)*
 
 **Ficheros:** `.git/` (nuevo), `.gitignore` (nuevo), `CLAUDE.md` (modificado).
+
+*(Superado en el paso 7: las ramas pasan a `feature/<nº-issue>-descripcion` al sustituir Jira por GitHub.)*
 
 ## Paso 6 — Skill de proyecto para mensajes de commit (2026-11-24)
 
@@ -67,6 +69,8 @@ Registro de cada paso que damos, en orden. Cada entrada indica qué se hizo, por
 - Ejemplos buenos y malos, y el commit solo se hace con aprobación del usuario.
 
 **Decisión:** el CLAUDE.md dice `<JIRA-KEY>: descripción breve` para los commits y el skill propone `tipo: <JIRA-KEY> descripción` cuando hay ticket. Se decidió **no modificar la regla del CLAUDE.md** por ahora; ambos formatos conviven. *(Superado en el paso 7: Jira se sustituye por GitHub.)*
+
+**Ficheros:** `.claude/skills/mensaje-commit/SKILL.md` (nuevo).
 
 ## Paso 7 — GitHub en lugar de Jira (2026-11-24)
 
@@ -104,8 +108,6 @@ Registro de cada paso que damos, en orden. Cada entrada indica qué se hizo, por
 - En la Fase 0, la tarea "Crear estructura de carpetas" pasa a ser "Definir la estructura" (hecha) y "Crear las carpetas que faltan a medida que avance cada fase" (pendiente).
 
 **Ficheros:** `CLAUDE.md` (modificado).
-
-**Ficheros:** `.claude/skills/mensaje-commit/SKILL.md` (nuevo).
 
 ## Paso 9 — Corrección del frontmatter del skill (2026-11-24)
 
@@ -199,5 +201,15 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 2. Fase 0: configurar el MCP de GitHub (o usar `gh`), crear el tablero en GitHub Projects y las etiquetas base, y definir el Docker Compose.
 3. Fase 0.5: completar el diseño en el CLAUDE.md. Falta lo principal: **qué aplicación vamos a construir**.
 4. Fase 1: reunir la documentación funcional de la app en `docs/app/`.
+
+**Ficheros:** `docs/bitacora.md` (modificado).
+
+## Paso 15 — Corrección de desajustes en la bitácora (2026-11-24)
+
+**Qué hicimos:** corregimos los desajustes que detectó `/bitacora retomar` al empezar la segunda sesión.
+
+**Cambios:**
+- Paso 5: añadida la marca de superado (el formato de ramas `feature/<JIRA-KEY>` cambió en el paso 7) y marcado como resuelto su pendiente del primer commit (paso 10).
+- Pasos 6 y 8: la línea "Ficheros" del paso 6 estaba al final del paso 8, que tenía dos. La devolvimos al paso 6.
 
 **Ficheros:** `docs/bitacora.md` (modificado).
