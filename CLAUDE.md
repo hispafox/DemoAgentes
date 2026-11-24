@@ -152,6 +152,13 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 - [ ] Por cada issue: leer el issue vía MCP → implementar → mover en el tablero y comentar el avance
 
 ### Fase 5 — Tests
+
+> ⏸️ **Tests SUSPENDIDOS** desde el 2026-11-24 por decisión de hispafox, hasta que lo reactive en el chat. Mientras dure:
+> - El agente **no ejecuta** PHPUnit ni ningún test, y **no escribe tests nuevos**. Los que ya existen se quedan como están.
+> - Se pueden abrir PR sin tests en verde; la descripción lo indica con "Tests diferidos (Fase 5 suspendida)".
+> - Siguen vigentes las comprobaciones que no son tests: sintaxis (`php -l`), mapeo de Doctrine y migraciones.
+> - Pendiente al reactivar: el bloqueo de PHPUnit en `main` (bitácora, paso 31) y ejecutar los tests escritos sin ejecutar (paso 32).
+
 - [x] Configurar PHPUnit y base de datos de test
 - [ ] Tests unitarios de servicios y entidades
 - [ ] Tests funcionales de los endpoints
@@ -182,7 +189,7 @@ Una firma deja tres huellas, y las tres deben coincidir:
 
 > ⏸️ **Regla de bloqueo SUSPENDIDA** desde el 2026-11-24 por decisión de hispafox, hasta que lo reactive en el chat. Mientras dure:
 > - El agente avanza sin esperar firmas, pero cada entregable nuevo lleva `Estado: pendiente de firma` y se anota en "Pendientes de firma" (abajo), para firmarlo al reactivar la regla.
-> - Siguen vigentes: no abrir PR con tests en rojo, no hacer merge (lo decide una persona) y no implementar sin issue.
+> - Siguen vigentes: no abrir PR con tests en rojo (salvo mientras los tests estén suspendidos, ver Fase 5), no hacer merge (lo decide una persona) y no implementar sin issue.
 
 **Regla de bloqueo:** antes de empezar cualquier paso, el agente comprueba que están firmados todos los entregables de los que depende. Si falta una firma, **se detiene**: dice qué falta y la pide. No crea issues, código, ramas ni PR mientras tanto.
 
@@ -217,7 +224,7 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 - Documentar cada paso que se dé en `docs/bitacora.md` con el skill `bitacora` (qué se hizo, por qué, ficheros afectados). En un chat nuevo, empezar con `/bitacora retomar`.
 - Añadir a `docs/aprendizajes.md` lo aprendido solo cuando el usuario lo pida.
 - No implementar nada sin issue de GitHub asociado.
-- No abrir PR si los tests no pasan.
+- No abrir PR si los tests no pasan. *(Suspendida mientras lo estén los tests: ver Fase 5.)*
 - No hacer merge: el merge lo decide una persona (CRITERIO).
 - Respetar el análisis de `docs/analisis.md`; si hay que desviarse, proponer un ADR antes.
 - Commits con referencia al issue al final: `descripción breve (#<nº>)`. No empezar el mensaje por `#`: Git trata esas líneas como comentarios al editar el mensaje.

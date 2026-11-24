@@ -493,3 +493,20 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 - El resto del issue #5: DTO, servicio, controlador, tests funcionales y la cabecera `application/problem+json`.
 
 **Ficheros:** `backend/src/Entity/Recurrence.php`, `backend/src/Entity/Task.php`, `backend/src/Entity/Exception/DomainRuleViolation.php`, `backend/src/Repository/TaskRepository.php`, `backend/migrations/Version20261124123921.php`, `backend/tests/Unit/Entity/TaskTest.php` (nuevos), `docs/bitacora.md` (modificado).
+
+## Paso 33 — Suspensión del sistema de tests (2026-11-24)
+
+**Qué hicimos:** a petición del usuario, aplazamos todo el sistema de tests hasta que lo reactive en el chat.
+
+**Cambios:**
+- `CLAUDE.md`, Fase 5: aviso de tests suspendidos. Mientras dure, el agente no ejecuta ni escribe tests, y se pueden abrir PR sin tests en verde si se indica "Tests diferidos". Siguen vigentes `php -l`, el mapeo de Doctrine y las migraciones. La regla "No abrir PR si los tests no pasan" y su mención en la sección "Firmas" remiten a esa suspensión.
+- `scripts/backend-test.ps1`: por defecto ya no lanza PHPUnit (que se queda colgado, paso 31). Solo lo hace con `-PhpUnit`. Comprobado: sin PHPUnit termina en "Todo en verde".
+- Skill `modelo`: nota de que, con los tests suspendidos, no los escribe ni los ejecuta.
+
+**Por qué el modelo "desapareció":** para commitear esto volvimos a `main`, y VS Code mostró `Task.php` como borrado. El modelo está en la rama `feature/5-gestionar-tareas` (commit `584bc2b`, subido); al volver a esa rama reaparece.
+
+**Pendiente:**
+- Al reactivar los tests: resolver el bloqueo de PHPUnit (paso 31) y ejecutar los tests del paso 32.
+- Sigue abierta la propuesta de añadir al CLAUDE.md que el mapeo de Doctrine va con atributos.
+
+**Ficheros:** `CLAUDE.md`, `scripts/backend-test.ps1`, `.claude/skills/modelo/SKILL.md`, `docs/bitacora.md` (modificados).
