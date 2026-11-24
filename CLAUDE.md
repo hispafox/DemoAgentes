@@ -10,13 +10,13 @@ Aplicación web para gestionar tareas personales con **plantillas** reutilizable
 
 | Documento | Qué define |
 |---|---|
-| `docs/app/lista-de-tareas.md` | Qué hace: funcionalidades F-01 a F-19, casos de uso y reglas de negocio RN-01 a RN-16 |
+| `docs/app/lista-de-tareas.md` | Qué hace: funcionalidades F-01 a F-19, casos de uso y reglas de negocio RN-01 a RN-17 |
 | `docs/analisis.md` | Cómo se construye: entidades, endpoints, lógica, pantallas y plan de tests |
 | `docs/decisiones/` | Decisiones técnicas (ADR) |
 
 **Alcance de la versión 0.1:** API completa (tareas, completar con recurrencia, papelera y plantillas) y frontend Angular con sus pantallas, con SQLite como base de datos (ADR-0003).
 
-**Versión 0.2:** categorías de tareas (F-15 a F-19, RN-14 a RN-16; issue #15).
+**Versión 0.2:** categorías de tareas (F-15 a F-19, RN-14 a RN-17; issue #15).
 
 **Fuera de alcance:** usuarios y autenticación, paginación, filtros y búsqueda, generación automática de ocurrencias, periodicidades personalizadas, vaciar la papelera.
 

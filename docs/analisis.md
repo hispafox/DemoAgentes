@@ -92,7 +92,7 @@ erDiagram
 
     CATEGORY {
         int id PK "autogenerado (v0.2)"
-        varchar name "100, not null (RN-14)"
+        varchar name "100, not null, único (RN-14, RN-17)"
     }
 ```
 
@@ -145,7 +145,11 @@ El borrado lógico se implementa a mano con `deletedAt` y métodos del repositor
 | `id` | `int` | `id` serial PK | Autogenerado | |
 | `name` | `string` | `varchar(100)` not null | Nombre de la categoría | RN-14 |
 
-Métodos de dominio: `rename(string $name)`, que rechaza el nombre vacío (RN-14). La unicidad del nombre está pendiente de decidir por el PO; mientras tanto no se impone.
+Métodos de dominio: `rename(string $name)`, que recorta espacios y rechaza el nombre vacío (RN-14).
+
+Unicidad del nombre (RN-17):
+- `CategoryRepository::existsWithName(string $name, ?int $exceptId)` compara con `LOWER(TRIM(name))`. `CategoryService` lo consulta antes de crear o renombrar y, si ya existe, la API responde `422` con la violación en `name`.
+- Índice único `uniq_category_name` sobre `name` como segunda barrera en la base de datos. Solo detecta duplicados exactos, porque el índice no ignora mayúsculas de forma portable entre SQLite y PostgreSQL; la regla completa la garantiza el servicio.
 
 En `Task` se añade, también en la 0.2:
 
@@ -193,8 +197,8 @@ Las tareas de la papelera responden `404` en detalle, `PUT`, `DELETE` y `complet
 | Verbo | Ruta | Descripción | OK | Errores | Func. |
 |---|---|---|---|---|---|
 | GET | `/api/categories` | Listar | `200` + `CategoryOutput[]` | — | F-15 |
-| POST | `/api/categories` | Crear | `201` + `CategoryOutput` | `422` | F-16 |
-| PUT | `/api/categories/{id}` | Renombrar | `200` + `CategoryOutput` | `404`, `422` | F-17 |
+| POST | `/api/categories` | Crear | `201` + `CategoryOutput` | `422` (también si el nombre ya existe, RN-17) | F-16 |
+| PUT | `/api/categories/{id}` | Renombrar | `200` + `CategoryOutput` | `404`, `422` (también si el nombre ya existe, RN-17) | F-17 |
 | DELETE | `/api/categories/{id}` | Eliminar (definitivo) | `204` | `404`, `409` si tiene tareas asociadas | F-18 |
 
 La categoría de una tarea se asigna, cambia o quita con `categoryId` en `POST`/`PUT /api/tasks` (F-19). Un `categoryId` inexistente devuelve `422`.
@@ -325,6 +329,7 @@ frontend/src/app/
 | Functional — `TaskControllerTest` | Los 8 endpoints, `404`, `409`, `422` (RN-01, RN-03), tarea en papelera inaccesible (RN-13) y formato problem+json. |
 | Functional — `TaskTemplateControllerTest` | Los 6 endpoints; borrar plantilla con tareas devuelve `409` (RN-12); modificar plantilla no cambia tareas (RN-09). |
 | Unit — `CategoryTest` *(v0.2)* | Nombre obligatorio al crear y al renombrar (RN-14). |
+| Functional — `CategoryRepositoryTest` *(v0.2)* | `existsWithName()` encuentra "Casa" al buscar " casa " y excluye la propia categoría al renombrar (RN-17). |
 | Functional — `CategoryControllerTest` *(v0.2)* | Los 4 endpoints; borrar con tareas, también en la papelera, devuelve `409` (RN-16); `categoryId` inexistente en una tarea devuelve `422`. |
 | Angular | Servicios HTTP con `HttpTestingController`; componentes de lista y formulario. |
 
@@ -347,5 +352,5 @@ frontend/src/app/
 
 1. Diferencias entre SQLite y PostgreSQL al migrar después de la 0.1: se mitiga escribiendo migraciones solo con tipos portables de Doctrine.
 2. Una tarea completada por error no se puede deshacer (RN-11). Si resulta incómodo en el uso, la alternativa es eliminarla y crearla de nuevo.
-3. *(v0.2)* Unicidad del nombre de categoría: pendiente de decisión del PO. Si se impone, hará falta un índice único y un `409` o `422` al duplicar.
+3. *(v0.2)* Unicidad del nombre de categoría (RN-17): el índice único solo cubre duplicados exactos; la comparación sin mayúsculas depende del servicio. Dos peticiones simultáneas con "Casa" y "casa" podrían colarse; se acepta en una demo de un solo usuario.
 4. *(v0.2)* Las categorías dependen de la entidad `Task` (issue #5): su implementación debe esperar a que esa entidad esté en `main`.
