@@ -213,3 +213,96 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 - Pasos 6 y 8: la línea "Ficheros" del paso 6 estaba al final del paso 8, que tenía dos. La devolvimos al paso 6.
 
 **Ficheros:** `docs/bitacora.md` (modificado).
+
+## Paso 16 — La app es la Lista de Tareas: documentación funcional, análisis y ADR (2026-11-24)
+
+**Qué hicimos:** decidimos que la app de DemoAgentes es la **Lista de Tareas** (tareas, plantillas y tareas repetitivas) del análisis de referencia `docs/analisis-diseño.md`, y la adaptamos al stack del CLAUDE.md. Así se resuelve el pendiente principal de la Fase 0.5 (qué app construir) y, en parte, el pendiente del paso 13 (qué se reutiliza de los documentos de referencia).
+
+**Por qué:** el análisis existente describía la app sobre ASP.NET Core, EF Core, SQLite y xUnit, que no es nuestro stack.
+
+**Cambios:**
+- `docs/app/lista-de-tareas.md` (Fase 1): parte funcional sin tecnología, con actor, conceptos, funcionalidades F-01 a F-12, dos casos de uso, reglas de negocio RN-01 a RN-10, fuera de alcance y preguntas abiertas para negocio.
+- `docs/analisis.md` (Fase 2): capas de Symfony, entidades Doctrine (`Task`, `TaskTemplate`, enum `Recurrence`), 12 endpoints bajo `/api/tasks` y `/api/task-templates`, errores en `application/problem+json`, lógica de completar e instanciar, pantallas y rutas de Angular, requisitos no funcionales, plan de tests y tabla de diferencias con la referencia.
+- `docs/decisiones/0001-base-de-datos-postgresql.md` y `0002-codigo-y-api-en-ingles.md`, en estado "propuesto".
+- `CLAUDE.md`: marcadas como hechas las tareas de documentación (Fase 1) y de análisis, requisitos no funcionales y ADR (Fase 2), y con ✅ las carpetas `docs/app/`, `docs/analisis.md` y `docs/decisiones/`. Los dos CRITERIO siguen sin marcar.
+
+**Decisión:**
+- PostgreSQL en lugar de SQLite, porque el Docker Compose ya prevé un servidor de base de datos (ADR-0001).
+- Código y rutas en inglés, según la regla del CLAUDE.md (ADR-0002).
+- Se elimina el booleano `EsRepetitiva`: `recurrence` nullable lo sustituye y evita estados incoherentes.
+- La validación devuelve `422` y no `400`, como hace Symfony por defecto.
+- `/complete` devuelve la tarea completada y la nueva ocurrencia.
+- `analisis-diseño.md` se conserva sin tocar, como referencia.
+
+**Pendiente:**
+- CRITERIO de la Fase 1 (validación funcional) y de la Fase 2 (revisión técnica), y aprobación de los ADR.
+- Preguntas abiertas: qué pasa con las tareas al borrar una plantilla, desde qué fecha se calcula la siguiente ocurrencia, qué pasa al reabrir y volver a completar una tarea repetitiva, si hace falta borrado lógico y qué base de datos se usa en los tests.
+- Conflicto con el CLAUDE.md: la Fase 4 incluye "Implementar seguridad (autenticación…)", pero la autenticación queda fuera de alcance. Hay que decidir si se cambia esa tarea; es un cambio del candado y necesita aprobación.
+- Fase 0.5: completar el CLAUDE.md con qué es la app y su alcance.
+
+**Ficheros:** `docs/app/lista-de-tareas.md` (nuevo), `docs/analisis.md` (nuevo), `docs/decisiones/0001-base-de-datos-postgresql.md` (nuevo), `docs/decisiones/0002-codigo-y-api-en-ingles.md` (nuevo), `CLAUDE.md` (modificado), `docs/bitacora.md` (modificado).
+
+## Paso 17 — CRITERIO de la Fase 1: documentación funcional aprobada (2026-11-24)
+
+**Qué hicimos:** el usuario, como PO, aprobó y firmó la documentación funcional `docs/app/lista-de-tareas.md`. Queda cerrado el CRITERIO de la Fase 1.
+
+**Cambios:**
+- `docs/app/lista-de-tareas.md`: el estado pasa de "borrador" a "aprobado", con firma y fecha.
+- `CLAUDE.md`: marcado `[x]` el CRITERIO de la Fase 1.
+
+**Pendiente:**
+- Las cuatro preguntas abiertas de la sección 8 del documento siguen sin respuesta. La aprobación no las resuelve: hay que contestarlas antes de crear los issues de la Fase 3.
+- CRITERIO de la Fase 2: revisión técnica de `docs/analisis.md` y aprobación de los ADR 0001 y 0002.
+
+**Ficheros:** `docs/app/lista-de-tareas.md` (modificado), `CLAUDE.md` (modificado), `docs/bitacora.md` (modificado).
+
+## Paso 18 — Respuestas del PO a las preguntas abiertas (2026-11-24)
+
+**Qué hicimos:** el PO respondió las cuatro preguntas abiertas de la documentación funcional e incorporamos las respuestas a la documentación y al análisis. Queda resuelto el primer pendiente del paso 17.
+
+**Respuestas:**
+1. No se puede eliminar una plantilla con tareas asociadas → RN-12, `409` y FK `ON DELETE RESTRICT`.
+2. La siguiente ocurrencia se calcula desde el día en que se completa → RN-05.
+3. Una tarea completada no se puede reabrir → RN-11. `PUT` deja de aceptar `completed` y el estado solo cambia con `/complete`.
+4. Borrado lógico con papelera → RN-10 reescrita, F-13 (ver papelera), F-14 (restaurar), CU-03, campo `deletedAt` y endpoints `GET /api/tasks/trash` y `POST /api/tasks/{id}/restore`.
+
+**Cambios:**
+- `docs/app/lista-de-tareas.md`: funcionalidades F-04, F-05, F-11, F-13 y F-14; CU-01 y CU-03; reglas RN-05 y RN-10 a RN-13; fuera de alcance; la sección 8 pasa a ser "Preguntas de negocio resueltas".
+- `docs/analisis.md`: modelo de `Task`, relación con la plantilla, endpoints, DTO, errores `409`, lógica de servicios, pantalla de papelera en Angular, plan de tests y tablas de diferencias y riesgos.
+
+**Decisión:** el borrado lógico se hace a mano con `deletedAt` y métodos del repositorio, sin la extensión Gedmo SoftDeleteable, para que sea explícito en la demo.
+
+**Pendiente:**
+- El PO debe confirmar lo que añadimos por deducción y no salió de sus respuestas: RN-13 (una tarea de la papelera no se modifica ni se completa), que las tareas de la papelera también cuentan para RN-12, y que vaciar la papelera y la papelera de plantillas quedan fuera de alcance.
+- CRITERIO de la Fase 2 (análisis y ADR) y conflicto de seguridad de la Fase 4 con el CLAUDE.md.
+
+**Ficheros:** `docs/app/lista-de-tareas.md` (modificado), `docs/analisis.md` (modificado), `docs/bitacora.md` (modificado).
+
+## Paso 19 — El PO confirma las reglas deducidas (2026-11-24)
+
+**Qué hicimos:** el PO dio por buenas las reglas que añadimos por deducción en el paso 18: RN-13, que las tareas de la papelera cuentan para RN-12, y que vaciar la papelera y la papelera de plantillas quedan fuera de alcance. Queda resuelto el primer pendiente del paso 18 y la documentación funcional queda cerrada.
+
+**Pendiente:** CRITERIO de la Fase 2 (análisis y ADR) y conflicto de seguridad de la Fase 4 con el CLAUDE.md.
+
+**Ficheros:** `docs/app/lista-de-tareas.md` (modificado), `docs/bitacora.md` (modificado).
+
+## Paso 20 — CRITERIO de la Fase 2 y decisiones para la versión 0.1 (2026-11-24)
+
+**Qué hicimos:** el usuario pidió crear la versión 0.1 de la aplicación. Antes de implementar cerramos lo que exige el CLAUDE.md: aprobó el análisis y los ADR (CRITERIO de la Fase 2) y tomó tres decisiones. Queda resuelto el conflicto de seguridad de la Fase 4 pendiente desde el paso 16.
+
+**Decisiones del usuario:**
+- **Alcance de la 0.1:** backend completo (tareas, papelera y plantillas) y frontend Angular.
+- **Base de datos:** SQLite en la 0.1, porque Docker no está instalado. PostgreSQL en Docker se aplaza (nuevo ADR-0003).
+- **Seguridad:** la tarea de la Fase 4 se reduce a validación de entrada y gestión de errores; la autenticación queda fuera de alcance.
+
+**Cambios:**
+- `docs/decisiones/0001` y `0002` pasan a "aceptado"; el 0001 se aplicará cuando haya entorno Docker.
+- Nuevo `docs/decisiones/0003-sqlite-en-la-version-0-1.md`.
+- `docs/analisis.md`: estado "aprobado", stack con SQLite, entorno de la 0.1 y riesgos actualizados.
+- `CLAUDE.md`: tarea de seguridad de la Fase 4 reescrita (cambio del candado aprobado por el usuario) y CRITERIO de la Fase 2 marcado.
+
+**Pendiente:**
+- Composer no está instalado y hace falta para crear el proyecto Symfony (Fase 4).
+- Docker Compose (Fase 0) sigue pendiente; no bloquea la 0.1.
+
+**Ficheros:** `docs/decisiones/0001-base-de-datos-postgresql.md`, `docs/decisiones/0002-codigo-y-api-en-ingles.md`, `docs/analisis.md` (modificados), `docs/decisiones/0003-sqlite-en-la-version-0-1.md` (nuevo), `CLAUDE.md` (modificado), `docs/bitacora.md` (modificado).

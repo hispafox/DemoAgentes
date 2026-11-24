@@ -28,9 +28,9 @@ DemoAgentes/
 ├── docs/                         ✅ Documentación del proyecto (en español)
 │   ├── bitacora.md               ✅ Registro de cada paso
 │   ├── aprendizajes.md           ✅ Lo aprendido (solo cuando se pide)
-│   ├── app/                         Documentación funcional: requisitos, casos de uso, mockups (Fase 1)
-│   ├── analisis.md                  Análisis técnico: entidades, endpoints, pantallas (Fase 2)
-│   └── decisiones/                  ADR: una decisión técnica por fichero (Fase 2)
+│   ├── app/                      ✅ Documentación funcional: requisitos, casos de uso, mockups (Fase 1)
+│   ├── analisis.md               ✅ Análisis técnico: entidades, endpoints, pantallas (Fase 2)
+│   └── decisiones/               ✅ ADR: una decisión técnica por fichero (Fase 2)
 ├── backend/                         Symfony + Doctrine (Fase 4)
 │   ├── config/
 │   ├── migrations/                  Doctrine Migrations
@@ -87,15 +87,15 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 - [ ] **CRITERIO:** aprobación del CLAUDE.md; a partir de aquí la IA trabaja dentro de este marco
 
 ### Fase 1 — Documentación de la app (DOC)
-- [ ] Reunir la documentación funcional en `docs/` (requisitos, casos de uso, mockups)
-- [ ] Normalizar el documento: actores, funcionalidades, reglas de negocio
-- [ ] **CRITERIO:** validación del documento por negocio/PO
+- [x] Reunir la documentación funcional en `docs/` (requisitos, casos de uso, mockups)
+- [x] Normalizar el documento: actores, funcionalidades, reglas de negocio
+- [x] **CRITERIO:** validación del documento por negocio/PO
 
 ### Fase 2 — Análisis (DOC → ANÁLISIS)
-- [ ] Generar `docs/analisis.md`: entidades Doctrine, relaciones, endpoints de la API, pantallas Angular
-- [ ] Identificar requisitos no funcionales (seguridad, rendimiento, autenticación)
-- [ ] Registrar decisiones técnicas en `docs/decisiones/` (ADR)
-- [ ] **CRITERIO:** revisión del análisis por el equipo técnico
+- [x] Generar `docs/analisis.md`: entidades Doctrine, relaciones, endpoints de la API, pantallas Angular
+- [x] Identificar requisitos no funcionales (seguridad, rendimiento, autenticación)
+- [x] Registrar decisiones técnicas en `docs/decisiones/` (ADR)
+- [x] **CRITERIO:** revisión del análisis por el equipo técnico
 
 ### Fase 3 — Backlog en GitHub Issues (DOC → ISSUES)
 - [ ] Crear un milestone por bloque funcional (épica) vía MCP
@@ -110,7 +110,7 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 - [ ] Configurar Doctrine y la conexión a la base de datos
 - [ ] Implementar entidades y migraciones según el análisis
 - [ ] Implementar servicios de dominio y controladores/API REST
-- [ ] Implementar seguridad (autenticación, autorización, validación de entrada)
+- [ ] Implementar validación de entrada y gestión de errores (la autenticación queda fuera de alcance según `docs/app/`)
 - [ ] Por cada issue: leer el issue vía MCP → implementar → mover en el tablero y comentar el avance
 
 ### Fase 5 — Tests
