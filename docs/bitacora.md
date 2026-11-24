@@ -318,3 +318,25 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Pendiente:** al aplicar la regla, la Fase 3 (backlog) queda **bloqueada**, porque el CLAUDE.md (CRITERIO de la Fase 0.5) no está firmado.
 
 **Ficheros:** `CLAUDE.md`, `docs/analisis.md`, `docs/app/lista-de-tareas.md`, `docs/decisiones/0001-base-de-datos-postgresql.md`, `docs/decisiones/0002-codigo-y-api-en-ingles.md`, `docs/decisiones/0003-sqlite-en-la-version-0-1.md`, `docs/bitacora.md` (modificados).
+
+## Paso 22 — Diseño de la app en el CLAUDE.md (2026-11-24)
+
+**Qué hicimos:** completamos el CLAUDE.md con lo que pedía la Fase 0.5, para que el usuario pueda firmarlo y se desbloquee el backlog de la 0.1.
+
+**Cambios:**
+- Sección "La aplicación: Lista de Tareas": qué es, documentos de referencia, alcance de la 0.1, fuera de alcance y qué manda si hay contradicción.
+- Stack: línea de base de datos (SQLite en la 0.1, PostgreSQL después).
+- Sección "Arquitectura y convenciones": capas del backend, convenciones de la API REST (rutas, códigos, problem+json), nombres y estructura de Angular.
+- Marcadas las cuatro tareas de la Fase 0.5. El CRITERIO queda pendiente de firma.
+
+**Pendiente:** firma del CLAUDE.md (CRITERIO de la Fase 0.5).
+
+**Ficheros:** `CLAUDE.md` (modificado), `docs/bitacora.md` (modificado).
+
+## Paso 23 — CRITERIO de la Fase 0.5: CLAUDE.md firmado (2026-11-24)
+
+**Qué hicimos:** el usuario firmó el CLAUDE.md. Con esto queda desbloqueado el backlog de la 0.1 (Fase 3) y resuelto el pendiente del paso 22.
+
+**Cambios:** cabecera de estado en el CLAUDE.md, fila en el Registro de firmas y `[x]` en el CRITERIO de la Fase 0.5.
+
+**Ficheros:** `CLAUDE.md` (modificado), `docs/bitacora.md` (modificado).

@@ -1,13 +1,49 @@
 # CLAUDE.md — DemoAgentes
 
+> Estado: **aprobado** — firmado por hispafox el 2026-11-24 (CRITERIO de la Fase 0.5).
+
 Demo de desarrollo asistido por agentes de IA: partimos de la documentación funcional de una aplicación y, a través de MCP, llegamos a código PHP probado y a una Pull Request en Git. En cada paso hay un **criterio** (punto de control humano) antes de avanzar.
+
+## La aplicación: Lista de Tareas
+
+Aplicación web para gestionar tareas personales con **plantillas** reutilizables, **tareas repetitivas** (al completarlas se genera la siguiente) y **papelera**. Es una demo didáctica: se prioriza la claridad del código sobre la sofisticación.
+
+| Documento | Qué define |
+|---|---|
+| `docs/app/lista-de-tareas.md` | Qué hace: funcionalidades F-01 a F-14, casos de uso y reglas de negocio RN-01 a RN-13 |
+| `docs/analisis.md` | Cómo se construye: entidades, endpoints, lógica, pantallas y plan de tests |
+| `docs/decisiones/` | Decisiones técnicas (ADR) |
+
+**Alcance de la versión 0.1:** API completa (tareas, completar con recurrencia, papelera y plantillas) y frontend Angular con sus pantallas, con SQLite como base de datos (ADR-0003).
+
+**Fuera de alcance:** usuarios y autenticación, paginación, filtros y búsqueda, generación automática de ocurrencias, periodicidades personalizadas, vaciar la papelera.
+
+Si este CLAUDE.md y esos documentos se contradicen, manda el documento firmado más específico (análisis para lo técnico, documentación funcional para lo funcional), y se corrige el otro.
 
 ## Stack
 
 - **Backend:** PHP 8.3+, Symfony 7, Doctrine ORM (migraciones con Doctrine Migrations)
+- **Base de datos:** SQLite en la versión 0.1 (ADR-0003); PostgreSQL en Docker más adelante (ADR-0001)
 - **Frontend:** Angular (última LTS), TypeScript estricto
 - **Tests:** PHPUnit (unitarios e integración) en backend; Jest/Karma en Angular; tests E2E opcionales (Playwright)
 - **Gestión:** GitHub (vía MCP): Issues para el backlog, Milestones/labels para agrupar, GitHub Projects como tablero y Pull Requests
+
+## Arquitectura y convenciones
+
+**Backend (capas):** `Controller → Service → Repository → Entity`, con `Dto/` para la entrada y salida de la API.
+- El controlador recibe el DTO (`#[MapRequestPayload]`), llama al servicio y devuelve un DTO de salida. Nunca contiene lógica de negocio ni serializa entidades.
+- Las reglas de negocio viven en los servicios y en los métodos de dominio de las entidades.
+- Inyección por constructor (autowiring); fechas con `DateTimeImmutable` y `ClockInterface`.
+
+**API REST:**
+- Prefijo `/api`, recursos en plural y en inglés (`/api/tasks`, `/api/task-templates`); acciones con efectos como subrecurso `POST` (`/complete`, `/restore`, `/instantiate`).
+- JSON con propiedades en `camelCase`; fechas ISO 8601.
+- Códigos: `200`, `201` (+ `Location`), `204`, `400` (JSON mal formado), `404`, `409` (estado no permite la acción), `422` (validación).
+- Errores siempre en `application/problem+json` (RFC 9457).
+
+**Nombres:** código, tablas y rutas en inglés (ADR-0002). Clases en `PascalCase`, métodos y propiedades en `camelCase`, tablas y columnas en `snake_case`. Tests: `<Clase>Test`, un método `test<Comportamiento>` por caso.
+
+**Frontend (Angular):** `core/` (servicios HTTP, interceptores, modelos), `shared/` (componentes y pipes reutilizables) y `features/<bloque>/` (pantallas y rutas). Componentes *standalone*, formularios reactivos tipados y textos de la interfaz en castellano.
 
 ## Estructura de carpetas
 
@@ -80,11 +116,11 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 - [ ] Definir entorno local (Docker Compose: PHP-FPM, Nginx, base de datos, Node)
 
 ### Fase 0.5 — Diseño del proyecto (① candado: CLAUDE.md)
-- [ ] Completar este CLAUDE.md con el diseño: qué es la app, alcance, arquitectura y convenciones
-- [ ] Definir la estructura de capas del backend (Controller → Service → Repository/Doctrine)
-- [ ] Definir convenciones de nombres, API (REST, formato de errores) y estructura de Angular
-- [ ] Actualizar el CLAUDE.md al cerrar el análisis (Fase 2) para reflejar las decisiones
-- [ ] **CRITERIO:** aprobación del CLAUDE.md; a partir de aquí la IA trabaja dentro de este marco
+- [x] Completar este CLAUDE.md con el diseño: qué es la app, alcance, arquitectura y convenciones
+- [x] Definir la estructura de capas del backend (Controller → Service → Repository/Doctrine)
+- [x] Definir convenciones de nombres, API (REST, formato de errores) y estructura de Angular
+- [x] Actualizar el CLAUDE.md al cerrar el análisis (Fase 2) para reflejar las decisiones
+- [x] **CRITERIO:** aprobación del CLAUDE.md; a partir de aquí la IA trabaja dentro de este marco
 
 ### Fase 1 — Documentación de la app (DOC)
 - [x] Reunir la documentación funcional en `docs/` (requisitos, casos de uso, mockups)
@@ -157,6 +193,7 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 
 | Entregable | Fase | Firmado por | Fecha |
 |---|---|---|---|
+| `CLAUDE.md` | 0.5 | hispafox | 2026-11-24 |
 | `docs/app/lista-de-tareas.md` | 1 | hispafox (PO) | 2026-11-24 |
 | `docs/analisis.md` | 2 | hispafox | 2026-11-24 |
 | ADR 0001, 0002 y 0003 (`docs/decisiones/`) | 2 | hispafox | 2026-11-24 |
