@@ -4,7 +4,7 @@
 >
 > Origen: parte funcional de `docs/analisis-diseño.md` (AppTodoList), que se conserva como referencia.
 >
-> Estado: **aprobado** — firmado por hispafox (PO) el 2026-11-24 (CRITERIO de la Fase 1). Las preguntas abiertas se respondieron el mismo día (sección 8) y sus respuestas ya están incorporadas.
+> Estado: **pendiente de nueva firma** — firmado por hispafox (PO) el 2026-11-24 (CRITERIO de la Fase 1); cambiado después para añadir las categorías de tareas (versión 0.2, Bloque C).
 
 ## 1. Objetivo
 
@@ -26,6 +26,7 @@ Es una demo didáctica, así que se prioriza que el código sea claro antes que 
 | **Tarea repetitiva** | Tarea con una periodicidad (diaria, semanal o mensual). Al completarla se crea la siguiente ocurrencia. |
 | **Plantilla** | Modelo con valores por defecto (título, si es repetitiva y su periodicidad) para crear tareas rápidamente. |
 | **Periodicidad** | Cada cuánto se repite una tarea: diaria, semanal o mensual. |
+| **Categoría** *(v0.2)* | Agrupación que el usuario define (por ejemplo, Casa, Trabajo, Compras). Una tarea puede tener una categoría o ninguna. |
 
 ## 4. Funcionalidades
 
@@ -52,6 +53,16 @@ Es una demo didáctica, así que se prioriza que el código sea claro antes que 
 | F-10 | Modificar una plantilla. |
 | F-11 | Eliminar una plantilla, si no tiene tareas asociadas. |
 | F-12 | Crear una tarea nueva a partir de una plantilla ("instanciar"). |
+
+### Bloque C — Categorías (versión 0.2)
+
+| Id | Funcionalidad |
+|---|---|
+| F-15 | Listar todas las categorías. |
+| F-16 | Crear una categoría con su nombre. |
+| F-17 | Renombrar una categoría. |
+| F-18 | Eliminar una categoría, si no tiene tareas asociadas. |
+| F-19 | Asignar una categoría a una tarea, cambiarla o quitarla (al crear o modificar la tarea). |
 
 ## 5. Casos de uso principales
 
@@ -92,6 +103,9 @@ Es una demo didáctica, así que se prioriza que el código sea claro antes que 
 | RN-11 | Una tarea completada no puede volver a pendiente. Completar una tarea ya completada no está permitido. |
 | RN-12 | No se puede eliminar una plantilla que tenga tareas asociadas, incluidas las que están en la papelera. |
 | RN-13 | Una tarea en la papelera no se puede modificar ni completar hasta que se restaure. |
+| RN-14 | *(v0.2)* El nombre de una categoría es obligatorio. |
+| RN-15 | *(v0.2)* Una tarea tiene como mucho una categoría; puede no tener ninguna. |
+| RN-16 | *(v0.2)* No se puede eliminar una categoría que tenga tareas asociadas, incluidas las que están en la papelera. |
 
 ## 7. Fuera de alcance
 
@@ -101,6 +115,8 @@ Es una demo didáctica, así que se prioriza que el código sea claro antes que 
 - Periodicidades personalizadas (cada N días, ciertos días de la semana).
 - Vaciar la papelera o borrar tareas definitivamente.
 - Papelera de plantillas: las plantillas se borran definitivamente (si se permite, RN-12).
+- Categorías en las plantillas: una plantilla no tiene categoría y la tarea instanciada nace sin ella (v0.2).
+- Varias categorías por tarea (etiquetas).
 
 ## 8. Preguntas de negocio resueltas (2026-11-24)
 
@@ -112,3 +128,14 @@ Es una demo didáctica, así que se prioriza que el código sea claro antes que 
 | 4 | ¿Hace falta papelera o borrado lógico? | Sí, borrado lógico con papelera y restauración. | RN-10, RN-13, F-13, F-14 |
 
 El PO también confirmó las reglas deducidas de estas respuestas: RN-13, que las tareas de la papelera cuentan para RN-12, y los nuevos puntos de "Fuera de alcance".
+
+### Categorías (2026-11-24)
+
+| # | Pregunta | Respuesta del PO | Reglas |
+|---|---|---|---|
+| 5 | ¿Qué es una categoría? | Una entidad que el usuario gestiona (crear, renombrar, eliminar). | F-15 a F-18 |
+| 6 | ¿Cuántas categorías por tarea? | Cero o una. | RN-15, F-19 |
+| 7 | ¿Qué pasa al eliminar una categoría con tareas? | Se impide. | RN-16 |
+| 8 | ¿En qué versión y a qué afecta? | Versión 0.2 y solo a las tareas; las plantillas no llevan categoría. | Fuera de alcance |
+
+**Pendiente de confirmar por el PO:** ¿los nombres de categoría deben ser únicos? Mientras no se decida, no se impone unicidad.
