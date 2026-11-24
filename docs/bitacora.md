@@ -1,0 +1,132 @@
+# Bitácora del proyecto DemoAgentes
+
+Registro de cada paso que damos, en orden. Cada entrada indica qué se hizo, por qué y qué ficheros cambiaron.
+
+---
+
+## Paso 1 — Punto de partida: la pizarra (2026-11-24)
+
+**Qué hicimos:** partimos de un diagrama en pizarra que describe el flujo de trabajo con agentes de IA:
+
+- La **documentación de la app (DOC)** se lleva, vía **MCP**, a **Jira** (tareas) y a un **análisis** técnico.
+- La **IA** toma los tickets de Jira (vía MCP) y construye la **app en PHP**.
+- El resultado acaba en una **Pull Request en Git**.
+- En cada salida hay un **CRITERIO**: revisión humana antes de avanzar.
+
+**Stack decidido:** PHP + Symfony + Doctrine (backend), Angular (frontend) y tests.
+
+**Ficheros:** ninguno; la carpeta estaba vacía.
+
+## Paso 2 — Creación del CLAUDE.md como lista de tareas (2026-11-24)
+
+**Qué hicimos:** creamos `CLAUDE.md` en la raíz con el stack, el flujo de la pizarra, una lista de tareas por fases (0 a 7) con su punto de CRITERIO, reglas para el agente y comandos básicos.
+
+**Ficheros:** `CLAUDE.md` (nuevo).
+
+## Paso 3 — El candado de la pizarra es el CLAUDE.md (2026-11-24)
+
+**Qué hicimos:** corregimos la interpretación del candado ① del diagrama. En la primera versión lo habíamos leído como "tests en verde"; en realidad **el candado representa el CLAUDE.md**: el diseño que define en qué consiste el proyecto y que acota lo que puede hacer la IA.
+
+**Cambios:**
+- El diagrama del CLAUDE.md sitúa el candado ① sobre la app PHP.
+- Nueva **Fase 0.5 — Diseño del proyecto** para completar y aprobar el CLAUDE.md antes de implementar.
+- Nueva regla: "Este CLAUDE.md es el candado: ninguna implementación puede salirse de lo que define".
+- Los tests pasan a ser una fase normal (Fase 5).
+
+**Ficheros:** `CLAUDE.md` (modificado).
+
+## Paso 4 — Carpeta docs y bitácora (2026-11-24)
+
+**Qué hicimos:** creamos `docs/` con dos ficheros:
+- `docs/bitacora.md` (este fichero): registro de cada paso.
+- `docs/aprendizajes.md`: lo que vamos aprendiendo, que se añade cuando se pide.
+
+**Ficheros:** `docs/bitacora.md`, `docs/aprendizajes.md` (nuevos), `CLAUDE.md` (regla de documentación).
+
+## Paso 5 — Repositorio Git en local (2026-11-24)
+
+**Qué hicimos:** inicializamos el repositorio Git en local con `git init -b main`. De momento no hay remoto.
+
+- Rama principal: `main`. Las ramas de trabajo seguirán el formato `feature/<JIRA-KEY>-descripcion`.
+- Añadimos un `.gitignore` para Symfony (`vendor/`, `var/`, `.env.local`, cachés de PHPUnit) y Angular (`node_modules/`, `dist/`, `.angular/`), además de ficheros del IDE, del sistema y la configuración local de Claude Code.
+- Marcada la tarea en la Fase 0 del CLAUDE.md y añadida otra pendiente: crear el remoto y enlazarlo.
+
+**Pendiente:** primer commit (todavía no hay ninguno).
+
+**Ficheros:** `.git/` (nuevo), `.gitignore` (nuevo), `CLAUDE.md` (modificado).
+
+## Paso 6 — Skill de proyecto para mensajes de commit (2026-11-24)
+
+**Qué hicimos:** creamos el skill `mensaje-commit` en `.claude/skills/`, la carpeta de skills de Claude Code a nivel de proyecto (solo existe en este repositorio, no en el resto de proyectos del usuario).
+
+**Qué hace el skill:**
+- Lee el diff preparado antes de escribir nada.
+- Primera línea con el formato `tipo: descripción corta` (`feat`, `fix`, `docs`, `test`, `refactor`, `style`, `build`, `ci`, `chore`), en castellano y con 72 caracteres como máximo.
+- Cuerpo opcional con el detalle; si el cambio es trivial, basta una línea.
+- Tres reglas: ser específico con lo que cambió, no confundir escueto con vago y proponer dividir commits si el diff mezcla cambios sin relación.
+- Ejemplos buenos y malos, y el commit solo se hace con aprobación del usuario.
+
+**Decisión:** el CLAUDE.md dice `<JIRA-KEY>: descripción breve` para los commits y el skill propone `tipo: <JIRA-KEY> descripción` cuando hay ticket. Se decidió **no modificar la regla del CLAUDE.md** por ahora; ambos formatos conviven. *(Superado en el paso 7: Jira se sustituye por GitHub.)*
+
+## Paso 7 — GitHub en lugar de Jira (2026-11-24)
+
+**Qué hicimos:** corregimos el proyecto para usar **GitHub** como gestor del backlog en lugar de Jira. Todo pasa por GitHub vía MCP: issues, tablero y Pull Requests.
+
+**Equivalencias:**
+
+| Antes (Jira) | Ahora (GitHub) |
+|---|---|
+| Épica | Milestone (y etiquetas) |
+| Historia / tarea | Issue (con sub-issues o checklist) |
+| Tablero | GitHub Projects |
+| Clave `PROJ-12` | Número de issue `#12` |
+| Cerrar ticket a mano | `Closes #12` en la PR: se cierra al hacer merge |
+| CI | GitHub Actions |
+
+**Cambios:**
+- `CLAUDE.md`: stack, diagrama, flujo, Fases 0, 3, 4, 5 y 7, y reglas del agente.
+- Ramas: `feature/<nº-issue>-descripcion`.
+- Commits: el número del issue va al final, `descripción breve (#<nº>)`. No puede ir al principio porque Git trata las líneas que empiezan por `#` como comentarios cuando el mensaje se edita en el editor.
+- Skill `mensaje-commit`: `tipo: descripción corta (#<nº>)` y `Closes #<nº>` en el cuerpo. Así el skill y el CLAUDE.md quedan alineados y desaparece la divergencia del paso 6.
+
+**Ficheros:** `CLAUDE.md`, `.claude/skills/mensaje-commit/SKILL.md` (modificados).
+
+## Paso 8 — Estructura de carpetas en el CLAUDE.md (2026-11-24)
+
+**Qué hicimos:** añadimos al CLAUDE.md la sección "Estructura de carpetas" con el árbol completo del proyecto. Las carpetas que ya existen van marcadas con ✅ y en el resto se indica la fase en que se crean.
+
+**Puntos clave:**
+- `docs/`: bitácora, aprendizajes, documentación funcional (`docs/app/`), análisis y ADR.
+- `backend/src/` sigue las capas Controller → Service → Repository → Entity, más `Dto/` para la API.
+- `backend/tests/` separa tests `Unit/` y `Functional/`.
+- `frontend/src/app/` se organiza en `core/`, `shared/` y `features/` (una carpeta por bloque funcional).
+- `.github/`: workflows de GitHub Actions y plantilla de PR.
+- En la Fase 0, la tarea "Crear estructura de carpetas" pasa a ser "Definir la estructura" (hecha) y "Crear las carpetas que faltan a medida que avance cada fase" (pendiente).
+
+**Ficheros:** `CLAUDE.md` (modificado).
+
+**Ficheros:** `.claude/skills/mensaje-commit/SKILL.md` (nuevo).
+
+## Paso 9 — Corrección del frontmatter del skill (2026-11-24)
+
+**Qué pasó:** Claude Code mostraba el error *"Failed to parse frontmatter: Nested mappings are not allowed in compact mappings"* al cargar el skill `mensaje-commit`.
+
+**Causa:** el campo `description` iba en una sola línea sin comillas y contenía `"tipo: descripción corta"`. En YAML, la secuencia `: ` (dos puntos y espacio) dentro de un valor sin comillas se interpreta como una nueva clave, y el parser falla.
+
+**Solución:** pasamos `description` a un bloque YAML plegado (`description: >-`) en varias líneas, donde los dos puntos son texto literal. Comprobamos que el frontmatter ya se lee correctamente como YAML.
+
+**Verificación:** el skill aparece entre los disponibles de la sesión y se invoca sin errores. Carga la versión actual, la que ya incluye la referencia a issues de GitHub.
+
+**Ficheros:** `.claude/skills/mensaje-commit/SKILL.md` (modificado).
+
+## Paso 10 — Primeros commits (2026-11-24)
+
+**Qué hicimos:** hicimos los primeros commits del repositorio con los mensajes redactados por el skill `mensaje-commit`. Siguiendo su regla "un commit, un propósito", el trabajo se dividió en tres commits:
+
+1. `chore: añadir .gitignore para Symfony, Angular y configuración local`
+2. `chore: añadir skill mensaje-commit para redactar commits del proyecto`
+3. `docs: crear CLAUDE.md con el flujo de la pizarra y la bitácora en docs/`
+
+Ninguno lleva número de issue porque todavía no existen issues en GitHub.
+
+**Ficheros:** `docs/bitacora.md` (modificado); ninguno más, solo commits.

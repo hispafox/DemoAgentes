@@ -1,0 +1,159 @@
+# CLAUDE.md — DemoAgentes
+
+Demo de desarrollo asistido por agentes de IA: partimos de la documentación funcional de una aplicación y, a través de MCP, llegamos a código PHP probado y a una Pull Request en Git. En cada paso hay un **criterio** (punto de control humano) antes de avanzar.
+
+## Stack
+
+- **Backend:** PHP 8.3+, Symfony 7, Doctrine ORM (migraciones con Doctrine Migrations)
+- **Frontend:** Angular (última LTS), TypeScript estricto
+- **Tests:** PHPUnit (unitarios e integración) en backend; Jest/Karma en Angular; tests E2E opcionales (Playwright)
+- **Gestión:** GitHub (vía MCP): Issues para el backlog, Milestones/labels para agrupar, GitHub Projects como tablero y Pull Requests
+
+## Estructura de carpetas
+
+Las marcadas con ✅ ya existen; el resto se crean en su fase.
+
+```
+DemoAgentes/
+├── CLAUDE.md                     ✅ ① El candado: diseño y reglas del proyecto
+├── .gitignore                    ✅
+├── docker-compose.yml               Entorno local: PHP-FPM, Nginx, BD, Node (Fase 0)
+├── .claude/
+│   └── skills/                   ✅ Skills del proyecto
+│       └── mensaje-commit/       ✅ Redacta los mensajes de commit
+├── .github/
+│   ├── workflows/                   GitHub Actions: lint, PHPStan, tests (Fase 7)
+│   └── pull_request_template.md     Plantilla de PR con "Closes #<nº>" (Fase 7)
+├── docs/                         ✅ Documentación del proyecto (en español)
+│   ├── bitacora.md               ✅ Registro de cada paso
+│   ├── aprendizajes.md           ✅ Lo aprendido (solo cuando se pide)
+│   ├── app/                         Documentación funcional: requisitos, casos de uso, mockups (Fase 1)
+│   ├── analisis.md                  Análisis técnico: entidades, endpoints, pantallas (Fase 2)
+│   └── decisiones/                  ADR: una decisión técnica por fichero (Fase 2)
+├── backend/                         Symfony + Doctrine (Fase 4)
+│   ├── config/
+│   ├── migrations/                  Doctrine Migrations
+│   ├── public/                      index.php (punto de entrada)
+│   ├── src/
+│   │   ├── Controller/              Capa HTTP: recibe la petición y delega en Service
+│   │   ├── Service/                 Lógica de negocio
+│   │   ├── Repository/              Acceso a datos con Doctrine
+│   │   ├── Entity/                  Entidades Doctrine
+│   │   └── Dto/                     Objetos de entrada/salida de la API
+│   └── tests/
+│       ├── Unit/                    PHPUnit: servicios y entidades
+│       └── Functional/              PHPUnit: endpoints de la API
+└── frontend/                        Angular (Fase 6)
+    └── src/app/
+        ├── core/                    Servicios HTTP, interceptores, guards
+        ├── shared/                  Componentes y utilidades reutilizables
+        └── features/                Una carpeta por bloque funcional (pantallas y rutas)
+```
+
+## Flujo de trabajo (pizarra)
+
+```
+DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP──► IA ──► APP PHP [🔒 ① CLAUDE.md] ──► ② Git PR
+      │                                                           ▲                │                     │
+      └──MCP──► ANÁLISIS ─────────────────────────────────────────┘                ▼                     ▼
+      ▼                ▼                                                        CRITERIO              CRITERIO
+   CRITERIO         CRITERIO
+```
+
+1. **DOC → GITHUB ISSUES:** la documentación de la app se convierte, vía MCP, en issues de GitHub (historias y tareas), agrupados en milestones (épicas) y etiquetas.
+2. **DOC → ANÁLISIS:** en paralelo se genera un análisis técnico (modelo de datos, endpoints, pantallas, riesgos).
+3. **ISSUES + ANÁLISIS → APP PHP:** la IA toma cada issue de GitHub (vía MCP) y lo implementa apoyándose en el análisis.
+4. **① El candado = este CLAUDE.md:** es el diseño que define en qué consiste el proyecto. Cierra el marco dentro del cual trabaja la IA: stack, arquitectura, convenciones y reglas. Todo lo que se implemente debe ajustarse a él; si algo no encaja, se cambia primero el CLAUDE.md (con aprobación), no el código por libre.
+5. **② Git PR:** cada issue termina en una rama y una Pull Request enlazada al issue (`Closes #<nº>`).
+6. **CRITERIO:** en cada salida hay revisión humana; no se avanza al siguiente paso sin aprobación.
+
+## Lista de tareas
+
+### Fase 0 — Preparación del entorno
+- [x] Inicializar repositorio Git en local (rama `main`) y definir estrategia de ramas (`main`, `feature/<nº-issue>-descripcion`)
+- [ ] Crear el repositorio remoto en GitHub y enlazarlo (`origin`)
+- [ ] Configurar el MCP de GitHub y comprobar lectura/escritura de issues y PRs (alternativa: CLI `gh`)
+- [ ] Crear el tablero en GitHub Projects y las etiquetas base (`backend`, `frontend`, `test`, `docs`)
+- [x] Definir la estructura de carpetas (ver sección "Estructura de carpetas")
+- [ ] Crear las carpetas que faltan a medida que avance cada fase
+- [ ] Definir entorno local (Docker Compose: PHP-FPM, Nginx, base de datos, Node)
+
+### Fase 0.5 — Diseño del proyecto (① candado: CLAUDE.md)
+- [ ] Completar este CLAUDE.md con el diseño: qué es la app, alcance, arquitectura y convenciones
+- [ ] Definir la estructura de capas del backend (Controller → Service → Repository/Doctrine)
+- [ ] Definir convenciones de nombres, API (REST, formato de errores) y estructura de Angular
+- [ ] Actualizar el CLAUDE.md al cerrar el análisis (Fase 2) para reflejar las decisiones
+- [ ] **CRITERIO:** aprobación del CLAUDE.md; a partir de aquí la IA trabaja dentro de este marco
+
+### Fase 1 — Documentación de la app (DOC)
+- [ ] Reunir la documentación funcional en `docs/` (requisitos, casos de uso, mockups)
+- [ ] Normalizar el documento: actores, funcionalidades, reglas de negocio
+- [ ] **CRITERIO:** validación del documento por negocio/PO
+
+### Fase 2 — Análisis (DOC → ANÁLISIS)
+- [ ] Generar `docs/analisis.md`: entidades Doctrine, relaciones, endpoints de la API, pantallas Angular
+- [ ] Identificar requisitos no funcionales (seguridad, rendimiento, autenticación)
+- [ ] Registrar decisiones técnicas en `docs/decisiones/` (ADR)
+- [ ] **CRITERIO:** revisión del análisis por el equipo técnico
+
+### Fase 3 — Backlog en GitHub Issues (DOC → ISSUES)
+- [ ] Crear un milestone por bloque funcional (épica) vía MCP
+- [ ] Crear issues de historia de usuario con criterios de aceptación (Dado/Cuando/Entonces)
+- [ ] Desglosar en issues de tarea técnica (backend, frontend, tests), con etiquetas y sub-issues o checklists
+- [ ] Enlazar cada issue con la sección correspondiente del análisis
+- [ ] Añadir los issues al tablero de GitHub Projects
+- [ ] **CRITERIO:** refinamiento y priorización del backlog
+
+### Fase 4 — Backend PHP (ISSUES → IA → PHP)
+- [ ] Crear proyecto Symfony en `backend/`
+- [ ] Configurar Doctrine y la conexión a la base de datos
+- [ ] Implementar entidades y migraciones según el análisis
+- [ ] Implementar servicios de dominio y controladores/API REST
+- [ ] Implementar seguridad (autenticación, autorización, validación de entrada)
+- [ ] Por cada issue: leer el issue vía MCP → implementar → mover en el tablero y comentar el avance
+
+### Fase 5 — Tests
+- [ ] Configurar PHPUnit y base de datos de test
+- [ ] Tests unitarios de servicios y entidades
+- [ ] Tests funcionales de los endpoints
+- [ ] Cubrir cada criterio de aceptación del issue con al menos un test
+- [ ] **CRITERIO:** todos los tests en verde y cobertura acordada antes de abrir PR
+
+### Fase 6 — Frontend Angular
+- [ ] Crear proyecto Angular en `frontend/`
+- [ ] Servicios HTTP contra la API del backend
+- [ ] Componentes y rutas según las pantallas del análisis
+- [ ] Tests de componentes y servicios
+- [ ] **CRITERIO:** revisión funcional de las pantallas
+
+### Fase 7 — Git y Pull Request (②)
+- [ ] Una rama por issue, con el número del issue en el nombre y en los commits
+- [ ] Abrir PR con descripción, `Closes #<nº>` y resumen de tests
+- [ ] CI con GitHub Actions: lint, análisis estático (PHPStan) y tests en cada PR
+- [ ] **CRITERIO:** code review humana y merge; el issue se cierra solo al hacer merge
+
+## Reglas para el agente
+
+- Este CLAUDE.md es el candado: ninguna implementación puede salirse de lo que define.
+- Documentar cada paso que se dé en `docs/bitacora.md` (qué se hizo, por qué, ficheros afectados).
+- Añadir a `docs/aprendizajes.md` lo aprendido solo cuando el usuario lo pida.
+- No implementar nada sin issue de GitHub asociado.
+- No abrir PR si los tests no pasan.
+- No hacer merge: el merge lo decide una persona (CRITERIO).
+- Respetar el análisis de `docs/analisis.md`; si hay que desviarse, proponer un ADR antes.
+- Commits con referencia al issue al final: `descripción breve (#<nº>)`. No empezar el mensaje por `#`: Git trata esas líneas como comentarios al editar el mensaje.
+- Código y comentarios en inglés; documentación y tickets en español.
+
+## Comandos (se completarán al crear los proyectos)
+
+```bash
+# Backend
+cd backend && composer install
+php bin/console doctrine:migrations:migrate
+php bin/phpunit
+
+# Frontend
+cd frontend && npm install
+npm start
+npm test
+```
