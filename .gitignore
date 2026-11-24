@@ -1,0 +1,28 @@
+# --- Backend (Symfony) ---
+/backend/vendor/
+/backend/var/
+/backend/public/bundles/
+/backend/.env.local
+/backend/.env.local.php
+/backend/.env.*.local
+/backend/.phpunit.result.cache
+/backend/.phpunit.cache/
+/backend/.php-cs-fixer.cache
+/backend/phpstan.neon.local
+
+# --- Frontend (Angular) ---
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.angular/
+/frontend/coverage/
+
+# --- Herramientas y sistema ---
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.log
+.DS_Store
+Thumbs.db
+
+# --- Claude Code (configuración local) ---
+.claude/settings.local.json
