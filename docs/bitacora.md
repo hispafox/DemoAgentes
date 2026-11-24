@@ -522,3 +522,35 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Decisión:** lo editamos en `main` a través de un worktree temporal, sin cambiar la rama de trabajo. Así evitamos que los ficheros del modelo de `feature/5-gestionar-tareas` desaparezcan del editor (paso 33).
 
 **Ficheros:** `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 35 — Categorías de tareas para la versión 0.2 (2026-11-24)
+
+**Qué hicimos:** el usuario pidió con `/modelo` añadir categorías de tareas y comprobar el análisis. Las categorías no estaban ni en el análisis ni en la documentación funcional, así que el skill se detuvo y lo preguntó al PO. Con sus respuestas actualizamos la documentación funcional y el análisis, y creamos el issue #15. Todavía **no** hay código.
+
+**Decisiones del PO:**
+- La categoría es una entidad que el usuario gestiona: crear, renombrar y eliminar.
+- Una tarea tiene cero o una categoría.
+- No se puede eliminar una categoría que tenga tareas (`409`), tampoco si están en la papelera.
+- Entra en la versión 0.2 y solo afecta a las tareas; las plantillas no llevan categoría.
+
+**Cambios:**
+- `docs/app/lista-de-tareas.md`:
+  - Concepto "Categoría" y Bloque C con F-15 a F-19.
+  - Reglas RN-14 (nombre obligatorio), RN-15 (cero o una por tarea) y RN-16 (no se elimina con tareas).
+  - Fuera de alcance: categorías en plantillas y varias categorías por tarea.
+  - Las respuestas del PO, como preguntas 5 a 8.
+- `docs/analisis.md`:
+  - Entidad `Category` (tabla `category`, `name` varchar 100) y campo `Task.category` (FK nullable `ON DELETE RESTRICT`), con `countByCategory()`.
+  - Diagrama ER con `CATEGORY`; el Mermaid validado es de tipo `er` y sin errores.
+  - Endpoints `/api/categories` y `categoryId` en los DTO de tarea, validación, `CategoryService::delete()`, pantalla `/categories`, plan de tests y dos riesgos nuevos.
+- GitHub: etiqueta `v0.2`, milestone "Bloque C — Categorías" e issue #15 con criterios Dado/Cuando/Entonces.
+- `CLAUDE.md`: rangos F-01 a F-19 y RN-01 a RN-16, línea "Versión 0.2" y cuatro entregables nuevos en "Pendientes de firma".
+
+**Decisión:** el código del modelo (`Category`, la relación y la migración) se aplaza hasta que `Task` (issue #5) esté en `main`. Hacerlo ahora obligaría a mezclar dos issues en una rama o a duplicar la entidad.
+
+**Pendiente:**
+- El PO tiene que decidir si los nombres de categoría son únicos.
+- La documentación funcional y el análisis han **perdido la firma**.
+- El modelo de categorías, cuando se haya fusionado el #5.
+
+**Ficheros:** `docs/app/lista-de-tareas.md`, `docs/analisis.md`, `CLAUDE.md`, `docs/bitacora.md` (modificados).

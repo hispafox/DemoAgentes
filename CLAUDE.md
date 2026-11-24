@@ -10,11 +10,13 @@ Aplicación web para gestionar tareas personales con **plantillas** reutilizable
 
 | Documento | Qué define |
 |---|---|
-| `docs/app/lista-de-tareas.md` | Qué hace: funcionalidades F-01 a F-14, casos de uso y reglas de negocio RN-01 a RN-13 |
+| `docs/app/lista-de-tareas.md` | Qué hace: funcionalidades F-01 a F-19, casos de uso y reglas de negocio RN-01 a RN-16 |
 | `docs/analisis.md` | Cómo se construye: entidades, endpoints, lógica, pantallas y plan de tests |
 | `docs/decisiones/` | Decisiones técnicas (ADR) |
 
 **Alcance de la versión 0.1:** API completa (tareas, completar con recurrencia, papelera y plantillas) y frontend Angular con sus pantallas, con SQLite como base de datos (ADR-0003).
+
+**Versión 0.2:** categorías de tareas (F-15 a F-19, RN-14 a RN-16; issue #15).
 
 **Fuera de alcance:** usuarios y autenticación, paginación, filtros y búsqueda, generación automática de ocurrencias, periodicidades personalizadas, vaciar la papelera.
 
@@ -208,7 +210,10 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 | Entregable | Fase | Desde |
 |---|---|---|
 | Backlog v0.1: issues #1 a #12 y milestones en GitHub | 3 | 2026-11-24 |
-| `CLAUDE.md`: regla de mapeo de Doctrine con atributos | 0.5 | 2026-11-24 |
+| `CLAUDE.md`: regla de mapeo de Doctrine con atributos y versión 0.2 | 0.5 | 2026-11-24 |
+| `docs/app/lista-de-tareas.md`: categorías (Bloque C) | 1 | 2026-11-24 |
+| `docs/analisis.md`: categorías (`Category`, `/api/categories`) | 2 | 2026-11-24 |
+| Backlog v0.2: issue #15 y milestone "Bloque C — Categorías" | 3 | 2026-11-24 |
 
 ### Registro de firmas
 

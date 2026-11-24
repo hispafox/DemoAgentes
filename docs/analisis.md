@@ -4,7 +4,7 @@
 >
 > Adapta `docs/analisis-diseño.md` (AppTodoList, en .NET). Las diferencias con ese documento se explican en la sección 9.
 >
-> Estado: **aprobado** — firmado por hispafox el 2026-11-24 (CRITERIO de la Fase 2).
+> Estado: **pendiente de nueva firma** — firmado por hispafox el 2026-11-24 (CRITERIO de la Fase 2); cambiado después para añadir las categorías de tareas (versión 0.2).
 
 ## 1. Stack
 
@@ -70,6 +70,7 @@ Resume en un dibujo las tablas de este apartado. Las columnas aparecen con su no
 ```mermaid
 erDiagram
     TASK_TEMPLATE |o--o{ TASK : "origina (RN-08)"
+    CATEGORY |o--o{ TASK : "agrupa (RN-15, v0.2)"
 
     TASK {
         int id PK "autogenerado"
@@ -80,6 +81,7 @@ erDiagram
         date next_occurrence_date "null si no es repetitiva (RN-05)"
         int template_id FK "null, ON DELETE RESTRICT (RN-12)"
         datetime deleted_at "null = activa; papelera (RN-10, RN-13)"
+        int category_id FK "v0.2; null, ON DELETE RESTRICT (RN-15, RN-16)"
     }
 
     TASK_TEMPLATE {
@@ -87,9 +89,14 @@ erDiagram
         varchar title "255, not null (RN-07)"
         varchar recurrence "10, null: daily, weekly, monthly (RN-07)"
     }
+
+    CATEGORY {
+        int id PK "autogenerado (v0.2)"
+        varchar name "100, not null (RN-14)"
+    }
 ```
 
-Lectura de la relación: una plantilla puede originar cero o muchas tareas, y una tarea viene de cero o una plantilla. `recurrence` guarda el valor del enum `Recurrence`.
+Lectura de las relaciones: una plantilla puede originar cero o muchas tareas, y una tarea viene de cero o una plantilla. Una categoría agrupa cero o muchas tareas, y una tarea tiene cero o una categoría (versión 0.2). `recurrence` guarda el valor del enum `Recurrence`.
 
 ### `Recurrence` (enum respaldado)
 
@@ -131,9 +138,25 @@ El borrado lógico se implementa a mano con `deletedAt` y métodos del repositor
 | `title` | `string` | `varchar(255)` not null | Título por defecto | RN-07 |
 | `recurrence` | `?Recurrence` | `varchar(10)` null | Periodicidad por defecto | RN-07 |
 
+### `Category` — tabla `category` *(versión 0.2)*
+
+| Campo | Tipo PHP | Columna | Descripción | Regla |
+|---|---|---|---|---|
+| `id` | `int` | `id` serial PK | Autogenerado | |
+| `name` | `string` | `varchar(100)` not null | Nombre de la categoría | RN-14 |
+
+Métodos de dominio: `rename(string $name)`, que rechaza el nombre vacío (RN-14). La unicidad del nombre está pendiente de decidir por el PO; mientras tanto no se impone.
+
+En `Task` se añade, también en la 0.2:
+
+| Campo | Tipo PHP | Columna | Descripción | Regla |
+|---|---|---|---|---|
+| `category` | `?Category` | `category_id` FK null, `ON DELETE RESTRICT` | Categoría de la tarea | RN-15, RN-16 |
+
 ### Relaciones
 
 - `Task` N → 0..1 `TaskTemplate` (`ManyToOne`, nullable, unidireccional). Para RN-12, `TaskRepository::countByTemplate()` cuenta las tareas de una plantilla, incluidas las de la papelera. La FK con `ON DELETE RESTRICT` es la segunda barrera en la base de datos.
+- *(v0.2)* `Task` N → 0..1 `Category` (`ManyToOne`, nullable, unidireccional). Para RN-16, `TaskRepository::countByCategory()` cuenta las tareas de una categoría, incluidas las de la papelera; la FK con `ON DELETE RESTRICT` es la segunda barrera.
 
 ## 4. API REST
 
@@ -165,16 +188,31 @@ Las tareas de la papelera responden `404` en detalle, `PUT`, `DELETE` y `complet
 | DELETE | `/api/task-templates/{id}` | Eliminar (definitivo) | `204` | `404`, `409` si tiene tareas asociadas | F-11 |
 | POST | `/api/task-templates/{id}/instantiate` | Crear una tarea desde la plantilla | `201` + `TaskOutput` | `404` | F-12 |
 
+### Categorías — `/api/categories` *(versión 0.2)*
+
+| Verbo | Ruta | Descripción | OK | Errores | Func. |
+|---|---|---|---|---|---|
+| GET | `/api/categories` | Listar | `200` + `CategoryOutput[]` | — | F-15 |
+| POST | `/api/categories` | Crear | `201` + `CategoryOutput` | `422` | F-16 |
+| PUT | `/api/categories/{id}` | Renombrar | `200` + `CategoryOutput` | `404`, `422` | F-17 |
+| DELETE | `/api/categories/{id}` | Eliminar (definitivo) | `204` | `404`, `409` si tiene tareas asociadas | F-18 |
+
+La categoría de una tarea se asigna, cambia o quita con `categoryId` en `POST`/`PUT /api/tasks` (F-19). Un `categoryId` inexistente devuelve `422`.
+
 ### Formato de los DTO
 
 ```json
 // TaskInput (POST/PUT /api/tasks) — el estado no se envía: se completa con /complete
-{ "title": "Regar las plantas", "recurrence": "weekly" }
+{ "title": "Regar las plantas", "recurrence": "weekly", "categoryId": 3 }   // categoryId: v0.2, opcional
 
 // TaskOutput
 { "id": 7, "title": "Regar las plantas", "completed": false,
   "createdAt": "2026-11-24T10:00:00+01:00", "recurrence": "weekly",
-  "nextOccurrenceDate": "2026-12-01", "templateId": null, "deletedAt": null }
+  "nextOccurrenceDate": "2026-12-01", "templateId": null, "deletedAt": null,
+  "categoryId": 3 }                                                       // v0.2
+
+// CategoryInput / CategoryOutput (v0.2)
+{ "name": "Casa" }  /  { "id": 3, "name": "Casa" }
 
 // CompleteTaskOutput
 { "task": { ...TaskOutput completada... }, "nextOccurrence": { ...TaskOutput nueva... } | null }
@@ -225,6 +263,11 @@ Crea una tarea pendiente con `title` y `recurrence` de la plantilla, vinculada a
 
 - `title`: `NotBlank`, `Length(max: 255)`.
 - `recurrence`: `null` o uno de los valores del enum (`Choice` / deserialización al enum).
+- *(v0.2)* `name` de categoría: `NotBlank`, `Length(max: 100)`. `categoryId` de tarea: `null` o el id de una categoría existente.
+
+### `CategoryService::delete(Category $category)` *(versión 0.2)*
+
+Si `TaskRepository::countByCategory($category) > 0` → excepción de dominio (→ `409`, RN-16). Si no, borra la categoría definitivamente.
 
 ## 6. Frontend Angular
 
@@ -245,6 +288,8 @@ frontend/src/app/
     └── task-templates/
         ├── template-list/                      // F-07, F-11, F-12
         └── template-form/                      // F-09, F-10
+    └── categories/                             // v0.2
+        └── category-list/                      // F-15 a F-18 (crear y renombrar en línea)
 ```
 
 | Ruta | Pantalla | Qué hace |
@@ -254,6 +299,7 @@ frontend/src/app/
 | `/tasks/trash` | Papelera | Tareas eliminadas con botón restaurar. |
 | `/templates` | Lista de plantillas | Botones "crear tarea", editar y eliminar. Si la plantilla tiene tareas, muestra el aviso del `409`. |
 | `/templates/new`, `/templates/:id/edit` | Formulario de plantilla | Igual que el de tarea. |
+| `/categories` *(v0.2)* | Categorías | Lista con crear, renombrar y eliminar; aviso del `409` si tiene tareas. El formulario de tarea añade un selector de categoría opcional (F-19). |
 
 - Componentes *standalone*, formularios reactivos tipados y `HttpClient`.
 - Los textos de la interfaz, en castellano; el código, en inglés.
@@ -278,6 +324,8 @@ frontend/src/app/
 | Unit — `TaskTemplateServiceTest` | Instanciar copia valores y vincula la plantilla (RN-08); no se borra con tareas, tampoco si están en la papelera (RN-12). |
 | Functional — `TaskControllerTest` | Los 8 endpoints, `404`, `409`, `422` (RN-01, RN-03), tarea en papelera inaccesible (RN-13) y formato problem+json. |
 | Functional — `TaskTemplateControllerTest` | Los 6 endpoints; borrar plantilla con tareas devuelve `409` (RN-12); modificar plantilla no cambia tareas (RN-09). |
+| Unit — `CategoryTest` *(v0.2)* | Nombre obligatorio al crear y al renombrar (RN-14). |
+| Functional — `CategoryControllerTest` *(v0.2)* | Los 4 endpoints; borrar con tareas, también en la papelera, devuelve `409` (RN-16); `categoryId` inexistente en una tarea devuelve `422`. |
 | Angular | Servicios HTTP con `HttpTestingController`; componentes de lista y formulario. |
 
 ## 9. Diferencias con el análisis de referencia (.NET)
@@ -299,3 +347,5 @@ frontend/src/app/
 
 1. Diferencias entre SQLite y PostgreSQL al migrar después de la 0.1: se mitiga escribiendo migraciones solo con tipos portables de Doctrine.
 2. Una tarea completada por error no se puede deshacer (RN-11). Si resulta incómodo en el uso, la alternativa es eliminarla y crearla de nuevo.
+3. *(v0.2)* Unicidad del nombre de categoría: pendiente de decisión del PO. Si se impone, hará falta un índice único y un `409` o `422` al duplicar.
+4. *(v0.2)* Las categorías dependen de la entidad `Task` (issue #5): su implementación debe esperar a que esa entidad esté en `main`.
