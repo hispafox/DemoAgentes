@@ -1,6 +1,6 @@
 # CLAUDE.md — DemoAgentes
 
-> Estado: **aprobado** — firmado por hispafox el 2026-11-24 (CRITERIO de la Fase 0.5).
+> Estado: **pendiente de nueva firma** — firmado por hispafox el 2026-11-24 (CRITERIO de la Fase 0.5); cambiado después para añadir el mapeo de Doctrine con atributos.
 
 Demo de desarrollo asistido por agentes de IA: partimos de la documentación funcional de una aplicación y, a través de MCP, llegamos a código PHP probado y a una Pull Request en Git. En cada paso hay un **criterio** (punto de control humano) antes de avanzar.
 
@@ -34,6 +34,7 @@ Si este CLAUDE.md y esos documentos se contradicen, manda el documento firmado m
 - El controlador recibe el DTO (`#[MapRequestPayload]`), llama al servicio y devuelve un DTO de salida. Nunca contiene lógica de negocio ni serializa entidades.
 - Las reglas de negocio viven en los servicios y en los métodos de dominio de las entidades.
 - Inyección por constructor (autowiring); fechas con `DateTimeImmutable` y `ClockInterface`.
+- Mapeo de Doctrine con **atributos PHP** en la propia entidad (`#[ORM\Entity]`, `#[ORM\Column]`…); no se usan ficheros XML ni YAML de mapeo.
 
 **API REST:**
 - Prefijo `/api`, recursos en plural y en inglés (`/api/tasks`, `/api/task-templates`); acciones con efectos como subrecurso `POST` (`/complete`, `/restore`, `/instantiate`).
@@ -207,6 +208,7 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 | Entregable | Fase | Desde |
 |---|---|---|
 | Backlog v0.1: issues #1 a #12 y milestones en GitHub | 3 | 2026-11-24 |
+| `CLAUDE.md`: regla de mapeo de Doctrine con atributos | 0.5 | 2026-11-24 |
 
 ### Registro de firmas
 
