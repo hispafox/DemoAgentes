@@ -401,3 +401,28 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Por qué el agente:** la regla "No hacer merge" del CLAUDE.md reserva la decisión a una persona. La decisión la tomó el usuario en el chat; el agente solo ejecutó `gh pr merge --merge --delete-branch`. GitHub no permite aprobar una PR propia, así que no hay revisión formal.
 
 **Ficheros:** `docs/bitacora.md` (modificado).
+
+## Paso 28 — Skill modelo para crear y actualizar el modelo de datos (2026-11-24)
+
+**Qué hicimos:** creamos el skill de proyecto `modelo` en `.claude/skills/modelo/`. Crea, actualiza y revisa el modelo de la aplicación (entidades y enums Doctrine, repositorios, migraciones y tests de dominio) a partir de la sección 3 de `docs/analisis.md`.
+
+**Por qué:** el usuario quería un skill propio para mantener el modelo. Se basa en el CLAUDE.md, el análisis y, a petición del usuario, en los documentos de orquestación de skills (`docs/skills-orquestacion.md` y `-v2.md`).
+
+**Cambios:**
+- Tres modos:
+  - `crear`: genera lo que el análisis define y aún no existe, solo en la parte que cubre el issue.
+  - `actualizar <cambio>`: primero el análisis (que pierde la firma) y, si hace falta, un ADR; después el código, una migración nueva y los tests.
+  - `revisar`: compara análisis y código, devuelve una tabla de diferencias y no modifica nada.
+- Comprobaciones previas: issue y rama, estado de la regla de firmas y repositorio limpio.
+- Sección "Lugar en la orquestación", al estilo de las referencias: qué lee, qué escribe, qué no toca, prerrequisito (se detiene si el análisis no define algo), verificación mínima, entregable y frontera con los servicios.
+- Convenciones de entidades (sin setters de estado, métodos de dominio con la regla RN en el docblock, la fecha se pasa como argumento) y tabla de tipos del análisis a Doctrine, solo con tipos portables entre SQLite y PostgreSQL.
+- Reglas de migraciones (una por issue, leerla entera, no editar las que ya están en `main`) y aviso sobre las claves foráneas en SQLite.
+- `CLAUDE.md`: el skill aparece en la estructura de carpetas.
+
+**Decisión:** `modelo` reúne en un solo tramo lo que en las referencias eran dos skills (`modelo` + `base-de-datos`, o `dominio-backend` + `persistencia-doctrine`), porque con atributos de Doctrine la entidad y su mapeo están en el mismo fichero. La lógica entre varias entidades (RN-05, RN-12) queda para los servicios.
+
+**Verificación:** el frontmatter se lee bien como YAML y el skill aparece entre los disponibles de la sesión.
+
+**Pendiente:** el resto de skills de la cadena (DTO, servicios, API, frontend, pruebas) no existen todavía.
+
+**Ficheros:** `.claude/skills/modelo/SKILL.md` (nuevo), `CLAUDE.md` (modificado), `docs/bitacora.md` (modificado).

@@ -57,7 +57,8 @@ DemoAgentes/
 ├── .claude/
 │   └── skills/                   ✅ Skills del proyecto
 │       ├── mensaje-commit/       ✅ Redacta los mensajes de commit
-│       └── bitacora/             ✅ Registra pasos y retoma el proyecto en un chat nuevo
+│       ├── bitacora/             ✅ Registra pasos y retoma el proyecto en un chat nuevo
+│       └── modelo/               ✅ Crea, actualiza y revisa el modelo Doctrine a partir del análisis
 ├── .github/
 │   ├── workflows/                   GitHub Actions: lint, PHPStan, tests (Fase 7)
 │   └── pull_request_template.md     Plantilla de PR con "Closes #<nº>" (Fase 7)
