@@ -465,3 +465,31 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Pendiente:** después del merge, `php bin/phpunit` se quedó colgado en `main`, cuando en la rama terminaba en menos de un segundo. La suite `Unit` acabó mostrando una traza de error y la `Functional` no terminó. La migración de test, ejecutada sola, sí funciona. A petición del usuario (estaba en clase) aplazamos la investigación. Sospechas que hay que comprobar: un proceso PHP anterior que bloquea `var/test.db` o la caché de `var/cache/test`.
 
 **Ficheros:** `docs/bitacora.md` (modificado).
+
+## Paso 32 — Modelo del issue #5: enum Recurrence, entidad Task y migración (2026-11-24)
+
+**Qué hicimos:** con `/modelo revisar` confirmamos que el código seguía sin modelo, y con `/modelo crear` generamos la parte del issue #5 en la rama `feature/5-gestionar-tareas`. Por petición del usuario (estaba en clase), **no ejecutamos los tests**.
+
+**Cambios:**
+- `src/Entity/Recurrence.php`: enum `daily`, `weekly`, `monthly` (RN-04).
+- `src/Entity/Task.php`, tabla `task`: `id`, `title` (255), `completed` (default false), `createdAt`, `recurrence` (varchar 10, enum) y `nextOccurrenceDate` (date).
+  - Constructor con la fecha como argumento, porque la tarea nace pendiente (RN-02).
+  - `setTitle()` recorta espacios y rechaza el título vacío o de más de 255 caracteres (RN-01).
+  - `setRecurrence()` impide que una tarea no repetitiva tenga fecha de siguiente ocurrencia (RN-03).
+  - `isRecurring()` es derivado. No hay setter para `completed`.
+- `src/Entity/Exception/DomainRuleViolation.php`: excepción de dominio cuyo mensaje cita la regla RN.
+- `src/Repository/TaskRepository.php`: repositorio base, sin consultas propias.
+- `migrations/Version20261124123921.php` ("Create task table (#5)"): solo crea la tabla `task`.
+- `tests/Unit/Entity/TaskTest.php`: 11 tests que cubren RN-01 a RN-04. **Escritos, sin ejecutar.**
+
+**Verificación:** `php -l` sin errores en todos los ficheros. Con `var/data.db` borrada, la migración se aplica en limpio, `doctrine:schema:validate` da mapeo correcto y esquema sincronizado, y `doctrine:migrations:status` muestra 1 ejecutada y 0 pendientes.
+
+**Decisión:**
+- Quedan fuera las partes del modelo de otros issues: `complete()` (#6), la papelera (#7) y la plantilla con su relación (#8).
+- El análisis no dice quién calcula `nextOccurrenceDate` al crear una tarea a mano. La entidad lo recibe ya calculado y el cálculo queda para el servicio del #5, sin inventar una regla.
+
+**Pendiente:**
+- Ejecutar los tests cuando se resuelva el bloqueo de PHPUnit (paso 31). Sin tests en verde no se abre PR.
+- El resto del issue #5: DTO, servicio, controlador, tests funcionales y la cabecera `application/problem+json`.
+
+**Ficheros:** `backend/src/Entity/Recurrence.php`, `backend/src/Entity/Task.php`, `backend/src/Entity/Exception/DomainRuleViolation.php`, `backend/src/Repository/TaskRepository.php`, `backend/migrations/Version20261124123921.php`, `backend/tests/Unit/Entity/TaskTest.php` (nuevos), `docs/bitacora.md` (modificado).
