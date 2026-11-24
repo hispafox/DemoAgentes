@@ -436,3 +436,24 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Verificación:** la sintaxis del diagrama se validó con un renderizador de Mermaid (tipo `er`, válido).
 
 **Ficheros:** `docs/analisis.md` (modificado), `docs/bitacora.md` (modificado).
+
+## Paso 30 — Issue #2: PHPUnit con base de datos de test (2026-11-24)
+
+**Qué hicimos:** implementamos el issue #2 en la rama `feature/2-phpunit`. El backend ya tiene tests unitarios y funcionales, con una base de datos SQLite de test aislada.
+
+**Cambios:**
+- `symfony/test-pack` (PHPUnit 13, BrowserKit, CssSelector) y `dama/doctrine-test-bundle` 8.8.
+- `phpunit.dist.xml`: suites `Unit` (`tests/Unit`) y `Functional` (`tests/Functional`), y la extensión de DAMA, que envuelve cada test en una transacción y la deshace al terminar.
+- `.env.test`: `DATABASE_URL` con SQLite en `var/test.db`. En `doctrine.yaml` quitamos el `dbname_suffix` de la receta, que no tiene sentido con una ruta de fichero.
+- `tests/bootstrap.php`: en cada ejecución borra `var/test.db` y la recrea con las migraciones, para que los tests usen el mismo esquema que producción.
+- DAMA registrado a mano en `bundles.php` con su configuración, porque su receta no se aplicó.
+- Tests de humo: `Unit/ClockTest`, que comprueba que se puede fijar la fecha (`MockClock`) para RN-02 y RN-05; `Functional/DatabaseTest`, que comprueba la base de datos de test y que las escrituras se deshacen entre tests; y `Functional/ApiErrorFormatTest`, que comprueba que un 404 de la API devuelve la estructura Problem Details.
+- `CLAUDE.md`: marcada la tarea "Configurar PHPUnit y base de datos de test" de la Fase 5.
+
+**Verificación:** `php bin/phpunit` → OK (6 tests, 10 assertions); las suites `Unit` y `Functional` por separado también; `scripts/backend-test.ps1` → "Todo en verde".
+
+**Decisión:** el test de error iba a exigir `Content-Type: application/problem+json`, como pide el análisis, pero Symfony devuelve `application/json` por defecto, aunque con la estructura correcta. Ajustar la cabecera es gestión de errores y queda para el issue #5, donde lo anotamos en un comentario. El test de humo comprueba solo la estructura.
+
+**Pendiente:** en los tests aparece en la consola una línea `[error] Uncaught ... NotFoundHttpException` del logger por defecto de Symfony. No afecta al resultado; se puede silenciar más adelante con un logger de test.
+
+**Ficheros:** `backend/composer.json`, `backend/composer.lock`, `backend/symfony.lock`, `backend/.gitignore`, `backend/config/bundles.php`, `backend/config/packages/doctrine.yaml` (modificados); `backend/config/packages/dama_doctrine_test_bundle.yaml`, `backend/.env.test`, `backend/bin/phpunit`, `backend/phpunit.dist.xml`, `backend/tests/` (nuevos); `CLAUDE.md`, `docs/bitacora.md` (modificados).

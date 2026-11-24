@@ -152,7 +152,7 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 - [ ] Por cada issue: leer el issue vía MCP → implementar → mover en el tablero y comentar el avance
 
 ### Fase 5 — Tests
-- [ ] Configurar PHPUnit y base de datos de test
+- [x] Configurar PHPUnit y base de datos de test
 - [ ] Tests unitarios de servicios y entidades
 - [ ] Tests funcionales de los endpoints
 - [ ] Cubrir cada criterio de aceptación del issue con al menos un test
