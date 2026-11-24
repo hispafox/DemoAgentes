@@ -373,3 +373,23 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 - CRITERIO de la Fase 3 (refinamiento del backlog), pendiente de firma.
 
 **Ficheros:** `CLAUDE.md` (modificado), `docs/bitacora.md` (modificado).
+
+## Paso 26 — Issue #1: proyecto Symfony con Doctrine y SQLite, y scripts de PowerShell (2026-11-24)
+
+**Qué hicimos:** implementamos el issue #1 en la rama `feature/1-proyecto-symfony`. Además, a petición del usuario, creamos scripts `.ps1` para instalar, arrancar, parar y probar el backend.
+
+**Cambios:**
+- Composer: descargamos `composer.phar` 2.11.3 de getcomposer.org a `.tools/` (ignorada en Git), verificando su SHA-256.
+- `backend/`: proyecto Symfony 7.4 creado con `symfony new`, más `orm-pack`, `serializer-pack`, `validator`, `clock` y `maker-bundle` (dev).
+- `DATABASE_URL` apunta a SQLite en `var/data.db` (ADR-0003). Borramos los `compose*.yaml` que añadió la receta de Doctrine con PostgreSQL, porque Docker está aplazado.
+- Carpetas `src/Service/` y `src/Dto/`, junto a las `Controller/`, `Entity/` y `Repository/` del esqueleto.
+- `scripts/backend-setup.ps1` (descarga Composer si falta, `composer install` y migraciones), `backend-start.ps1` (`-Port`, `-Foreground`), `backend-stop.ps1` y `backend-test.ps1` (contenedor, mapeo de Doctrine y PHPUnit cuando exista). Se guardan en UTF-8 con BOM para que PowerShell 5.1 lea bien los acentos.
+- `CLAUDE.md`: sección "Comandos" con los scripts, `scripts/` y `backend/` en la estructura de carpetas, y dos tareas de la Fase 4 marcadas.
+
+**Verificación:** `backend-setup.ps1` instala y migra, `backend-test.ps1` termina en verde, y `backend-start.ps1` arranca el servidor (página de bienvenida de Symfony en dev) que `backend-stop.ps1` para. Se crea `var/data.db`.
+
+**Decisión:** las migraciones se ejecutan con `--allow-no-migration`, porque hasta el issue #5 no hay ninguna y sin la opción el comando devuelve error.
+
+**Pendiente:** todavía no hay PHPUnit (issue #2), así que la PR no incluye tests.
+
+**Ficheros:** `backend/` (nuevo), `scripts/*.ps1` (nuevos), `.gitignore`, `CLAUDE.md`, `docs/bitacora.md` (modificados).
