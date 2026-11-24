@@ -482,3 +482,15 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 - Sigue abierta la propuesta de añadir al CLAUDE.md que el mapeo de Doctrine va con atributos.
 
 **Ficheros:** `CLAUDE.md`, `scripts/backend-test.ps1`, `.claude/skills/modelo/SKILL.md`, `docs/bitacora.md` (modificados).
+
+## Paso 34 — Regla del mapeo de Doctrine con atributos en el CLAUDE.md (2026-11-24)
+
+**Qué hicimos:** a petición del usuario, añadimos al CLAUDE.md (Arquitectura y convenciones → Backend) que el mapeo de Doctrine se hace con **atributos PHP** en la propia entidad, sin ficheros XML ni YAML. Ya se hacía así (`doctrine.yaml` con `type: attribute`, skill `modelo` y entidad `Task`), pero no estaba en el candado. Además, los documentos de referencia de tstcln-reservas usaban XML y alguien podría copiarlo de ahí.
+
+**Cambios:**
+- `CLAUDE.md`: nueva regla en "Backend (capas)".
+- Como el CLAUDE.md firmado cambia de contenido, su cabecera pasa a "pendiente de nueva firma" y queda anotado en la tabla "Pendientes de firma". La regla de bloqueo sigue suspendida, así que no bloquea nada.
+
+**Decisión:** lo editamos en `main` a través de un worktree temporal, sin cambiar la rama de trabajo. Así evitamos que los ficheros del modelo de `feature/5-gestionar-tareas` desaparezcan del editor (paso 33).
+
+**Ficheros:** `CLAUDE.md`, `docs/bitacora.md` (modificados).
