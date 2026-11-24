@@ -1,6 +1,6 @@
 # ADR-0003 — SQLite en la versión 0.1
 
-- **Estado:** aceptado (2026-11-24)
+- **Estado:** aceptado — firmado por hispafox el 2026-11-24
 - **Matiza:** [ADR-0001](0001-base-de-datos-postgresql.md)
 
 ## Contexto

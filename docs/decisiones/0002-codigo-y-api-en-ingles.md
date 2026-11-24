@@ -1,6 +1,6 @@
 # ADR-0002 — Código, base de datos y rutas de la API en inglés
 
-- **Estado:** aceptado (2026-11-24)
+- **Estado:** aceptado — firmado por hispafox el 2026-11-24
 - **Fecha:** 2026-11-24
 
 ## Contexto

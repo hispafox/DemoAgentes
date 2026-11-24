@@ -1,6 +1,6 @@
 # ADR-0001 — PostgreSQL como base de datos
 
-- **Estado:** aceptado (2026-11-24), aplicable cuando se configure el entorno Docker. En la 0.1 se usa SQLite: ver [ADR-0003](0003-sqlite-en-la-version-0-1.md).
+- **Estado:** aceptado — firmado por hispafox el 2026-11-24; aplicable cuando se configure el entorno Docker. En la 0.1 se usa SQLite: ver [ADR-0003](0003-sqlite-en-la-version-0-1.md).
 - **Fecha:** 2026-11-24
 
 ## Contexto

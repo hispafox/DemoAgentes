@@ -4,7 +4,7 @@
 >
 > Adapta `docs/analisis-diseño.md` (AppTodoList, en .NET). Las diferencias con ese documento se explican en la sección 9.
 >
-> Estado: **aprobado** — CRITERIO de la Fase 2 cerrado el 2026-11-24.
+> Estado: **aprobado** — firmado por hispafox el 2026-11-24 (CRITERIO de la Fase 2).
 
 ## 1. Stack
 

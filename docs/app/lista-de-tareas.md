@@ -4,7 +4,7 @@
 >
 > Origen: parte funcional de `docs/analisis-diseño.md` (AppTodoList), que se conserva como referencia.
 >
-> Estado: **aprobado** — CRITERIO de la Fase 1 firmado por hispafox (PO) el 2026-11-24. Las preguntas abiertas se respondieron el mismo día (sección 8) y sus respuestas ya están incorporadas.
+> Estado: **aprobado** — firmado por hispafox (PO) el 2026-11-24 (CRITERIO de la Fase 1). Las preguntas abiertas se respondieron el mismo día (sección 8) y sus respuestas ya están incorporadas.
 
 ## 1. Objetivo
 

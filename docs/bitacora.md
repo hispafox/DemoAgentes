@@ -306,3 +306,15 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 - Docker Compose (Fase 0) sigue pendiente; no bloquea la 0.1.
 
 **Ficheros:** `docs/decisiones/0001-base-de-datos-postgresql.md`, `docs/decisiones/0002-codigo-y-api-en-ingles.md`, `docs/analisis.md` (modificados), `docs/decisiones/0003-sqlite-en-la-version-0-1.md` (nuevo), `CLAUDE.md` (modificado), `docs/bitacora.md` (modificado).
+
+## Paso 21 — Regla de firmas en el CLAUDE.md (2026-11-24)
+
+**Qué hicimos:** a petición del usuario, añadimos al CLAUDE.md una regla que impide avanzar si algo no se ha firmado antes. Interrumpe la creación del backlog de la 0.1, que queda a la espera de la regla.
+
+**Cambios:**
+- `CLAUDE.md`: nueva sección "Firmas (puertas de CRITERIO)". Explica qué es una firma (aprobación expresa de una persona en el chat; el agente nunca firma), sus tres huellas (registro, cabecera del documento y `[x]` del CRITERIO), la regla de bloqueo con la tabla de dependencias por fase, qué pasa si un documento firmado cambia y el "Registro de firmas" con las firmas ya dadas. También una regla nueva en "Reglas para el agente".
+- Cabeceras de la documentación funcional, el análisis y los tres ADR, con el formato `firmado por <persona> el <fecha>`.
+
+**Pendiente:** al aplicar la regla, la Fase 3 (backlog) queda **bloqueada**, porque el CLAUDE.md (CRITERIO de la Fase 0.5) no está firmado.
+
+**Ficheros:** `CLAUDE.md`, `docs/analisis.md`, `docs/app/lista-de-tareas.md`, `docs/decisiones/0001-base-de-datos-postgresql.md`, `docs/decisiones/0002-codigo-y-api-en-ingles.md`, `docs/decisiones/0003-sqlite-en-la-version-0-1.md`, `docs/bitacora.md` (modificados).

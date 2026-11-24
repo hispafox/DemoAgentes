@@ -133,9 +133,38 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 - [ ] CI con GitHub Actions: lint, análisis estático (PHPStan) y tests en cada PR
 - [ ] **CRITERIO:** code review humana y merge; el issue se cierra solo al hacer merge
 
+## Firmas (puertas de CRITERIO)
+
+Cada CRITERIO se cierra con una **firma**: una persona aprueba expresamente el entregable en el chat ("apruebo", "lo firmo"). El agente nunca firma por su cuenta ni da una firma por supuesta.
+
+Una firma deja tres huellas, y las tres deben coincidir:
+1. Una fila en el **Registro de firmas** (abajo).
+2. La cabecera del documento firmado: `Estado: aprobado — firmado por <persona> el <AAAA-MM-DD>` (en los ADR, `aceptado`).
+3. El `[x]` del CRITERIO en la "Lista de tareas".
+
+**Regla de bloqueo:** antes de empezar cualquier paso, el agente comprueba que están firmados todos los entregables de los que depende. Si falta una firma, **se detiene**: dice qué falta y la pide. No crea issues, código, ramas ni PR mientras tanto.
+
+| Para hacer… | Debe estar firmado |
+|---|---|
+| Análisis (Fase 2) | Documentación funcional (Fase 1) |
+| Backlog en GitHub (Fase 3) | CLAUDE.md (Fase 0.5), documentación funcional y análisis |
+| Implementar un issue (Fases 4 a 6) | Backlog (Fase 3) y los ADR que afecten al issue |
+| Abrir una PR (Fase 7) | Tests en verde (Fase 5); si toca pantallas, su revisión funcional (Fase 6) |
+
+Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de nueva firma`) y lo que dependa de él se bloquea hasta que se vuelva a firmar. Las correcciones de erratas que no cambian el contenido no anulan la firma.
+
+### Registro de firmas
+
+| Entregable | Fase | Firmado por | Fecha |
+|---|---|---|---|
+| `docs/app/lista-de-tareas.md` | 1 | hispafox (PO) | 2026-11-24 |
+| `docs/analisis.md` | 2 | hispafox | 2026-11-24 |
+| ADR 0001, 0002 y 0003 (`docs/decisiones/`) | 2 | hispafox | 2026-11-24 |
+
 ## Reglas para el agente
 
 - Este CLAUDE.md es el candado: ninguna implementación puede salirse de lo que define.
+- No avanzar si falta una firma: ver la sección "Firmas". Una firma solo la da una persona en el chat.
 - Documentar cada paso que se dé en `docs/bitacora.md` con el skill `bitacora` (qué se hizo, por qué, ficheros afectados). En un chat nuevo, empezar con `/bitacora retomar`.
 - Añadir a `docs/aprendizajes.md` lo aprendido solo cuando el usuario lo pida.
 - No implementar nada sin issue de GitHub asociado.
