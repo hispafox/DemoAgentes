@@ -178,6 +178,10 @@ Una firma deja tres huellas, y las tres deben coincidir:
 2. La cabecera del documento firmado: `Estado: aprobado — firmado por <persona> el <AAAA-MM-DD>` (en los ADR, `aceptado`).
 3. El `[x]` del CRITERIO en la "Lista de tareas".
 
+> ⏸️ **Regla de bloqueo SUSPENDIDA** desde el 2026-11-24 por decisión de hispafox, hasta que lo reactive en el chat. Mientras dure:
+> - El agente avanza sin esperar firmas, pero cada entregable nuevo lleva `Estado: pendiente de firma` y se anota en "Pendientes de firma" (abajo), para firmarlo al reactivar la regla.
+> - Siguen vigentes: no abrir PR con tests en rojo, no hacer merge (lo decide una persona) y no implementar sin issue.
+
 **Regla de bloqueo:** antes de empezar cualquier paso, el agente comprueba que están firmados todos los entregables de los que depende. Si falta una firma, **se detiene**: dice qué falta y la pide. No crea issues, código, ramas ni PR mientras tanto.
 
 | Para hacer… | Debe estar firmado |
@@ -188,6 +192,11 @@ Una firma deja tres huellas, y las tres deben coincidir:
 | Abrir una PR (Fase 7) | Tests en verde (Fase 5); si toca pantallas, su revisión funcional (Fase 6) |
 
 Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de nueva firma`) y lo que dependa de él se bloquea hasta que se vuelva a firmar. Las correcciones de erratas que no cambian el contenido no anulan la firma.
+
+### Pendientes de firma (regla suspendida)
+
+| Entregable | Fase | Desde |
+|---|---|---|
 
 ### Registro de firmas
 
@@ -201,7 +210,7 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 ## Reglas para el agente
 
 - Este CLAUDE.md es el candado: ninguna implementación puede salirse de lo que define.
-- No avanzar si falta una firma: ver la sección "Firmas". Una firma solo la da una persona en el chat.
+- No avanzar si falta una firma: ver la sección "Firmas". Una firma solo la da una persona en el chat. *(Suspendida temporalmente: ver la sección "Firmas".)*
 - Documentar cada paso que se dé en `docs/bitacora.md` con el skill `bitacora` (qué se hizo, por qué, ficheros afectados). En un chat nuevo, empezar con `/bitacora retomar`.
 - Añadir a `docs/aprendizajes.md` lo aprendido solo cuando el usuario lo pida.
 - No implementar nada sin issue de GitHub asociado.

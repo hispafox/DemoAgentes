@@ -340,3 +340,14 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Cambios:** cabecera de estado en el CLAUDE.md, fila en el Registro de firmas y `[x]` en el CRITERIO de la Fase 0.5.
 
 **Ficheros:** `CLAUDE.md` (modificado), `docs/bitacora.md` (modificado).
+
+## Paso 24 — Suspensión temporal de la regla de firmas (2026-11-24)
+
+**Qué hicimos:** a petición del usuario, suspendimos la regla de bloqueo por firmas hasta que la reactive en el chat.
+
+**Cambios:**
+- `CLAUDE.md`: aviso de suspensión en la sección "Firmas", nota en la regla del agente y nueva tabla "Pendientes de firma".
+
+**Decisión:** suspender no es borrar. Mientras dure, el agente avanza sin esperar firmas, pero marca cada entregable como `pendiente de firma` y lo anota en la tabla, para firmarlo todo junto al reactivarla. Siguen vigentes las reglas que no son firmas: nada de PR con tests en rojo, nada de merge sin una persona y nada de implementar sin issue.
+
+**Ficheros:** `CLAUDE.md` (modificado), `docs/bitacora.md` (modificado).
