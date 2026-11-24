@@ -526,3 +526,23 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 - El modelo de categorías, cuando se haya fusionado el #5.
 
 **Ficheros:** `docs/app/lista-de-tareas.md`, `docs/analisis.md`, `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 36 — Nombres de categoría únicos (RN-17) (2026-11-24)
+
+**Qué hicimos:** el PO decidió que los nombres de categoría son únicos. Así se resuelve el pendiente del paso 35. Lo incorporamos a la documentación funcional, al análisis, al issue #15 y al CLAUDE.md.
+
+**Cambios:**
+- `docs/app/lista-de-tareas.md`: regla RN-17 y la pregunta 9 en la tabla de respuestas del PO.
+- `docs/analisis.md`:
+  - `CategoryRepository::existsWithName()` compara con `LOWER(TRIM(name))` y `CategoryService` la consulta antes de crear o renombrar; un duplicado devuelve `422` con la violación en `name`.
+  - Índice único `uniq_category_name` como segunda barrera.
+  - Diagrama ER (`name` único), endpoints, plan de tests (`CategoryRepositoryTest`) y riesgo 3 reescrito.
+- Issue #15: dos criterios de aceptación nuevos (duplicado sin distinguir mayúsculas → `422`; renombrar con su mismo nombre → `200`) y las tareas del modelo.
+- `CLAUDE.md`: rangos de reglas hasta RN-17.
+
+**Decisión:**
+- La comparación ignora mayúsculas y espacios al principio o al final. Lo propuso el analista al aplicar la respuesta del PO, y queda anotado en el documento para que el PO pueda cambiarlo.
+- El duplicado se responde con `422` y no con `409`: según el CLAUDE.md, `409` es para "el estado no permite la acción" y `422` para datos que no pasan la validación.
+- El índice único solo atrapa duplicados exactos, porque un índice sin mayúsculas no es portable entre SQLite y PostgreSQL. La regla completa la garantiza el servicio.
+
+**Ficheros:** `docs/app/lista-de-tareas.md`, `docs/analisis.md`, `CLAUDE.md`, `docs/bitacora.md` (modificados).

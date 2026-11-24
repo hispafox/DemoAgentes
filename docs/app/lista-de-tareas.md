@@ -106,6 +106,7 @@ Es una demo didáctica, así que se prioriza que el código sea claro antes que 
 | RN-14 | *(v0.2)* El nombre de una categoría es obligatorio. |
 | RN-15 | *(v0.2)* Una tarea tiene como mucho una categoría; puede no tener ninguna. |
 | RN-16 | *(v0.2)* No se puede eliminar una categoría que tenga tareas asociadas, incluidas las que están en la papelera. |
+| RN-17 | *(v0.2)* No puede haber dos categorías con el mismo nombre. Se comparan sin distinguir mayúsculas ni espacios al principio o al final: "Casa" y " casa " son el mismo nombre. |
 
 ## 7. Fuera de alcance
 
@@ -137,5 +138,6 @@ El PO también confirmó las reglas deducidas de estas respuestas: RN-13, que la
 | 6 | ¿Cuántas categorías por tarea? | Cero o una. | RN-15, F-19 |
 | 7 | ¿Qué pasa al eliminar una categoría con tareas? | Se impide. | RN-16 |
 | 8 | ¿En qué versión y a qué afecta? | Versión 0.2 y solo a las tareas; las plantillas no llevan categoría. | Fuera de alcance |
+| 9 | ¿Los nombres de categoría deben ser únicos? | Sí. | RN-17 |
 
-**Pendiente de confirmar por el PO:** ¿los nombres de categoría deben ser únicos? Mientras no se decida, no se impone unicidad.
+Que la comparación ignore mayúsculas y espacios al principio o al final lo propuso el analista al aplicar la respuesta 9; el PO puede cambiarlo.
