@@ -67,7 +67,8 @@ DemoAgentes/
 │   ├── app/                      ✅ Documentación funcional: requisitos, casos de uso, mockups (Fase 1)
 │   ├── analisis.md               ✅ Análisis técnico: entidades, endpoints, pantallas (Fase 2)
 │   └── decisiones/               ✅ ADR: una decisión técnica por fichero (Fase 2)
-├── backend/                         Symfony + Doctrine (Fase 4)
+├── scripts/                      ✅ Scripts de PowerShell para instalar, arrancar y probar
+├── backend/                      ✅ Symfony + Doctrine (Fase 4)
 │   ├── config/
 │   ├── migrations/                  Doctrine Migrations
 │   ├── public/                      index.php (punto de entrada)
@@ -142,8 +143,8 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 - [ ] **CRITERIO:** refinamiento y priorización del backlog
 
 ### Fase 4 — Backend PHP (ISSUES → IA → PHP)
-- [ ] Crear proyecto Symfony en `backend/`
-- [ ] Configurar Doctrine y la conexión a la base de datos
+- [x] Crear proyecto Symfony en `backend/`
+- [x] Configurar Doctrine y la conexión a la base de datos
 - [ ] Implementar entidades y migraciones según el análisis
 - [ ] Implementar servicios de dominio y controladores/API REST
 - [ ] Implementar validación de entrada y gestión de errores (la autenticación queda fuera de alcance según `docs/app/`)
@@ -221,12 +222,23 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 - Commits con referencia al issue al final: `descripción breve (#<nº>)`. No empezar el mensaje por `#`: Git trata esas líneas como comentarios al editar el mensaje.
 - Código y comentarios en inglés; documentación y tickets en español.
 
-## Comandos (se completarán al crear los proyectos)
+## Comandos
+
+Scripts de PowerShell en `scripts/` (desde la raíz del repositorio):
+
+```powershell
+.\scripts\backend-setup.ps1    # Composer local en .tools/, dependencias y migraciones
+.\scripts\backend-start.ps1    # Servidor en http://127.0.0.1:8000 (-Port, -Foreground)
+.\scripts\backend-stop.ps1     # Para el servidor
+.\scripts\backend-test.ps1     # Contenedor, mapeo de Doctrine y PHPUnit
+```
+
+Equivalentes manuales:
 
 ```bash
-# Backend
-cd backend && composer install
-php bin/console doctrine:migrations:migrate
+# Backend (Composer local: php ../.tools/composer.phar)
+cd backend && php ../.tools/composer.phar install
+php bin/console doctrine:migrations:migrate --allow-no-migration
 php bin/phpunit
 
 # Frontend
