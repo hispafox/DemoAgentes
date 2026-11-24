@@ -393,3 +393,11 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Pendiente:** todavía no hay PHPUnit (issue #2), así que la PR no incluye tests.
 
 **Ficheros:** `backend/` (nuevo), `scripts/*.ps1` (nuevos), `.gitignore`, `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 27 — Merge de la PR #13 (issue #1) (2026-11-24)
+
+**Qué hicimos:** el usuario decidió hacer el merge de la PR #13 y pidió al agente que lo ejecutara. `main` ya incluye el backend Symfony y los scripts, y el issue #1 se cerró solo por el `Closes #1`.
+
+**Por qué el agente:** la regla "No hacer merge" del CLAUDE.md reserva la decisión a una persona. La decisión la tomó el usuario en el chat; el agente solo ejecutó `gh pr merge --merge --delete-branch`. GitHub no permite aprobar una PR propia, así que no hay revisión formal.
+
+**Ficheros:** `docs/bitacora.md` (modificado).
