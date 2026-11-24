@@ -457,3 +457,11 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Pendiente:** en los tests aparece en la consola una línea `[error] Uncaught ... NotFoundHttpException` del logger por defecto de Symfony. No afecta al resultado; se puede silenciar más adelante con un logger de test.
 
 **Ficheros:** `backend/composer.json`, `backend/composer.lock`, `backend/symfony.lock`, `backend/.gitignore`, `backend/config/bundles.php`, `backend/config/packages/doctrine.yaml` (modificados); `backend/config/packages/dama_doctrine_test_bundle.yaml`, `backend/.env.test`, `backend/bin/phpunit`, `backend/phpunit.dist.xml`, `backend/tests/` (nuevos); `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 31 — Merge de la PR #14 (issue #2) (2026-11-24)
+
+**Qué hicimos:** el usuario decidió hacer el merge de la PR #14 y el agente lo ejecutó (`gh pr merge --merge`). `main` ya tiene PHPUnit y la base de datos de test, el issue #2 se cerró solo y borramos la rama `feature/2-phpunit`.
+
+**Pendiente:** después del merge, `php bin/phpunit` se quedó colgado en `main`, cuando en la rama terminaba en menos de un segundo. La suite `Unit` acabó mostrando una traza de error y la `Functional` no terminó. La migración de test, ejecutada sola, sí funciona. A petición del usuario (estaba en clase) aplazamos la investigación. Sospechas que hay que comprobar: un proceso PHP anterior que bloquea `var/test.db` o la caché de `var/cache/test`.
+
+**Ficheros:** `docs/bitacora.md` (modificado).
