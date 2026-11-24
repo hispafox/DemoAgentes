@@ -63,6 +63,34 @@ backend/src/
 
 ## 3. Modelo de datos
 
+### Diagrama entidad-relación
+
+Resume en un dibujo las tablas de este apartado. Las columnas aparecen con su nombre en la base de datos (`snake_case`); el detalle está en las tablas de debajo.
+
+```mermaid
+erDiagram
+    TASK_TEMPLATE |o--o{ TASK : "origina (RN-08)"
+
+    TASK {
+        int id PK "autogenerado"
+        varchar title "255, not null (RN-01)"
+        boolean completed "default false (RN-02, RN-11)"
+        datetime created_at "not null, lo asigna el sistema (RN-02)"
+        varchar recurrence "10, null: daily, weekly, monthly (RN-03, RN-04)"
+        date next_occurrence_date "null si no es repetitiva (RN-05)"
+        int template_id FK "null, ON DELETE RESTRICT (RN-12)"
+        datetime deleted_at "null = activa; papelera (RN-10, RN-13)"
+    }
+
+    TASK_TEMPLATE {
+        int id PK "autogenerado"
+        varchar title "255, not null (RN-07)"
+        varchar recurrence "10, null: daily, weekly, monthly (RN-07)"
+    }
+```
+
+Lectura de la relación: una plantilla puede originar cero o muchas tareas, y una tarea viene de cero o una plantilla. `recurrence` guarda el valor del enum `Recurrence`.
+
 ### `Recurrence` (enum respaldado)
 
 ```php

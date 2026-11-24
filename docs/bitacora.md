@@ -426,3 +426,13 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Pendiente:** el resto de skills de la cadena (DTO, servicios, API, frontend, pruebas) no existen todavía.
 
 **Ficheros:** `.claude/skills/modelo/SKILL.md` (nuevo), `CLAUDE.md` (modificado), `docs/bitacora.md` (modificado).
+
+## Paso 29 — Diagrama ER del modelo en el análisis (2026-11-24)
+
+**Qué hicimos:** a petición del usuario, añadimos a la sección 3 de `docs/analisis.md` un diagrama entidad-relación en Mermaid con `TASK`, `TASK_TEMPLATE` y su relación. Cada columna lleva su tipo, su nulabilidad y las reglas RN que la afectan.
+
+**Decisión:** el diagrama solo dibuja lo que ya definían las tablas del análisis, sin añadir ni cambiar nada del diseño. Por eso no anula la firma del análisis; es el mismo caso que una corrección que no cambia el contenido. Lo commiteamos en `main`, aparte de la rama del issue #2, para no mezclarlo con PHPUnit.
+
+**Verificación:** la sintaxis del diagrama se validó con un renderizador de Mermaid (tipo `er`, válido).
+
+**Ficheros:** `docs/analisis.md` (modificado), `docs/bitacora.md` (modificado).
