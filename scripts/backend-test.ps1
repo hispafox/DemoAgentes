@@ -1,5 +1,9 @@
-﻿# Checks the backend: container, Doctrine mapping and PHPUnit tests (once installed, issue #2).
-# Usage: .\scripts\backend-test.ps1
+﻿# Checks the backend: container, Doctrine mapping and, on request, PHPUnit tests.
+# Usage: .\scripts\backend-test.ps1 [-PhpUnit]
+# PHPUnit is skipped by default while the tests are suspended (CLAUDE.md, Fase 5).
+param(
+    [switch]$PhpUnit
+)
 $ErrorActionPreference = 'Stop'
 
 $backend = Join-Path (Split-Path -Parent $PSScriptRoot) 'backend'
@@ -19,11 +23,14 @@ try {
     Invoke-Check 'Contenedor de servicios' { php bin/console lint:container }
     Invoke-Check 'Mapeo de Doctrine'       { php bin/console doctrine:schema:validate --skip-sync }
 
-    if (Test-Path 'bin/phpunit') {
+    if (-not $PhpUnit) {
+        Write-Host '== Tests PHPUnit: diferidos (Fase 5 suspendida). Usa -PhpUnit para lanzarlos.' -ForegroundColor Yellow
+    }
+    elseif (Test-Path 'bin/phpunit') {
         Invoke-Check 'Tests PHPUnit' { php bin/phpunit }
     }
     else {
-        Write-Host '== Tests PHPUnit: todavía no instalados (issue #2)' -ForegroundColor Yellow
+        Write-Host '== Tests PHPUnit: no instalados' -ForegroundColor Yellow
     }
 }
 finally {
