@@ -10,7 +10,7 @@ Aplicación web para gestionar tareas personales con **plantillas** reutilizable
 
 | Documento | Qué define |
 |---|---|
-| `docs/app/lista-de-tareas.md` | Qué hace: funcionalidades F-01 a F-19, casos de uso y reglas de negocio RN-01 a RN-17 |
+| `docs/app/lista-de-tareas.md` | Qué hace: funcionalidades F-01 a F-19, casos de uso y reglas de negocio RN-01 a RN-18 |
 | `docs/analisis.md` | Cómo se construye: entidades, endpoints, lógica, pantallas y plan de tests |
 | `docs/decisiones/` | Decisiones técnicas (ADR) |
 
@@ -215,6 +215,7 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 | `docs/app/lista-de-tareas.md`: categorías (Bloque C) | 1 | 2026-11-24 |
 | `docs/analisis.md`: categorías (`Category`, `/api/categories`) | 2 | 2026-11-24 |
 | Backlog v0.2: issue #15 y milestone "Bloque C — Categorías" | 3 | 2026-11-24 |
+| `docs/app/lista-de-tareas.md` y `docs/analisis.md`: RN-18 (fecha de la siguiente ocurrencia al crear) | 1 y 2 | 2026-11-25 |
 
 ### Registro de firmas
 

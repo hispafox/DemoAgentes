@@ -568,3 +568,18 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Pendiente:** decidir con el PO el hueco de `nextOccurrenceDate` antes de hacer `TaskService` (#5); se puede plantear con `/analisis-diseno revisar`.
 
 **Ficheros:** `.claude/skills/analisis-diseno/SKILL.md` (nuevo), `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 38 — RN-18: fecha de la siguiente ocurrencia al crear una tarea (2026-11-25)
+
+**Qué hicimos:** con `/analisis-diseno revisar` detectamos que el análisis no decidía qué fecha de siguiente ocurrencia lleva una tarea repetitiva creada a mano (pendiente de los pasos 32 y 37). El PO decidió que sea **hoy + periodicidad**, igual que al instanciar una plantilla. Lo añadimos como RN-18 a la documentación funcional y al análisis.
+
+**Cambios:**
+- `docs/app/lista-de-tareas.md`: regla RN-18 (al crear, hoy + periodicidad; si cambia la periodicidad, se recalcula desde hoy; si deja de ser repetitiva, sin fecha) y la pregunta 10 del PO.
+- `docs/analisis.md`: descripción de `nextOccurrenceDate` (§3 y diagrama ER), nuevo apartado `TaskService::create()` y `update()` en §5 y el caso en `TaskServiceTest` (§8). El diagrama Mermaid sigue siendo válido (tipo `er`).
+- `CLAUDE.md`: rango RN-01 a RN-18 y fila nueva en "Pendientes de firma".
+
+**Decisión:** si la periodicidad no cambia en un `PUT`, la fecha se conserva. La entidad sigue recibiendo la fecha ya calculada, porque el cálculo necesita el reloj y vive en el servicio.
+
+**Otros hallazgos de la revisión, sin aplicar:** §6 no incluye un `category-api.service.ts` para la 0.2; §8 no tiene fila para los tests de entidad (`TaskTest`); §4 dice que Symfony "ya genera" `problem+json`, pero por defecto responde `application/json` (paso 30). La documentación funcional no aclara si se puede cambiar el título de una tarea completada.
+
+**Ficheros:** `docs/app/lista-de-tareas.md`, `docs/analisis.md`, `CLAUDE.md`, `docs/bitacora.md` (modificados).
