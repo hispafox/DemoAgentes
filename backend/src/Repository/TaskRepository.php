@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Task;
+use App\Entity\TaskTemplate;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -12,7 +13,6 @@ use Doctrine\Persistence\ManagerRegistry;
  * Data access for tasks.
  *
  * The trash is a soft delete with deletedAt (RN-10): active tasks have it null.
- * countByTemplate arrives with issue #8.
  *
  * @extends ServiceEntityRepository<Task>
  */
@@ -51,5 +51,18 @@ class TaskRepository extends ServiceEntityRepository
             ->addOrderBy('t.id', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * RN-12: tasks created from a template, including those in the trash.
+     */
+    public function countByTemplate(TaskTemplate $template): int
+    {
+        return (int) $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->where('t.template = :template')
+            ->setParameter('template', $template)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

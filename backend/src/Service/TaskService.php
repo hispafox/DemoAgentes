@@ -16,7 +16,7 @@ use Psr\Clock\ClockInterface;
  * Business logic for tasks (docs/analisis.md §5).
  *
  * Issue #5 covers listing, reading, creating and updating, #6 completing and
- * #7 the trash. The link to a template (#8) is added by its own issue.
+ * #7 the trash. Creating a task from a template is TaskTemplateService (#9).
  */
 final class TaskService
 {
@@ -127,7 +127,7 @@ final class TaskService
 
     /**
      * F-06, RN-11, RN-05, RN-06: completes the task and, if it is recurring,
-     * creates the next occurrence (same title and recurrence, pending, with
+     * creates the next occurrence (same title, recurrence and template, pending, with
      * today + recurrence as its date). Both are saved in a single flush.
      *
      * @throws \App\Entity\Exception\DomainRuleViolation if it is already completed (RN-11)
@@ -143,6 +143,7 @@ final class TaskService
                 $this->clock->now(),
                 $task->getRecurrence(),
                 $this->nextOccurrenceDate($task->getRecurrence()),
+                $task->getTemplate(),
             );
             $this->entityManager->persist($nextOccurrence);
         }

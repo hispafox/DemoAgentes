@@ -790,3 +790,20 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Verificación:** con `var/data.db` borrada, las dos migraciones se aplican en limpio y `doctrine:schema:validate` da el esquema sincronizado.
 
 **Ficheros:** `backend/src/Entity/Task.php`, `backend/src/Repository/TaskRepository.php`, `backend/src/Dto/TaskOutput.php`, `backend/src/Service/TaskService.php`, `backend/src/Controller/TaskController.php`, `backend/tests/Unit/Entity/TaskTest.php`, `backend/tests/Unit/Service/TaskServiceTest.php`, `backend/tests/Functional/Controller/TaskControllerTest.php`, `docs/bitacora.md` (modificados); `backend/migrations/Version20261125195550.php` (nuevo).
+
+## Paso 50 — Issue #8: gestionar plantillas de tareas (2026-11-25)
+
+**Qué hicimos:** implementamos el issue #8 en la rama `feature/8-plantillas` con la cadena de skills: el CRUD de `/api/task-templates` y el vínculo de cada tarea con su plantilla. Con los tests en verde abrimos la PR y la fusionamos.
+
+**Cambios:**
+- Modelo: entidad `TaskTemplate` (`title` y `recurrence`; título obligatorio, recortado y de 255 caracteres como máximo, RN-07) con su repositorio, y relación `Task.template` (`ManyToOne` nullable y unidireccional, `ON DELETE RESTRICT`, RN-08 y RN-12). Migración `Add task_template and task.template_id (#8)`: SQLite no añade claves foráneas a una tabla existente, así que reconstruye `task`. Comprobamos `up`, `down` y otra vez `up`, y `doctrine:schema:validate` da el esquema sincronizado.
+- `TaskRepository::countByTemplate()`: cuenta las tareas de una plantilla, incluidas las de la papelera (RN-12).
+- DTO: `TaskTemplateInput` (mismas validaciones que `TaskInput`), `TaskTemplateOutput` (`id`, `title`, `recurrence`) y `templateId` en `TaskOutput`.
+- `TaskTemplateService`: `list()`, `getTemplate()` (`404`), `create()`, `update()` y `delete()`, que lanza `DomainRuleViolation` (`409`) si la plantilla tiene tareas. Modificar una plantilla no cambia sus tareas, porque las tareas copian los valores y no los leen de la plantilla (RN-09).
+- `TaskService::complete()`: la siguiente ocurrencia hereda la plantilla, tal como dice el análisis (pendiente desde el paso 48).
+- `TaskTemplateController`: los 5 endpoints del CRUD. `instantiate` llega con el issue #9.
+- Tests (86 en total, todos en verde): 4 de entidad, 5 de servicio de plantillas, 1 de herencia de la plantilla al completar y 9 funcionales, que cubren los seis criterios de aceptación, también el `409` con las tareas en la papelera.
+
+**Decisión:** hasta el issue #9 no se pueden crear tareas desde una plantilla por la API, así que los tests funcionales guardan la tarea vinculada directamente con Doctrine.
+
+**Ficheros:** `backend/src/Entity/Task.php`, `backend/src/Repository/TaskRepository.php`, `backend/src/Dto/TaskOutput.php`, `backend/src/Service/TaskService.php`, `backend/src/Service/Exception/ResourceNotFound.php`, `backend/tests/Unit/Service/TaskServiceTest.php`, `docs/bitacora.md` (modificados); `backend/src/Entity/TaskTemplate.php`, `backend/src/Repository/TaskTemplateRepository.php`, `backend/src/Dto/TaskTemplateInput.php`, `backend/src/Dto/TaskTemplateOutput.php`, `backend/src/Service/TaskTemplateService.php`, `backend/src/Controller/TaskTemplateController.php`, `backend/migrations/Version20261125211527.php`, `backend/tests/Unit/Entity/TaskTemplateTest.php`, `backend/tests/Unit/Service/TaskTemplateServiceTest.php`, `backend/tests/Functional/Controller/TaskTemplateControllerTest.php` (nuevos).

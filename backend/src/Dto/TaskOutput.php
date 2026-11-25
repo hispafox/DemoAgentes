@@ -9,8 +9,7 @@ use App\Entity\Task;
 /**
  * Task as returned by the API (docs/analisis.md §4).
  *
- * templateId (#8) and categoryId (#15) are added with the issues that bring
- * them to the entity.
+ * categoryId (#15) is added with the issue that brings it to the entity.
  */
 final readonly class TaskOutput
 {
@@ -21,6 +20,7 @@ final readonly class TaskOutput
         public string $createdAt,
         public ?string $recurrence,
         public ?string $nextOccurrenceDate,
+        public ?int $templateId,
         public ?string $deletedAt,
     ) {
     }
@@ -34,6 +34,7 @@ final readonly class TaskOutput
             createdAt: $task->getCreatedAt()->format(\DATE_ATOM),
             recurrence: $task->getRecurrence()?->value,
             nextOccurrenceDate: $task->getNextOccurrenceDate()?->format('Y-m-d'),
+            templateId: $task->getTemplate()?->getId(),
             deletedAt: $task->getDeletedAt()?->format(\DATE_ATOM),
         );
     }

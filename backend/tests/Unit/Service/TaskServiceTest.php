@@ -8,6 +8,7 @@ use App\Dto\TaskInput;
 use App\Entity\Exception\DomainRuleViolation;
 use App\Entity\Recurrence;
 use App\Entity\Task;
+use App\Entity\TaskTemplate;
 use App\Repository\TaskRepository;
 use App\Service\Exception\ResourceNotFound;
 use App\Service\RecurrenceCalculator;
@@ -245,5 +246,16 @@ final class TaskServiceTest extends TestCase
         $this->expectException(ResourceNotFound::class);
 
         $this->service()->restore(999);
+    }
+
+    // docs/analisis.md §5: the next occurrence keeps the template of the completed task (RN-08)
+    public function testTheNextOccurrenceKeepsTheTemplate(): void
+    {
+        $template = new TaskTemplate('Water the plants', Recurrence::Weekly);
+        $task = new Task('Water the plants', new \DateTimeImmutable(self::NOW), Recurrence::Weekly, new \DateTimeImmutable('2026-12-02'), $template);
+
+        $next = $this->service()->complete($task)->nextOccurrence;
+
+        self::assertSame($template, $next?->getTemplate());
     }
 }
