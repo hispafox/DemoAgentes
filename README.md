@@ -74,7 +74,7 @@ Comprueba el contenedor y el mapeo de Doctrine y lanza PHPUnit (`-SkipPhpUnit` p
 ```
 DemoAgentes/
 ├── CLAUDE.md          El candado: diseño y reglas del proyecto
-├── .claude/skills/    Skills del agente (bitácora, commits, análisis, modelo, DTO, servicios, API)
+├── .claude/skills/    Skills del agente (bitácora, commits, análisis, modelo, DTO, servicios, API, pruebas, frontend)
 ├── docs/              Documentación funcional, análisis, ADR y bitácora
 ├── scripts/           Scripts de PowerShell para instalar, arrancar y probar
 └── backend/           Symfony: Controller → Service → Repository → Entity, con Dto/
@@ -87,7 +87,7 @@ El detalle de carpetas y convenciones está en el [CLAUDE.md](CLAUDE.md).
 Los skills de [.claude/skills/](.claude/skills/) encadenan el trabajo por capas. Cada uno lee lo que dejó el anterior y no inventa reglas ni contratos:
 
 ```
-analisis-diseno ──► modelo ──► dto ──► servicio ──► api ──► (frontend) ──► (pruebas) ──► mensaje-commit
+analisis-diseno ──► modelo ──► dto ──► servicio ──► api ──► frontend ──► pruebas ──► mensaje-commit
 ```
 
 `bitacora` registra cada paso y, con `/bitacora retomar`, reconstruye el estado del proyecto al empezar una conversación nueva.

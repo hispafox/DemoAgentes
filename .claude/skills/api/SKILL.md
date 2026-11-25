@@ -133,4 +133,4 @@ Prueba manual con el servidor (`.\scripts\backend-start.ps1`) y `curl` o `Invoke
 1. Tabla de endpoints creados o cambiados: verbo, ruta, método del servicio, códigos y funcionalidad (F-xx), y el resultado de la prueba manual.
 2. Si cambió el análisis, dilo: ha perdido la firma.
 3. Siguiente tramo: `frontend` (servicios HTTP y pantallas) o la PR del issue.
-4. Registra el paso con `bitacora` y haz commit con `mensaje-commit` (`feat: … (#<nº>)`). La PR lleva `Closes #<nº>` y solo se abre con los tests en verde. El merge lo decide una persona.
+4. Registra el paso con `bitacora` y haz commit con `mensaje-commit` (`feat: … (#<nº>)`). La PR lleva `Closes #<nº>` y solo se abre con los tests en verde. El agente la fusiona en cuanto los tests están en verde (regla de merge del CLAUDE.md).

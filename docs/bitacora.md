@@ -836,3 +836,18 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Para activar la CI:** `gh auth refresh -h github.com -s workflow`, mover `.github/ci-pendiente.yml` a `.github/workflows/ci.yml` (quitando las tres líneas del principio) y subirlo.
 
 **Ficheros:** `backend/composer.json`, `backend/composer.lock`, `backend/symfony.lock`, `backend/.gitignore`, `backend/src/Service/TaskService.php`, `backend/tests/Unit/Entity/TaskTest.php`, `scripts/backend-test.ps1`, `CLAUDE.md`, `docs/bitacora.md` (modificados); `.github/ci-pendiente.yml`, `.github/pull_request_template.md`, `backend/phpstan.dist.neon`, `backend/.php-cs-fixer.dist.php`, `backend/.gitattributes` (nuevos).
+
+## Paso 53 — Skill `frontend` (2026-11-25)
+
+**Qué hicimos:** creamos el skill `frontend`, el último de la cadena que faltaba, para poder abordar los issues de Angular (#3, #10, #11 y #12). Antes cerramos lo que se podía del issue #4 (PR #21): PHPStan, PHP-CS-Fixer y la plantilla de PR ya están en `main`, y el workflow queda aparcado en `.github/ci-pendiente.yml`, porque el token de `gh` no tiene el permiso `workflow` y la CI no hace falta para el curso. El issue #4 sigue abierto, con un comentario que explica cómo activarlo.
+
+**Cambios:**
+- `.claude/skills/frontend/SKILL.md`, con el mismo formato que los demás (tabla Lee/Escribe/No toca/Prerrequisito/Verificación/Entregable) y cuatro modos:
+  - `proyecto`: el issue #3, con `ng new`, carpetas `core/`, `shared/` y `features/`, proxy a la API, interceptor de errores y scripts de PowerShell.
+  - `crear`, `actualizar` y `revisar`.
+- Convenciones del skill: componentes standalone con signals, `inject()` y el control de flujo nuevo (`@if`, `@for`); formularios reactivos tipados con las mismas validaciones del título que el backend; modelos copiados de los DTO de salida; un servicio HTTP por recurso; el interceptor traduce `problem+json` (`422`, `404` y `409`) a mensajes en castellano; tests con `HttpTestingController` y uno por criterio de aceptación.
+- El skill usa el *test runner* que genere el CLI de Angular (Vitest en las versiones recientes) y pide anotar la diferencia con el "Jest/Karma" del CLAUDE.md cuando se cree el proyecto.
+- Skills `api` y `modelo`: decían que el merge lo decide una persona; ahora remiten a la regla de merge del paso 47.
+- `CLAUDE.md` (estructura de carpetas) y `README.md` (cadena de skills completa).
+
+**Ficheros:** `.claude/skills/api/SKILL.md`, `.claude/skills/modelo/SKILL.md`, `CLAUDE.md`, `README.md`, `docs/bitacora.md` (modificados); `.claude/skills/frontend/SKILL.md` (nuevo).

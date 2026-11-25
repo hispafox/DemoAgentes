@@ -185,4 +185,4 @@ No des el modelo por terminado si alguna de estas comprobaciones falla.
 1. Resume qué entidades, campos, relaciones y migraciones se crearon o cambiaron, y qué reglas (RN) cubre cada test.
 2. Si cambió el análisis, dilo de forma explícita: ha perdido la firma.
 3. Registra el paso con el skill `bitacora`.
-4. Commit con el skill `mensaje-commit` (`feat: … (#<nº>)`), y PR con `Closes #<nº>` solo si los tests están en verde. El merge lo decide una persona.
+4. Commit con el skill `mensaje-commit` (`feat: … (#<nº>)`), y PR con `Closes #<nº>` solo si los tests están en verde. El agente la fusiona en cuanto los tests están en verde (regla de merge del CLAUDE.md).
