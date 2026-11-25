@@ -75,7 +75,7 @@ final class TaskService
     /**
      * F-14, RN-10: restores a task from the trash, keeping its status.
      *
-     * @throws ResourceNotFound if the task does not exist
+     * @throws ResourceNotFound                          if the task does not exist
      * @throws \App\Entity\Exception\DomainRuleViolation if it is not in the trash (409)
      */
     public function restore(int $id): Task

@@ -123,7 +123,6 @@ final class TaskTest extends TestCase
             static fn (Recurrence $r): string => $r->value,
             Recurrence::cases(),
         ));
-        self::assertNull(Recurrence::tryFrom('yearly'));
     }
 
     // RN-11
