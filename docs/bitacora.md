@@ -583,3 +583,20 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Otros hallazgos de la revisión, sin aplicar:** §6 no incluye un `category-api.service.ts` para la 0.2; §8 no tiene fila para los tests de entidad (`TaskTest`); §4 dice que Symfony "ya genera" `problem+json`, pero por defecto responde `application/json` (paso 30). La documentación funcional no aclara si se puede cambiar el título de una tarea completada.
 
 **Ficheros:** `docs/app/lista-de-tareas.md`, `docs/analisis.md`, `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 39 — Skills dto, servicio y api para el backend (2026-11-25)
+
+**Qué hicimos:** creamos los skills de proyecto `dto`, `servicio` y `api`, los tramos que faltaban entre `modelo` y el frontend para terminar el issue #5. Siguen el formato de `modelo`: modos `crear`, `actualizar` y `revisar`, tabla "Lee / Escribe / No toca / Prerrequisito / Verificación / Entregable" y fronteras con el tramo anterior y el siguiente.
+
+**Cambios:**
+- `dto`: `*Input` como `final readonly class` con `#[Assert\...]` y la regla en un comentario; `*Output` con `fromEntity()`, solo escalares, fechas ISO 8601 (`Y-m-d` para fechas sin hora) y relaciones como id. La entrada nunca lleva `id`, `completed`, `createdAt`, `deletedAt` ni `nextOccurrenceDate`.
+- `servicio`: un servicio por recurso con autowiring, fechas siempre de `ClockInterface`, un único `flush()` por operación y excepciones de dominio: `DomainRuleViolation` (→ `409`), `ResourceNotFound` (→ `404`, también para tareas de la papelera) e `InvalidInput` (→ `422` para lo que solo se valida contra la base de datos).
+- `api`: un controlador por recurso, `#[MapRequestPayload]`, códigos `200`/`201` + `Location`/`204`, excepciones mapeadas a códigos en `framework.exceptions` y prueba manual con el servidor mientras los tests estén suspendidos.
+- `CLAUDE.md`: los tres skills en la estructura de carpetas.
+
+**Decisión:**
+- Los skills se crean justo antes de necesitarlos (el frontend y las pruebas, más adelante), para probarlos enseguida con un issue real.
+- Los nombres `ResourceNotFound` e `InvalidInput` son detalle de implementación y no cambian el análisis.
+- Si Symfony no envía `application/problem+json`, el skill `api` propone un *listener* en `src/EventListener/`, carpeta que no está en el CLAUDE.md: hay que aprobarla antes de crearla.
+
+**Ficheros:** `.claude/skills/dto/SKILL.md`, `.claude/skills/servicio/SKILL.md`, `.claude/skills/api/SKILL.md` (nuevos), `CLAUDE.md`, `docs/bitacora.md` (modificados).

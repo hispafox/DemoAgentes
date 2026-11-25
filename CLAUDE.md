@@ -62,7 +62,10 @@ DemoAgentes/
 │       ├── mensaje-commit/       ✅ Redacta los mensajes de commit
 │       ├── bitacora/             ✅ Registra pasos y retoma el proyecto en un chat nuevo
 │       ├── analisis-diseno/      ✅ Crea, actualiza y revisa el análisis técnico a partir de la doc. funcional
-│       └── modelo/               ✅ Crea, actualiza y revisa el modelo Doctrine a partir del análisis
+│       ├── modelo/               ✅ Crea, actualiza y revisa el modelo Doctrine a partir del análisis
+│       ├── dto/                  ✅ DTO de entrada y salida de la API y su validación
+│       ├── servicio/             ✅ Servicios de lógica de negocio, reloj y excepciones de dominio
+│       └── api/                  ✅ Controladores, rutas, códigos HTTP y errores problem+json
 ├── .github/
 │   ├── workflows/                   GitHub Actions: lint, PHPStan, tests (Fase 7)
 │   └── pull_request_template.md     Plantilla de PR con "Closes #<nº>" (Fase 7)
