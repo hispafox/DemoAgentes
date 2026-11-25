@@ -11,16 +11,20 @@ use App\Entity\TaskTemplate;
 use App\Repository\TaskRepository;
 use App\Repository\TaskTemplateRepository;
 use App\Service\Exception\ResourceNotFound;
+use App\Service\RecurrenceCalculator;
 use App\Service\TaskTemplateService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\MockClock;
 
 /**
- * Template business logic covered by issue #8 (F-07 to F-11, RN-07, RN-09, RN-12).
+ * Template business logic covered by issues #8 and #9 (F-07 to F-12, RN-07 to RN-09, RN-12).
  */
 final class TaskTemplateServiceTest extends TestCase
 {
+    private const NOW = '2026-11-25 10:00:00';
+
     private TaskTemplateRepository&Stub $templateRepository;
     private TaskRepository&Stub $taskRepository;
 
@@ -96,6 +100,35 @@ final class TaskTemplateServiceTest extends TestCase
             $entityManager ?? $this->createStub(EntityManagerInterface::class),
             $this->templateRepository,
             $this->taskRepository,
+            new RecurrenceCalculator(),
+            new MockClock(self::NOW),
         );
+    }
+
+    // F-12, RN-08, RN-02: pending task with the template's values, linked to it
+    public function testInstantiateCreatesAPendingTaskLinkedToTheTemplate(): void
+    {
+        $template = new TaskTemplate('Buy bread');
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects(self::once())->method('persist')->with(self::isInstanceOf(\App\Entity\Task::class));
+        $entityManager->expects(self::once())->method('flush');
+
+        $task = $this->service($entityManager)->instantiate($template);
+
+        self::assertSame('Buy bread', $task->getTitle());
+        self::assertFalse($task->isCompleted());
+        self::assertSame(self::NOW, $task->getCreatedAt()->format('Y-m-d H:i:s'));
+        self::assertNull($task->getRecurrence());
+        self::assertNull($task->getNextOccurrenceDate());
+        self::assertSame($template, $task->getTemplate());
+    }
+
+    // RN-18: a recurring template gives a task with today + recurrence
+    public function testInstantiatingARecurringTemplateSetsTheNextOccurrence(): void
+    {
+        $task = $this->service()->instantiate(new TaskTemplate('Pay rent', Recurrence::Monthly));
+
+        self::assertSame(Recurrence::Monthly, $task->getRecurrence());
+        self::assertSame('2026-12-25', $task->getNextOccurrenceDate()?->format('Y-m-d'));
     }
 }

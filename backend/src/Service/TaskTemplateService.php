@@ -6,17 +6,18 @@ namespace App\Service;
 
 use App\Dto\TaskTemplateInput;
 use App\Entity\Exception\DomainRuleViolation;
+use App\Entity\Task;
 use App\Entity\TaskTemplate;
 use App\Repository\TaskRepository;
 use App\Repository\TaskTemplateRepository;
 use App\Service\Exception\ResourceNotFound;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Clock\ClockInterface;
 
 /**
  * Business logic for task templates (docs/analisis.md §5).
  *
- * Issue #8 covers the CRUD. Creating a task from a template (instantiate)
- * arrives with issue #9.
+ * Issue #8 covers the CRUD and #9 creating a task from a template (instantiate).
  */
 final class TaskTemplateService
 {
@@ -24,6 +25,8 @@ final class TaskTemplateService
         private readonly EntityManagerInterface $entityManager,
         private readonly TaskTemplateRepository $templateRepository,
         private readonly TaskRepository $taskRepository,
+        private readonly RecurrenceCalculator $recurrenceCalculator,
+        private readonly ClockInterface $clock,
     ) {
     }
 
@@ -88,5 +91,29 @@ final class TaskTemplateService
 
         $this->entityManager->remove($template);
         $this->entityManager->flush();
+    }
+
+    /**
+     * F-12, RN-08, RN-02, RN-18: creates a pending task with the title and
+     * recurrence of the template, linked to it. If recurring, its next
+     * occurrence is today + recurrence.
+     */
+    public function instantiate(TaskTemplate $template): Task
+    {
+        $now = $this->clock->now();
+        $recurrence = $template->getRecurrence();
+
+        $task = new Task(
+            $template->getTitle(),
+            $now,
+            $recurrence,
+            null === $recurrence ? null : $this->recurrenceCalculator->next($now, $recurrence),
+            $template,
+        );
+
+        $this->entityManager->persist($task);
+        $this->entityManager->flush();
+
+        return $task;
     }
 }
