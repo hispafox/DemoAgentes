@@ -807,3 +807,14 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Decisión:** hasta el issue #9 no se pueden crear tareas desde una plantilla por la API, así que los tests funcionales guardan la tarea vinculada directamente con Doctrine.
 
 **Ficheros:** `backend/src/Entity/Task.php`, `backend/src/Repository/TaskRepository.php`, `backend/src/Dto/TaskOutput.php`, `backend/src/Service/TaskService.php`, `backend/src/Service/Exception/ResourceNotFound.php`, `backend/tests/Unit/Service/TaskServiceTest.php`, `docs/bitacora.md` (modificados); `backend/src/Entity/TaskTemplate.php`, `backend/src/Repository/TaskTemplateRepository.php`, `backend/src/Dto/TaskTemplateInput.php`, `backend/src/Dto/TaskTemplateOutput.php`, `backend/src/Service/TaskTemplateService.php`, `backend/src/Controller/TaskTemplateController.php`, `backend/migrations/Version20261125211527.php`, `backend/tests/Unit/Entity/TaskTemplateTest.php`, `backend/tests/Unit/Service/TaskTemplateServiceTest.php`, `backend/tests/Functional/Controller/TaskTemplateControllerTest.php` (nuevos).
+
+## Paso 51 — Issue #9: crear una tarea desde una plantilla (2026-11-25)
+
+**Qué hicimos:** implementamos el issue #9 en la rama `feature/9-instanciar-plantilla`: `POST /api/task-templates/{id}/instantiate`. Con los tests en verde abrimos la PR y la fusionamos. Con este issue queda completo el backend de la versión 0.1.
+
+**Cambios:**
+- `TaskTemplateService::instantiate()`: crea una tarea pendiente con el título y la periodicidad de la plantilla, vinculada a ella (RN-08), con `createdAt` del reloj y, si es repetitiva, la fecha de la siguiente ocurrencia a hoy + periodicidad (RN-18). El servicio recibe ahora `RecurrenceCalculator` y `ClockInterface`.
+- `TaskTemplateController::instantiate()`: `201` con `TaskOutput` y la cabecera `Location` apuntando a `/api/tasks/{id}`; `404` en `problem+json` si la plantilla no existe.
+- Tests (91 en total, todos en verde): 2 de servicio y 3 funcionales (los tres criterios de aceptación). El ayudante de los tests funcionales del #8 ya no guarda la tarea con Doctrine: ahora la crea con `instantiate`.
+
+**Ficheros:** `backend/src/Service/TaskTemplateService.php`, `backend/src/Controller/TaskTemplateController.php`, `backend/tests/Unit/Service/TaskTemplateServiceTest.php`, `backend/tests/Functional/Controller/TaskTemplateControllerTest.php`, `docs/bitacora.md` (modificados).

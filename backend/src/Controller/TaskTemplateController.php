@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Dto\TaskOutput;
 use App\Dto\TaskTemplateInput;
 use App\Dto\TaskTemplateOutput;
 use App\Service\TaskTemplateService;
@@ -16,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 /**
  * HTTP layer for /api/task-templates (docs/analisis.md §4).
  *
- * Issue #8 covers the CRUD; instantiate arrives with issue #9.
+ * Issue #8 covers the CRUD and #9 instantiate.
  */
 // format: 'json' makes errors render as JSON even without an Accept header.
 #[Route('/api/task-templates', name: 'api_task_templates_', format: 'json')]
@@ -70,5 +71,18 @@ final class TaskTemplateController extends AbstractController
         $this->templateService->delete($this->templateService->getTemplate($id));
 
         return new Response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    // F-12: create a task from the template (RN-08, RN-18)
+    #[Route('/{id}/instantiate', name: 'instantiate', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function instantiate(int $id): JsonResponse
+    {
+        $task = $this->templateService->instantiate($this->templateService->getTemplate($id));
+
+        return $this->json(
+            TaskOutput::fromEntity($task),
+            JsonResponse::HTTP_CREATED,
+            ['Location' => $this->generateUrl('api_tasks_show', ['id' => $task->getId()])],
+        );
     }
 }

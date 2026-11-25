@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Controller;
 
-use App\Entity\Task;
-use App\Entity\TaskTemplate;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 /**
- * Acceptance criteria of issue #8 on /api/task-templates (F-07 to F-11).
+ * Acceptance criteria of issues #8 and #9 on /api/task-templates (F-07 to F-12).
  */
 final class TaskTemplateControllerTest extends WebTestCase
 {
@@ -150,21 +147,12 @@ final class TaskTemplateControllerTest extends WebTestCase
         return $this->body()['id'];
     }
 
-    /**
-     * Instantiating through the API arrives with issue #9, so the linked task
-     * is stored directly with the template's values (RN-08).
-     */
     private function createTaskFromTemplate(int $templateId): int
     {
-        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
-        $template = $entityManager->find(TaskTemplate::class, $templateId);
-        self::assertNotNull($template);
+        $this->client->request('POST', '/api/task-templates/'.$templateId.'/instantiate');
+        self::assertResponseStatusCodeSame(201);
 
-        $task = new Task($template->getTitle(), new \DateTimeImmutable('2026-11-25 10:00:00'), $template->getRecurrence(), null, $template);
-        $entityManager->persist($task);
-        $entityManager->flush();
-
-        return (int) $task->getId();
+        return $this->body()['id'];
     }
 
     /**
@@ -173,5 +161,47 @@ final class TaskTemplateControllerTest extends WebTestCase
     private function body(): array
     {
         return json_decode((string) $this->client->getResponse()->getContent(), true, flags: \JSON_THROW_ON_ERROR);
+    }
+
+    // CA #9: instantiate -> 201 with a pending task, the template's values and templateId (RN-08)
+    public function testInstantiateReturns201WithATaskLinkedToTheTemplate(): void
+    {
+        $templateId = $this->createTemplate(['title' => 'Buy bread']);
+
+        $this->client->request('POST', '/api/task-templates/'.$templateId.'/instantiate');
+
+        self::assertResponseStatusCodeSame(201);
+        $task = $this->body();
+        self::assertResponseHeaderSame('Location', '/api/tasks/'.$task['id']);
+        self::assertSame('Buy bread', $task['title']);
+        self::assertFalse($task['completed']);
+        self::assertSame('2026-11-25T10:00:00+00:00', $task['createdAt']);
+        self::assertNull($task['recurrence']);
+        self::assertNull($task['nextOccurrenceDate']);
+        self::assertSame($templateId, $task['templateId']);
+
+        $this->client->request('GET', '/api/tasks');
+        self::assertSame([$task['id']], array_column($this->body(), 'id'));
+    }
+
+    // CA #9: recurring template -> nextOccurrenceDate = today + recurrence (RN-18)
+    public function testInstantiateRecurringTemplateSetsTheNextOccurrenceDate(): void
+    {
+        $templateId = $this->createTemplate(['title' => 'Water the plants', 'recurrence' => 'weekly']);
+
+        $this->client->request('POST', '/api/task-templates/'.$templateId.'/instantiate');
+
+        self::assertResponseStatusCodeSame(201);
+        self::assertSame('weekly', $this->body()['recurrence']);
+        self::assertSame('2026-12-02', $this->body()['nextOccurrenceDate']);
+    }
+
+    // CA #9: unknown template -> 404
+    public function testInstantiateUnknownTemplateReturns404(): void
+    {
+        $this->client->request('POST', '/api/task-templates/999999/instantiate');
+
+        self::assertResponseStatusCodeSame(404);
+        self::assertResponseHeaderSame('Content-Type', 'application/problem+json');
     }
 }
