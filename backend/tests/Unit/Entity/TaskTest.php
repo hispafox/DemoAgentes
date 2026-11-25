@@ -125,4 +125,26 @@ final class TaskTest extends TestCase
         ));
         self::assertNull(Recurrence::tryFrom('yearly'));
     }
+
+    // RN-11
+    public function testCompleteMarksThePendingTaskAsCompleted(): void
+    {
+        $task = new Task('Water the plants', $this->now);
+
+        $task->complete();
+
+        self::assertTrue($task->isCompleted());
+    }
+
+    // RN-11: a completed task cannot be completed again
+    public function testCompletingACompletedTaskIsRejected(): void
+    {
+        $task = new Task('Water the plants', $this->now);
+        $task->complete();
+
+        $this->expectException(DomainRuleViolation::class);
+        $this->expectExceptionMessage('RN-11');
+
+        $task->complete();
+    }
 }

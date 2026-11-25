@@ -759,3 +759,18 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Decisión:** el control que queda es técnico (tests en verde) y no humano antes del merge. Es aceptable en una demo didáctica; en un proyecto real se mantendría la revisión antes de fusionar.
 
 **Ficheros:** `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 48 — Issue #6: completar tareas y generar la siguiente ocurrencia (2026-11-25)
+
+**Qué hicimos:** implementamos el issue #6 en la rama `feature/6-completar-tareas` con la cadena de skills (`modelo` → `dto` → `servicio` → `api` → `pruebas`): `POST /api/tasks/{id}/complete`. Con los tests en verde abrimos la PR y la fusionamos, según la regla del paso 47.
+
+**Cambios:**
+- `Task::complete()`: marca la tarea como completada y lanza `DomainRuleViolation` si ya lo estaba (RN-11). No cambia el esquema, así que no hay migración.
+- `CompleteResult` (servicio) y `CompleteTaskOutput` (DTO): la tarea completada y la nueva ocurrencia, o `null`.
+- `TaskService::complete()`: completa y, si es repetitiva, crea la siguiente ocurrencia con el mismo título y periodicidad, pendiente, `createdAt` del reloj y fecha hoy + periodicidad; todo en un único `flush` (RN-05, RN-06).
+- `TaskController::complete()`: `200` con `CompleteTaskOutput`, `404` si no existe y `409` en `problem+json` si ya está completada.
+- Tests (53 en total, todos en verde): 2 de entidad, 4 de servicio (no repetitiva, semanal, mensual el 31 de enero y doble completado sin guardar) y 5 funcionales (los cuatro criterios de aceptación y el `404`).
+
+**Decisión:** el análisis dice que la nueva ocurrencia hereda también la plantilla; `Task` todavía no tiene plantilla, así que ese vínculo llega con el issue #8.
+
+**Ficheros:** `backend/src/Entity/Task.php`, `backend/src/Service/TaskService.php`, `backend/src/Controller/TaskController.php`, `backend/tests/Unit/Entity/TaskTest.php`, `backend/tests/Unit/Service/TaskServiceTest.php`, `backend/tests/Functional/Controller/TaskControllerTest.php`, `docs/bitacora.md` (modificados); `backend/src/Service/CompleteResult.php`, `backend/src/Dto/CompleteTaskOutput.php` (nuevos).

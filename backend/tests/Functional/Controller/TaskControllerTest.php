@@ -165,4 +165,68 @@ final class TaskControllerTest extends WebTestCase
     {
         return json_decode((string) $this->client->getResponse()->getContent(), true, flags: \JSON_THROW_ON_ERROR);
     }
+
+    // CA #6: non-recurring task -> completed and nextOccurrence null (RN-06)
+    public function testCompleteNonRecurringTaskReturnsNoNextOccurrence(): void
+    {
+        $id = $this->createTask(['title' => 'Buy bread']);
+
+        $this->client->request('POST', '/api/tasks/'.$id.'/complete');
+
+        self::assertResponseIsSuccessful();
+        self::assertTrue($this->body()['task']['completed']);
+        self::assertNull($this->body()['nextOccurrence']);
+    }
+
+    // CA #6: weekly task completed today -> new pending task, same title and recurrence, today + 7 days (RN-05)
+    public function testCompleteWeeklyTaskCreatesTheNextOccurrence(): void
+    {
+        $id = $this->createTask(['title' => 'Water the plants', 'recurrence' => 'weekly']);
+
+        $this->client->request('POST', '/api/tasks/'.$id.'/complete');
+
+        self::assertResponseIsSuccessful();
+        $next = $this->body()['nextOccurrence'];
+        self::assertNotSame($id, $next['id']);
+        self::assertSame('Water the plants', $next['title']);
+        self::assertSame('weekly', $next['recurrence']);
+        self::assertFalse($next['completed']);
+        self::assertSame('2026-12-02', $next['nextOccurrenceDate']);
+
+        $this->client->request('GET', '/api/tasks');
+        self::assertSame([true, false], array_column($this->body(), 'completed'));
+    }
+
+    // CA #6: monthly task completed on 31 January -> last day of February (RN-05)
+    public function testCompleteMonthlyTaskOnJanuary31CreatesTheNextOccurrenceOnTheLastDayOfFebruary(): void
+    {
+        self::mockTime('2027-01-31 18:00:00');
+        $id = $this->createTask(['title' => 'Pay rent', 'recurrence' => 'monthly']);
+
+        $this->client->request('POST', '/api/tasks/'.$id.'/complete');
+
+        self::assertResponseIsSuccessful();
+        self::assertSame('2027-02-28', $this->body()['nextOccurrence']['nextOccurrenceDate']);
+    }
+
+    // CA #6: already completed -> 409 in problem+json (RN-11)
+    public function testCompleteAlreadyCompletedTaskReturns409(): void
+    {
+        $id = $this->createTask(['title' => 'Buy bread']);
+        $this->client->request('POST', '/api/tasks/'.$id.'/complete');
+
+        $this->client->request('POST', '/api/tasks/'.$id.'/complete');
+
+        self::assertResponseStatusCodeSame(409);
+        self::assertResponseHeaderSame('Content-Type', 'application/problem+json');
+        self::assertSame(409, $this->body()['status']);
+    }
+
+    // Unknown id -> 404
+    public function testCompleteUnknownTaskReturns404(): void
+    {
+        $this->client->request('POST', '/api/tasks/999999/complete');
+
+        self::assertResponseStatusCodeSame(404);
+    }
 }

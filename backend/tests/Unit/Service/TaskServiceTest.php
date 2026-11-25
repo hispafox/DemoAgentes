@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service;
 
 use App\Dto\TaskInput;
+use App\Entity\Exception\DomainRuleViolation;
 use App\Entity\Recurrence;
 use App\Entity\Task;
 use App\Repository\TaskRepository;
@@ -127,5 +128,68 @@ final class TaskServiceTest extends TestCase
             $recurrence,
             new \DateTimeImmutable($nextOccurrenceDate),
         );
+    }
+
+    // RN-06: completing a non-recurring task creates nothing else
+    public function testCompletingANonRecurringTaskCreatesNoNextOccurrence(): void
+    {
+        $task = new Task('Buy bread', new \DateTimeImmutable(self::NOW));
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects(self::never())->method('persist');
+        $entityManager->expects(self::once())->method('flush');
+
+        $result = $this->service($entityManager)->complete($task);
+
+        self::assertTrue($task->isCompleted());
+        self::assertSame($task, $result->task);
+        self::assertNull($result->nextOccurrence);
+    }
+
+    // RN-05: completing a recurring task creates exactly one pending occurrence, in the same flush
+    public function testCompletingARecurringTaskCreatesTheNextOccurrence(): void
+    {
+        $task = $this->recurringTask(Recurrence::Weekly, '2026-11-25');
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects(self::once())->method('persist')->with(self::isInstanceOf(Task::class));
+        $entityManager->expects(self::once())->method('flush');
+
+        $next = $this->service($entityManager)->complete($task)->nextOccurrence;
+
+        self::assertNotNull($next);
+        self::assertNotSame($task, $next);
+        self::assertSame('Water the plants', $next->getTitle());
+        self::assertSame(Recurrence::Weekly, $next->getRecurrence());
+        self::assertFalse($next->isCompleted());
+        self::assertSame(self::NOW, $next->getCreatedAt()->format('Y-m-d H:i:s'));
+        self::assertSame('2026-12-02', $next->getNextOccurrenceDate()?->format('Y-m-d'));
+    }
+
+    // RN-05: monthly task completed on 31 January -> last day of February
+    public function testCompletingAMonthlyTaskOnJanuary31CreatesTheNextOccurrenceOnTheLastDayOfFebruary(): void
+    {
+        $task = $this->recurringTask(Recurrence::Monthly, '2027-01-31');
+        $service = new TaskService(
+            $this->createStub(EntityManagerInterface::class),
+            $this->taskRepository,
+            new RecurrenceCalculator(),
+            new MockClock('2027-01-31 18:00:00'),
+        );
+
+        $next = $service->complete($task)->nextOccurrence;
+
+        self::assertSame('2027-02-28', $next?->getNextOccurrenceDate()?->format('Y-m-d'));
+    }
+
+    // RN-11: completing twice is rejected and nothing is saved
+    public function testCompletingACompletedTaskIsRejectedWithoutSaving(): void
+    {
+        $task = new Task('Buy bread', new \DateTimeImmutable(self::NOW));
+        $task->complete();
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects(self::never())->method('flush');
+
+        $this->expectException(DomainRuleViolation::class);
+
+        $this->service($entityManager)->complete($task);
     }
 }
