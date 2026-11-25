@@ -851,3 +851,23 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 - `CLAUDE.md` (estructura de carpetas) y `README.md` (cadena de skills completa).
 
 **Ficheros:** `.claude/skills/api/SKILL.md`, `.claude/skills/modelo/SKILL.md`, `CLAUDE.md`, `README.md`, `docs/bitacora.md` (modificados); `.claude/skills/frontend/SKILL.md` (nuevo).
+
+## Paso 54 — Issue #3: proyecto Angular con proxy a la API (2026-11-25)
+
+**Qué hicimos:** creamos el proyecto Angular en `frontend/` con el skill `frontend` en modo `proyecto`, en la rama `feature/3-proyecto-angular`. Con los tests en verde y el proxy comprobado contra el backend, abrimos la PR y la fusionamos.
+
+**Cambios:**
+- `ng new frontend` con Angular 22: TypeScript estricto, rutas, CSS, sin SSR y sin repositorio Git propio. El CLI trae **Vitest** como *test runner*, así que corregimos el "Jest/Karma" del CLAUDE.md. `npm test` ejecuta `ng test --watch=false`, una sola pasada.
+- `proxy.conf.json`, enlazado en `angular.json`: `/api` va a `http://127.0.0.1:8000`, sin CORS.
+- `core/`:
+  - `messages/message.service.ts`: un *signal* con el último error.
+  - `interceptors/error.interceptor.ts`: traduce `problem+json` a mensajes en castellano (`422` con las violaciones, `404`, `409` con el `detail`, sin conexión y genérico) y relanza el error.
+  - `models/problem-details.ts`.
+- Carpetas `core/api/`, `shared/` y `features/` preparadas para las pantallas.
+- `app.config.ts` con `provideHttpClient(withInterceptors([errorInterceptor]))` y locale `es`. El componente raíz muestra la cabecera "Lista de tareas", el aviso de error con su botón de cerrar y el `router-outlet`. Quitamos la página de ejemplo del CLI y `.vscode/`.
+- Tests (7, en verde): 5 del interceptor (`422`, `409`, `404`, error genérico y que relanza el error) y 2 del componente raíz.
+- Scripts `frontend-setup.ps1`, `frontend-start.ps1` y `frontend-test.ps1` (tests y build), apuntados en el CLAUDE.md y el README. En `.github/ci-pendiente.yml`, el job de frontend usa `npm test`, porque Vitest no necesita navegador.
+
+**Verificación:** `npm run build` sin errores. Con el backend y `ng serve` levantados, `GET http://localhost:4200/api/tasks` responde `200` a través del proxy, y un `404` llega con `application/problem+json`.
+
+**Ficheros:** `CLAUDE.md`, `README.md`, `.github/ci-pendiente.yml`, `docs/bitacora.md` (modificados); `frontend/` (nuevo, sin `node_modules/`), `scripts/frontend-setup.ps1`, `scripts/frontend-start.ps1`, `scripts/frontend-test.ps1` (nuevos).

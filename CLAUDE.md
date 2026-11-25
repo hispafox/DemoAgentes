@@ -26,8 +26,8 @@ Si este CLAUDE.md y esos documentos se contradicen, manda el documento firmado m
 
 - **Backend:** PHP 8.3+, Symfony 7, Doctrine ORM (migraciones con Doctrine Migrations)
 - **Base de datos:** SQLite en la versión 0.1 (ADR-0003); PostgreSQL en Docker más adelante (ADR-0001)
-- **Frontend:** Angular (última LTS), TypeScript estricto
-- **Tests:** PHPUnit (unitarios e integración) en backend; Jest/Karma en Angular; tests E2E opcionales (Playwright)
+- **Frontend:** Angular 22, TypeScript estricto
+- **Tests:** PHPUnit (unitarios e integración) en backend; Vitest en Angular (el que trae Angular 22); tests E2E opcionales (Playwright)
 - **Gestión:** GitHub (vía MCP): Issues para el backlog, Milestones/labels para agrupar, GitHub Projects como tablero y Pull Requests
 
 ## Arquitectura y convenciones
@@ -93,7 +93,7 @@ DemoAgentes/
 │   └── tests/
 │       ├── Unit/                    PHPUnit: servicios y entidades
 │       └── Functional/              PHPUnit: endpoints de la API
-└── frontend/                        Angular (Fase 6)
+└── frontend/                     ✅ Angular (Fase 6)
     └── src/app/
         ├── core/                    Servicios HTTP, interceptores, guards
         ├── shared/                  Componentes y utilidades reutilizables
@@ -173,7 +173,7 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 - [ ] **CRITERIO:** todos los tests en verde y cobertura acordada antes de abrir PR
 
 ### Fase 6 — Frontend Angular
-- [ ] Crear proyecto Angular en `frontend/`
+- [x] Crear proyecto Angular en `frontend/`
 - [ ] Servicios HTTP contra la API del backend
 - [ ] Componentes y rutas según las pantallas del análisis
 - [ ] Tests de componentes y servicios
@@ -251,6 +251,9 @@ Scripts de PowerShell en `scripts/` (desde la raíz del repositorio):
 .\scripts\backend-start.ps1    # Servidor en http://127.0.0.1:8000 (-Port, -Foreground)
 .\scripts\backend-stop.ps1     # Para el servidor
 .\scripts\backend-test.ps1     # Contenedor, mapeo de Doctrine, PHP-CS-Fixer, PHPStan y PHPUnit
+.\scripts\frontend-setup.ps1   # npm install
+.\scripts\frontend-start.ps1   # http://localhost:4200 con proxy de /api al backend
+.\scripts\frontend-test.ps1    # Tests de Vitest y build
 ```
 
 Equivalentes manuales:

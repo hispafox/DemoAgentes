@@ -1,0 +1,14 @@
+<header class="header">
+  <h1>Lista de tareas</h1>
+</header>
+
+<main class="content">
+  @if (messages.error(); as error) {
+    <div class="alert" role="alert">
+      <span>{{ error }}</span>
+      <button type="button" (click)="messages.clear()" aria-label="Cerrar aviso">×</button>
+    </div>
+  }
+
+  <router-outlet />
+</main>

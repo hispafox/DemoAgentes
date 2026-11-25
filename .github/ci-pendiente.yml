@@ -58,7 +58,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # The Angular project arrives with issue #3: until then this job only says so.
       - name: Check for the Angular project
         if: hashFiles('frontend/package.json') == ''
         run: echo "frontend/ does not exist yet (issue #3); nothing to test."
@@ -78,4 +77,4 @@ jobs:
       - name: Angular tests
         if: hashFiles('frontend/package.json') != ''
         working-directory: frontend
-        run: npm test -- --watch=false --browsers=ChromeHeadless
+        run: npm test
