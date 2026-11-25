@@ -466,6 +466,34 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 
 **Ficheros:** `docs/bitacora.md` (modificado).
 
+## Paso 32 — Modelo del issue #5: enum Recurrence, entidad Task y migración (2026-11-24)
+
+**Qué hicimos:** con `/modelo revisar` confirmamos que el código seguía sin modelo, y con `/modelo crear` generamos la parte del issue #5 en la rama `feature/5-gestionar-tareas`. Por petición del usuario (estaba en clase), **no ejecutamos los tests**.
+
+**Cambios:**
+- `src/Entity/Recurrence.php`: enum `daily`, `weekly`, `monthly` (RN-04).
+- `src/Entity/Task.php`, tabla `task`: `id`, `title` (255), `completed` (default false), `createdAt`, `recurrence` (varchar 10, enum) y `nextOccurrenceDate` (date).
+  - Constructor con la fecha como argumento, porque la tarea nace pendiente (RN-02).
+  - `setTitle()` recorta espacios y rechaza el título vacío o de más de 255 caracteres (RN-01).
+  - `setRecurrence()` impide que una tarea no repetitiva tenga fecha de siguiente ocurrencia (RN-03).
+  - `isRecurring()` es derivado. No hay setter para `completed`.
+- `src/Entity/Exception/DomainRuleViolation.php`: excepción de dominio cuyo mensaje cita la regla RN.
+- `src/Repository/TaskRepository.php`: repositorio base, sin consultas propias.
+- `migrations/Version20261124123921.php` ("Create task table (#5)"): solo crea la tabla `task`.
+- `tests/Unit/Entity/TaskTest.php`: 11 tests que cubren RN-01 a RN-04. **Escritos, sin ejecutar.**
+
+**Verificación:** `php -l` sin errores en todos los ficheros. Con `var/data.db` borrada, la migración se aplica en limpio, `doctrine:schema:validate` da mapeo correcto y esquema sincronizado, y `doctrine:migrations:status` muestra 1 ejecutada y 0 pendientes.
+
+**Decisión:**
+- Quedan fuera las partes del modelo de otros issues: `complete()` (#6), la papelera (#7) y la plantilla con su relación (#8).
+- El análisis no dice quién calcula `nextOccurrenceDate` al crear una tarea a mano. La entidad lo recibe ya calculado y el cálculo queda para el servicio del #5, sin inventar una regla.
+
+**Pendiente:**
+- Ejecutar los tests cuando se resuelva el bloqueo de PHPUnit (paso 31). Sin tests en verde no se abre PR.
+- El resto del issue #5: DTO, servicio, controlador, tests funcionales y la cabecera `application/problem+json`.
+
+**Ficheros:** `backend/src/Entity/Recurrence.php`, `backend/src/Entity/Task.php`, `backend/src/Entity/Exception/DomainRuleViolation.php`, `backend/src/Repository/TaskRepository.php`, `backend/migrations/Version20261124123921.php`, `backend/tests/Unit/Entity/TaskTest.php` (nuevos), `docs/bitacora.md` (modificado).
+
 ## Paso 33 — Suspensión del sistema de tests (2026-11-24)
 
 **Qué hicimos:** a petición del usuario, aplazamos todo el sistema de tests hasta que lo reactive en el chat.
@@ -615,6 +643,31 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 
 **Ficheros:** `README.md` (nuevo), `CLAUDE.md`, `docs/bitacora.md` (modificados).
 
+## Paso 41 — Issue #5: DTO, TaskService y TaskController (2026-11-25)
+
+**Qué hicimos:** completamos el código del issue #5 en la rama `feature/5-gestionar-tareas`, siguiendo los skills `dto`, `servicio` y `api`: `GET /api/tasks`, `GET /api/tasks/{id}`, `POST` y `PUT`. Es la primera prueba de esos skills con un issue real. Con los tests suspendidos, **no escribimos ni ejecutamos tests**; probamos a mano con `curl`.
+
+**Cambios:**
+- `src/Dto/TaskInput.php`: `title` con `NotBlank` (recortando espacios) y `Length(max: 255)` (RN-01), y `recurrence` tipada con el enum (RN-03, RN-04). No acepta estado ni fechas.
+- `src/Dto/TaskOutput.php`: campos base con `fromEntity()`, `createdAt` en ISO 8601 y `nextOccurrenceDate` como `Y-m-d`.
+- `src/Service/RecurrenceCalculator.php`: suma 1 día, 1 semana o 1 mes; en meses, si el día no existe se usa el último del mes (RN-05, RN-18).
+- `src/Service/TaskService.php`: `list()`, `getTask()`, `create()` (fecha hoy + periodicidad, RN-18) y `update()` (recalcula la fecha solo si cambia la periodicidad; sin ella, `null`). Fechas siempre de `ClockInterface`.
+- `src/Service/Exception/ResourceNotFound.php` y, en `framework.yaml`, el mapeo `ResourceNotFound` → `404` y `DomainRuleViolation` → `409`.
+- `src/Controller/TaskController.php`: cuatro acciones, `201` + `Location` al crear y `format: 'json'` en la ruta para que los errores salgan en JSON aunque la petición no mande `Accept`.
+
+**Verificación:** `php -l`, `lint:container`, `doctrine:schema:validate` y `debug:router` (4 rutas `api_tasks_*`). A mano, con el servidor: `201` + `Location` y fecha `+7 días` para una semanal; `null` en una no repetitiva; `422` con título vacío y con `recurrence: "yearly"`; `400` con JSON roto; `404` en `GET` y `PUT` de un id inexistente; `PUT` a mensual recalcula la fecha, quitar la periodicidad la deja en `null` y `completed: true` se ignora.
+
+**Decisión:**
+- `TaskOutput` solo lleva los campos que ya tiene la entidad; `templateId` (#8), `deletedAt` (#7) y `categoryId` (#15) llegan con sus issues.
+- Sin `Accept: application/json`, Symfony devolvía los errores en HTML. Lo resolvimos con `format: 'json'` en la ruta del controlador, sin código nuevo.
+
+**Pendiente:**
+- Los errores salen con `Content-Type: application/json` y no `application/problem+json`. La solución es un *listener* en `src/EventListener/`, carpeta que no está en el CLAUDE.md: falta la aprobación.
+- Tests del #5 (servicio y endpoints) y los del paso 32, cuando se reactiven.
+- Abrir la PR del #5.
+
+**Ficheros:** `backend/src/Dto/TaskInput.php`, `backend/src/Dto/TaskOutput.php`, `backend/src/Service/RecurrenceCalculator.php`, `backend/src/Service/TaskService.php`, `backend/src/Service/Exception/ResourceNotFound.php`, `backend/src/Controller/TaskController.php` (nuevos), `backend/config/packages/framework.yaml`, `docs/bitacora.md` (modificados).
+
 ## Paso 42 — Reactivación de los tests y causa del "bloqueo" de PHPUnit (2026-11-25)
 
 **Qué hicimos:** el usuario reactivó los tests en el chat. Antes de cambiar nada, investigamos el bloqueo de PHPUnit del paso 31 y ejecutamos las dos suites: **17 tests en verde** (Unit: 13, entre ellos los 11 de `TaskTest`, escritos sin ejecutar desde el paso 32; Functional: 4, en 11 segundos). Así se resuelven los pendientes de los pasos 31 y 32.
@@ -645,6 +698,34 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 - `CLAUDE.md`: el skill aparece en la estructura de carpetas.
 
 **Ficheros:** `.claude/skills/pruebas/SKILL.md` (nuevo), `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 44 — Tests del issue #5 y cabecera problem+json (2026-11-25)
+
+**Qué hicimos:** con el skill `pruebas` escribimos los tests del issue #5 y resolvimos la cabecera `application/problem+json`, pendiente desde el paso 30. Las dos suites pasan: **42 tests y 94 aserciones**, en menos de un segundo de ejecución gracias a la exclusión de Defender.
+
+**Cambios:**
+- `tests/Unit/Service/RecurrenceCalculatorTest.php` (7 tests): diaria, semanal, mensual, 31 de enero → 28 de febrero, año bisiesto (29 de febrero), cambio de año y hora descartada (RN-05, RN-18).
+- `tests/Unit/Service/TaskServiceTest.php` (7 tests): crear pendiente con la fecha del reloj y un único `flush` (RN-02), crear repetitiva con hoy + periodicidad, recalcular al cambiar la periodicidad, conservar la fecha si no cambia, borrarla al quitar la periodicidad (RN-03, RN-18), y `getTask()` con y sin resultado.
+- `tests/Functional/Controller/TaskControllerTest.php` (11 tests): los seis criterios de aceptación del issue, más RN-18 de punta a punta, JSON roto → `400` y detalle de una tarea. La fecha se fija con `ClockSensitiveTrait::mockTime()`.
+- `tests/Functional/ApiErrorFormatTest.php`: ahora comprueba también la cabecera `application/problem+json`.
+- `config/packages/framework.yaml`: el formato `json` lista primero `application/problem+json`. El renderizador de errores de Symfony toma el primer tipo MIME del formato, así que los errores salen en RFC 9457; las respuestas correctas siguen en `application/json`, porque `JsonResponse` fija su cabecera.
+
+**Cobertura de los criterios de aceptación del #5:**
+
+| Criterio | Test |
+|---|---|
+| `POST` válido → `201` + `Location`, pendiente con `createdAt` | `testCreateReturns201WithLocationAndAPendingTask` |
+| Título vacío → `422` en `problem+json` | `testCreateWithBlankTitleReturns422ProblemDetails` |
+| Periodicidad inválida al crear o modificar → `422` | `testCreateWithUnknownRecurrenceReturns422`, `testUpdateWithUnknownRecurrenceReturns422` |
+| `GET` lista → todas | `testListReturnsAllTasks` |
+| Id inexistente en `GET` o `PUT` → `404` | `testShowUnknownTaskReturns404ProblemDetails`, `testUpdateUnknownTaskReturns404` |
+| `PUT` cambia título y periodicidad, no el estado | `testUpdateChangesTitleAndRecurrenceButNotStatus` |
+
+**Decisión:** la cabecera `problem+json` se resuelve con configuración y no con un *listener*. Así no hace falta la carpeta `src/EventListener/`, que no está en el CLAUDE.md (pendiente del paso 41, resuelto).
+
+**Pendiente:** el skill `api` todavía propone el *listener*; hay que actualizarlo para que use esta configuración.
+
+**Ficheros:** `backend/tests/Unit/Service/RecurrenceCalculatorTest.php`, `backend/tests/Unit/Service/TaskServiceTest.php`, `backend/tests/Functional/Controller/TaskControllerTest.php` (nuevos), `backend/tests/Functional/ApiErrorFormatTest.php`, `backend/config/packages/framework.yaml`, `docs/bitacora.md` (modificados).
 
 ## Paso 45 — Skill api actualizado con la solución de problem+json (2026-11-25)
 
