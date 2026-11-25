@@ -4,7 +4,7 @@
 >
 > Origen: parte funcional de `docs/analisis-diseño.md` (AppTodoList), que se conserva como referencia.
 >
-> Estado: **pendiente de nueva firma** — firmado por hispafox (PO) el 2026-11-24 (CRITERIO de la Fase 1); cambiado después para añadir las categorías de tareas (versión 0.2, Bloque C).
+> Estado: **pendiente de nueva firma** — firmado por hispafox (PO) el 2026-11-24 (CRITERIO de la Fase 1); cambiado después para añadir las categorías de tareas (versión 0.2, Bloque C) y la fecha de la siguiente ocurrencia al crear (RN-18).
 
 ## 1. Objetivo
 
@@ -107,6 +107,7 @@ Es una demo didáctica, así que se prioriza que el código sea claro antes que 
 | RN-15 | *(v0.2)* Una tarea tiene como mucho una categoría; puede no tener ninguna. |
 | RN-16 | *(v0.2)* No se puede eliminar una categoría que tenga tareas asociadas, incluidas las que están en la papelera. |
 | RN-17 | *(v0.2)* No puede haber dos categorías con el mismo nombre. Se comparan sin distinguir mayúsculas ni espacios al principio o al final: "Casa" y " casa " son el mismo nombre. |
+| RN-18 | Al crear una tarea repetitiva, a mano o desde una plantilla, la fecha de su siguiente ocurrencia es hoy + periodicidad. Si al modificarla cambia la periodicidad, la fecha se recalcula desde hoy; si deja de ser repetitiva, no tiene fecha. |
 
 ## 7. Fuera de alcance
 
@@ -139,5 +140,11 @@ El PO también confirmó las reglas deducidas de estas respuestas: RN-13, que la
 | 7 | ¿Qué pasa al eliminar una categoría con tareas? | Se impide. | RN-16 |
 | 8 | ¿En qué versión y a qué afecta? | Versión 0.2 y solo a las tareas; las plantillas no llevan categoría. | Fuera de alcance |
 | 9 | ¿Los nombres de categoría deben ser únicos? | Sí. | RN-17 |
+
+### Fecha de la siguiente ocurrencia (2026-11-25)
+
+| # | Pregunta | Respuesta del PO | Reglas |
+|---|---|---|---|
+| 10 | ¿Qué fecha de siguiente ocurrencia lleva una tarea repetitiva creada a mano? | Hoy + periodicidad, igual que al crear desde una plantilla; se recalcula si cambia la periodicidad. | RN-18 |
 
 Que la comparación ignore mayúsculas y espacios al principio o al final lo propuso el analista al aplicar la respuesta 9; el PO puede cambiarlo.

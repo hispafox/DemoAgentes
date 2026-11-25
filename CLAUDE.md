@@ -10,7 +10,7 @@ Aplicación web para gestionar tareas personales con **plantillas** reutilizable
 
 | Documento | Qué define |
 |---|---|
-| `docs/app/lista-de-tareas.md` | Qué hace: funcionalidades F-01 a F-19, casos de uso y reglas de negocio RN-01 a RN-17 |
+| `docs/app/lista-de-tareas.md` | Qué hace: funcionalidades F-01 a F-19, casos de uso y reglas de negocio RN-01 a RN-18 |
 | `docs/analisis.md` | Cómo se construye: entidades, endpoints, lógica, pantallas y plan de tests |
 | `docs/decisiones/` | Decisiones técnicas (ADR) |
 
@@ -56,13 +56,17 @@ Las marcadas con ✅ ya existen; el resto se crean en su fase.
 DemoAgentes/
 ├── CLAUDE.md                     ✅ ① El candado: diseño y reglas del proyecto
 ├── .gitignore                    ✅
+├── README.md                     ✅ Presentación del proyecto y puesta en marcha
 ├── docker-compose.yml               Entorno local: PHP-FPM, Nginx, BD, Node (Fase 0)
 ├── .claude/
 │   └── skills/                   ✅ Skills del proyecto
 │       ├── mensaje-commit/       ✅ Redacta los mensajes de commit
 │       ├── bitacora/             ✅ Registra pasos y retoma el proyecto en un chat nuevo
 │       ├── analisis-diseno/      ✅ Crea, actualiza y revisa el análisis técnico a partir de la doc. funcional
-│       └── modelo/               ✅ Crea, actualiza y revisa el modelo Doctrine a partir del análisis
+│       ├── modelo/               ✅ Crea, actualiza y revisa el modelo Doctrine a partir del análisis
+│       ├── dto/                  ✅ DTO de entrada y salida de la API y su validación
+│       ├── servicio/             ✅ Servicios de lógica de negocio, reloj y excepciones de dominio
+│       └── api/                  ✅ Controladores, rutas, códigos HTTP y errores problem+json
 ├── .github/
 │   ├── workflows/                   GitHub Actions: lint, PHPStan, tests (Fase 7)
 │   └── pull_request_template.md     Plantilla de PR con "Closes #<nº>" (Fase 7)
@@ -215,6 +219,7 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 | `docs/app/lista-de-tareas.md`: categorías (Bloque C) | 1 | 2026-11-24 |
 | `docs/analisis.md`: categorías (`Category`, `/api/categories`) | 2 | 2026-11-24 |
 | Backlog v0.2: issue #15 y milestone "Bloque C — Categorías" | 3 | 2026-11-24 |
+| `docs/app/lista-de-tareas.md` y `docs/analisis.md`: RN-18 (fecha de la siguiente ocurrencia al crear) | 1 y 2 | 2026-11-25 |
 
 ### Registro de firmas
 

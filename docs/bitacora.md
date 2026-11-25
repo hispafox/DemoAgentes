@@ -596,3 +596,49 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Pendiente:** decidir con el PO el hueco de `nextOccurrenceDate` antes de hacer `TaskService` (#5); se puede plantear con `/analisis-diseno revisar`.
 
 **Ficheros:** `.claude/skills/analisis-diseno/SKILL.md` (nuevo), `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 38 — RN-18: fecha de la siguiente ocurrencia al crear una tarea (2026-11-25)
+
+**Qué hicimos:** con `/analisis-diseno revisar` detectamos que el análisis no decidía qué fecha de siguiente ocurrencia lleva una tarea repetitiva creada a mano (pendiente de los pasos 32 y 37). El PO decidió que sea **hoy + periodicidad**, igual que al instanciar una plantilla. Lo añadimos como RN-18 a la documentación funcional y al análisis.
+
+**Cambios:**
+- `docs/app/lista-de-tareas.md`: regla RN-18 (al crear, hoy + periodicidad; si cambia la periodicidad, se recalcula desde hoy; si deja de ser repetitiva, sin fecha) y la pregunta 10 del PO.
+- `docs/analisis.md`: descripción de `nextOccurrenceDate` (§3 y diagrama ER), nuevo apartado `TaskService::create()` y `update()` en §5 y el caso en `TaskServiceTest` (§8). El diagrama Mermaid sigue siendo válido (tipo `er`).
+- `CLAUDE.md`: rango RN-01 a RN-18 y fila nueva en "Pendientes de firma".
+
+**Decisión:** si la periodicidad no cambia en un `PUT`, la fecha se conserva. La entidad sigue recibiendo la fecha ya calculada, porque el cálculo necesita el reloj y vive en el servicio.
+
+**Otros hallazgos de la revisión, sin aplicar:** §6 no incluye un `category-api.service.ts` para la 0.2; §8 no tiene fila para los tests de entidad (`TaskTest`); §4 dice que Symfony "ya genera" `problem+json`, pero por defecto responde `application/json` (paso 30). La documentación funcional no aclara si se puede cambiar el título de una tarea completada.
+
+**Ficheros:** `docs/app/lista-de-tareas.md`, `docs/analisis.md`, `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 39 — Skills dto, servicio y api para el backend (2026-11-25)
+
+**Qué hicimos:** creamos los skills de proyecto `dto`, `servicio` y `api`, los tramos que faltaban entre `modelo` y el frontend para terminar el issue #5. Siguen el formato de `modelo`: modos `crear`, `actualizar` y `revisar`, tabla "Lee / Escribe / No toca / Prerrequisito / Verificación / Entregable" y fronteras con el tramo anterior y el siguiente.
+
+**Cambios:**
+- `dto`: `*Input` como `final readonly class` con `#[Assert\...]` y la regla en un comentario; `*Output` con `fromEntity()`, solo escalares, fechas ISO 8601 (`Y-m-d` para fechas sin hora) y relaciones como id. La entrada nunca lleva `id`, `completed`, `createdAt`, `deletedAt` ni `nextOccurrenceDate`.
+- `servicio`: un servicio por recurso con autowiring, fechas siempre de `ClockInterface`, un único `flush()` por operación y excepciones de dominio: `DomainRuleViolation` (→ `409`), `ResourceNotFound` (→ `404`, también para tareas de la papelera) e `InvalidInput` (→ `422` para lo que solo se valida contra la base de datos).
+- `api`: un controlador por recurso, `#[MapRequestPayload]`, códigos `200`/`201` + `Location`/`204`, excepciones mapeadas a códigos en `framework.exceptions` y prueba manual con el servidor mientras los tests estén suspendidos.
+- `CLAUDE.md`: los tres skills en la estructura de carpetas.
+
+**Decisión:**
+- Los skills se crean justo antes de necesitarlos (el frontend y las pruebas, más adelante), para probarlos enseguida con un issue real.
+- Los nombres `ResourceNotFound` e `InvalidInput` son detalle de implementación y no cambian el análisis.
+- Si Symfony no envía `application/problem+json`, el skill `api` propone un *listener* en `src/EventListener/`, carpeta que no está en el CLAUDE.md: hay que aprobarla antes de crearla.
+
+**Ficheros:** `.claude/skills/dto/SKILL.md`, `.claude/skills/servicio/SKILL.md`, `.claude/skills/api/SKILL.md` (nuevos), `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 40 — README del repositorio (2026-11-25)
+
+**Qué hicimos:** a petición del usuario, añadimos un `README.md` en la raíz, porque el repositorio no tenía ninguno.
+
+**Cambios:**
+- `README.md`: qué es la demo y la aplicación, estado actual, cómo se trabaja (candado, firmas, ramas y PR, bitácora), tabla de documentos, stack, puesta en marcha del backend con los scripts de PowerShell, estructura y cadena de skills.
+- `CLAUDE.md`: el `README.md` aparece en la estructura de carpetas.
+
+**Decisión:** el README presenta el proyecto y remite al CLAUDE.md para el detalle, sin repetir las reglas, para que no haya dos fuentes que mantener.
+
+**Pendiente:** actualizar la sección "Estado" del README cuando avancen los issues o se reactiven los tests.
+
+**Ficheros:** `README.md` (nuevo), `CLAUDE.md`, `docs/bitacora.md` (modificados).

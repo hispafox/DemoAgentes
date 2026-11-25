@@ -4,7 +4,7 @@
 >
 > Adapta `docs/analisis-diseño.md` (AppTodoList, en .NET). Las diferencias con ese documento se explican en la sección 9.
 >
-> Estado: **pendiente de nueva firma** — firmado por hispafox el 2026-11-24 (CRITERIO de la Fase 2); cambiado después para añadir las categorías de tareas (versión 0.2).
+> Estado: **pendiente de nueva firma** — firmado por hispafox el 2026-11-24 (CRITERIO de la Fase 2); cambiado después para añadir las categorías de tareas (versión 0.2) y la fecha de la siguiente ocurrencia al crear y modificar (RN-18).
 
 ## 1. Stack
 
@@ -78,7 +78,7 @@ erDiagram
         boolean completed "default false (RN-02, RN-11)"
         datetime created_at "not null, lo asigna el sistema (RN-02)"
         varchar recurrence "10, null: daily, weekly, monthly (RN-03, RN-04)"
-        date next_occurrence_date "null si no es repetitiva (RN-05)"
+        date next_occurrence_date "null si no es repetitiva (RN-05, RN-18)"
         int template_id FK "null, ON DELETE RESTRICT (RN-12)"
         datetime deleted_at "null = activa; papelera (RN-10, RN-13)"
         int category_id FK "v0.2; null, ON DELETE RESTRICT (RN-15, RN-16)"
@@ -118,7 +118,7 @@ enum Recurrence: string
 | `completed` | `bool` | `boolean` default false | Estado | RN-02 |
 | `createdAt` | `DateTimeImmutable` | `timestamp` not null | Lo asigna el servicio al crear | RN-02 |
 | `recurrence` | `?Recurrence` | `varchar(10)` null | `null` = no repetitiva | RN-03, RN-04 |
-| `nextOccurrenceDate` | `?DateTimeImmutable` | `date` null | Fecha prevista de la ocurrencia. `null` si no es repetitiva | RN-05 |
+| `nextOccurrenceDate` | `?DateTimeImmutable` | `date` null | Fecha prevista de la ocurrencia: hoy + periodicidad al crear o al cambiar la periodicidad (RN-18) y al generarse al completar (RN-05). `null` si no es repetitiva | RN-05, RN-18 |
 | `template` | `?TaskTemplate` | `template_id` FK null, `ON DELETE RESTRICT` | Plantilla de origen | RN-08, RN-12 |
 | `deletedAt` | `?DateTimeImmutable` | `timestamp` null | Fecha en que se movió a la papelera. `null` = activa | RN-10 |
 
@@ -239,6 +239,12 @@ Todas las respuestas de error usan `application/problem+json` (RFC 9457, el form
 
 ## 5. Lógica de negocio
 
+### `TaskService::create()` y `update()`
+
+- `create(TaskInput $input): Task`: crea la tarea pendiente con `createdAt = now` (RN-02). Si es repetitiva, `nextOccurrenceDate = RecurrenceCalculator::next(today, recurrence)` (RN-18).
+- `update(Task $task, TaskInput $input): Task`: cambia el título y, si la periodicidad es distinta de la actual, recalcula `nextOccurrenceDate` desde hoy, o la deja en `null` si la tarea deja de ser repetitiva (RN-03, RN-18). Si la periodicidad no cambia, la fecha se conserva.
+- La entidad recibe la fecha ya calculada: el cálculo necesita el reloj y vive en el servicio.
+
 ### `TaskService::complete(Task $task): CompleteResult`
 
 1. Si la tarea ya está completada → excepción de dominio (→ `409`, RN-11).
@@ -324,7 +330,7 @@ frontend/src/app/
 | Tipo | Qué cubre |
 |---|---|
 | Unit — `RecurrenceCalculatorTest` | Diaria, semanal, mensual y fin de mes (31 ene → 28/29 feb), siempre desde la fecha de hoy fijada con el reloj (RN-05). |
-| Unit — `TaskServiceTest` | Completar no repetitiva (RN-06), repetitiva (RN-05), ya completada (RN-11, 409); papelera y restauración (RN-10). |
+| Unit — `TaskServiceTest` | Crear repetitiva con fecha hoy + periodicidad y modificar la periodicidad recalcula o borra la fecha (RN-18); completar no repetitiva (RN-06), repetitiva (RN-05), ya completada (RN-11, 409); papelera y restauración (RN-10). |
 | Unit — `TaskTemplateServiceTest` | Instanciar copia valores y vincula la plantilla (RN-08); no se borra con tareas, tampoco si están en la papelera (RN-12). |
 | Functional — `TaskControllerTest` | Los 8 endpoints, `404`, `409`, `422` (RN-01, RN-03), tarea en papelera inaccesible (RN-13) y formato problem+json. |
 | Functional — `TaskTemplateControllerTest` | Los 6 endpoints; borrar plantilla con tareas devuelve `409` (RN-12); modificar plantilla no cambia tareas (RN-09). |
