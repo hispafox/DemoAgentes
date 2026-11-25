@@ -104,7 +104,7 @@ php bin/console lint:container
 php bin/console debug:container 'App\Service\<Servicio>'   # se registra con autowiring
 ```
 
-> Mientras el CLAUDE.md tenga los tests **suspendidos** (Fase 5), este skill no escribe ni ejecuta tests y lo indica en la entrega. Al reactivarlos, cada método se cubre con los tests unitarios de §8 (`TaskServiceTest`, `RecurrenceCalculatorTest`…), con `MockClock` para fijar la fecha.
+**Tests:** cada método se cubre con los tests unitarios de §8 (`TaskServiceTest`, `RecurrenceCalculatorTest`…), con `MockClock` para fijar la fecha, usando el skill `pruebas`.
 
 ## Entrega
 

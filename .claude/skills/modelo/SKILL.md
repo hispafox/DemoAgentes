@@ -157,8 +157,6 @@ php bin/console doctrine:migrations:migrate --no-interaction
 
 ## Tests
 
-> Mientras el CLAUDE.md tenga los tests **suspendidos** (Fase 5), este skill no escribe ni ejecuta tests: se limita a `php -l`, al mapeo de Doctrine y a las migraciones, y lo indica en la entrega.
-
 - Un test unitario por entidad con reglas: `tests/Unit/Entity/<Entidad>Test.php`, con un método `test<Comportamiento>` por caso y la regla en el nombre o en un comentario (`testCompleteTwiceThrows` → RN-11).
 - Cubre cada método de dominio: el camino feliz y la excepción de cada regla.
 - Los métodos de repositorio con consultas propias se prueban en `tests/Functional/Repository/`.

@@ -4,7 +4,7 @@ Demo de **desarrollo asistido por agentes de IA**. Partimos de la documentación
 
 La aplicación que se construye es una **Lista de Tareas**: tareas personales con plantillas reutilizables, tareas repetitivas (al completar una se genera la siguiente) y papelera. Es una demo didáctica, así que se prioriza que el código sea claro antes que sofisticado.
 
-> **Estado:** en desarrollo, versión 0.1. El backend Symfony está creado y la entidad `Task` está en marcha (issue #5). El frontend Angular todavía no existe. Los tests están suspendidos temporalmente (ver [CLAUDE.md](CLAUDE.md), Fase 5).
+> **Estado:** en desarrollo, versión 0.1. El backend Symfony está creado y la entidad `Task` está en marcha (issue #5). El frontend Angular todavía no existe. Los tests de PHPUnit están activos.
 
 ## Cómo se trabaja
 
@@ -67,7 +67,7 @@ Para el servidor.
 .\scripts\backend-test.ps1
 ```
 
-Comprueba el contenedor y el mapeo de Doctrine. Con `-PhpUnit` lanza también PHPUnit.
+Comprueba el contenedor y el mapeo de Doctrine y lanza PHPUnit (`-SkipPhpUnit` para omitirlo).
 
 ## Estructura
 
