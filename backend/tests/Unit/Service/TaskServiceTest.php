@@ -192,4 +192,58 @@ final class TaskServiceTest extends TestCase
 
         $this->service($entityManager)->complete($task);
     }
+
+    // RN-13: a task in the trash counts as not found
+    public function testGetTaskThrowsWhenTheTaskIsInTheTrash(): void
+    {
+        $task = new Task('Buy bread', new \DateTimeImmutable(self::NOW));
+        $task->moveToTrash(new \DateTimeImmutable(self::NOW));
+        $this->taskRepository->method('find')->willReturn($task);
+
+        $this->expectException(ResourceNotFound::class);
+
+        $this->service()->getTask(7);
+    }
+
+    // RN-10: the deletion date comes from the clock
+    public function testMoveToTrashUsesTheCurrentDateAndSaves(): void
+    {
+        $task = new Task('Buy bread', new \DateTimeImmutable('2026-11-24 10:00:00'));
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects(self::once())->method('flush');
+
+        $this->service($entityManager)->moveToTrash($task);
+
+        self::assertSame(self::NOW, $task->getDeletedAt()?->format('Y-m-d H:i:s'));
+    }
+
+    // RN-10
+    public function testRestoreBringsBackATaskFromTheTrash(): void
+    {
+        $task = new Task('Buy bread', new \DateTimeImmutable(self::NOW));
+        $task->moveToTrash(new \DateTimeImmutable(self::NOW));
+        $this->taskRepository->method('find')->willReturn($task);
+
+        self::assertFalse($this->service()->restore(7)->isDeleted());
+    }
+
+    // Restoring an active task -> 409 in the API
+    public function testRestoreThrowsWhenTheTaskIsNotInTheTrash(): void
+    {
+        $this->taskRepository->method('find')->willReturn(new Task('Buy bread', new \DateTimeImmutable(self::NOW)));
+
+        $this->expectException(DomainRuleViolation::class);
+
+        $this->service()->restore(7);
+    }
+
+    // Restoring an unknown task -> 404 in the API
+    public function testRestoreThrowsWhenTheTaskDoesNotExist(): void
+    {
+        $this->taskRepository->method('find')->willReturn(null);
+
+        $this->expectException(ResourceNotFound::class);
+
+        $this->service()->restore(999);
+    }
 }

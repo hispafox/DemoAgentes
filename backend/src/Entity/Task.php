@@ -12,8 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * A personal task (docs/analisis.md §3).
  *
- * Issue #5 covers the base fields and #6 completing. The trash (#7) and the
- * link to a template (#8) are added by their own issues.
+ * Issue #5 covers the base fields, #6 completing and #7 the trash. The link
+ * to a template (#8) is added by its own issue.
  */
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[ORM\Table(name: 'task')]
@@ -40,6 +40,10 @@ class Task
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $nextOccurrenceDate = null;
+
+    /** When the task was moved to the trash; null = active (RN-10). */
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $deletedAt = null;
 
     /**
      * RN-02: a new task is always pending and its creation date is set by the system.
@@ -135,5 +139,42 @@ class Task
     public function isRecurring(): bool
     {
         return null !== $this->recurrence;
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * Derived from deletedAt instead of a redundant column.
+     */
+    public function isDeleted(): bool
+    {
+        return null !== $this->deletedAt;
+    }
+
+    /**
+     * RN-10: deleting a task moves it to the trash; it is never removed.
+     */
+    public function moveToTrash(\DateTimeImmutable $now): void
+    {
+        if ($this->isDeleted()) {
+            throw new DomainRuleViolation('RN-10: the task is already in the trash.');
+        }
+
+        $this->deletedAt = $now;
+    }
+
+    /**
+     * RN-10: a task in the trash can be restored, keeping its status.
+     */
+    public function restore(): void
+    {
+        if (!$this->isDeleted()) {
+            throw new DomainRuleViolation('RN-10: only a task in the trash can be restored.');
+        }
+
+        $this->deletedAt = null;
     }
 }

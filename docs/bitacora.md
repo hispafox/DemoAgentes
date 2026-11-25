@@ -774,3 +774,19 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Decisión:** el análisis dice que la nueva ocurrencia hereda también la plantilla; `Task` todavía no tiene plantilla, así que ese vínculo llega con el issue #8.
 
 **Ficheros:** `backend/src/Entity/Task.php`, `backend/src/Service/TaskService.php`, `backend/src/Controller/TaskController.php`, `backend/tests/Unit/Entity/TaskTest.php`, `backend/tests/Unit/Service/TaskServiceTest.php`, `backend/tests/Functional/Controller/TaskControllerTest.php`, `docs/bitacora.md` (modificados); `backend/src/Service/CompleteResult.php`, `backend/src/Dto/CompleteTaskOutput.php` (nuevos).
+
+## Paso 49 — Issue #7: papelera de tareas (2026-11-25)
+
+**Qué hicimos:** implementamos el issue #7 en la rama `feature/7-papelera` con la cadena de skills: eliminar una tarea la mueve a la papelera, se puede ver la papelera y restaurar. Con los tests en verde abrimos la PR y la fusionamos.
+
+**Cambios:**
+- Modelo: campo `deletedAt` (`datetime` nullable), `isDeleted()`, `moveToTrash($now)` y `restore()`, que lanzan `DomainRuleViolation` si la tarea ya está en la papelera o no lo está (RN-10). Migración `Add deleted_at to task for the trash (#7)`, que solo añade la columna; su `down()` reconstruye la tabla, porque SQLite no borra columnas directamente.
+- Repositorio: `findActive()` (no borradas, por fecha de creación) y `findDeleted()` (las borradas, la más reciente primero).
+- `TaskOutput`: campo `deletedAt` en ISO 8601.
+- `TaskService`: `list()` usa `findActive()`; `getTask()` trata una tarea de la papelera como inexistente (RN-13); nuevos `listTrash()`, `moveToTrash()` (fecha del reloj) y `restore()`.
+- `TaskController`: `DELETE /api/tasks/{id}` (`204`), `GET /api/tasks/trash` y `POST /api/tasks/{id}/restore` (`200`, `404`, o `409` si no está en la papelera). Ya están las 8 rutas de tareas del análisis.
+- Tests (67 en total, todos en verde): 4 de entidad, 5 de servicio y 5 funcionales, que cubren los cuatro criterios de aceptación y el `404` al restaurar un id inexistente.
+
+**Verificación:** con `var/data.db` borrada, las dos migraciones se aplican en limpio y `doctrine:schema:validate` da el esquema sincronizado.
+
+**Ficheros:** `backend/src/Entity/Task.php`, `backend/src/Repository/TaskRepository.php`, `backend/src/Dto/TaskOutput.php`, `backend/src/Service/TaskService.php`, `backend/src/Controller/TaskController.php`, `backend/tests/Unit/Entity/TaskTest.php`, `backend/tests/Unit/Service/TaskServiceTest.php`, `backend/tests/Functional/Controller/TaskControllerTest.php`, `docs/bitacora.md` (modificados); `backend/migrations/Version20261125195550.php` (nuevo).

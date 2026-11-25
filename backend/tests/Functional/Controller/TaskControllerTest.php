@@ -229,4 +229,83 @@ final class TaskControllerTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(404);
     }
+
+    // CA #7: DELETE -> 204, gone from the list and present in the trash (RN-10)
+    public function testDeleteMovesTheTaskToTheTrash(): void
+    {
+        $kept = $this->createTask(['title' => 'Buy bread']);
+        $deleted = $this->createTask(['title' => 'Water the plants']);
+
+        $this->client->request('DELETE', '/api/tasks/'.$deleted);
+
+        self::assertResponseStatusCodeSame(204);
+        self::assertSame('', (string) $this->client->getResponse()->getContent());
+
+        $this->client->request('GET', '/api/tasks');
+        self::assertSame([$kept], array_column($this->body(), 'id'));
+
+        $this->client->request('GET', '/api/tasks/trash');
+        self::assertResponseIsSuccessful();
+        $trash = $this->body();
+        self::assertSame([$deleted], array_column($trash, 'id'));
+        self::assertSame('2026-11-25T10:00:00+00:00', $trash[0]['deletedAt']);
+    }
+
+    // CA #7: a task in the trash answers 404 to GET, PUT, DELETE and complete (RN-13)
+    public function testTaskInTheTrashIsNotFoundForOtherActions(): void
+    {
+        $id = $this->createTask(['title' => 'Water the plants']);
+        $this->client->request('DELETE', '/api/tasks/'.$id);
+
+        $this->client->request('GET', '/api/tasks/'.$id);
+        self::assertResponseStatusCodeSame(404);
+
+        $this->client->jsonRequest('PUT', '/api/tasks/'.$id, ['title' => 'Water all the plants']);
+        self::assertResponseStatusCodeSame(404);
+
+        $this->client->request('DELETE', '/api/tasks/'.$id);
+        self::assertResponseStatusCodeSame(404);
+
+        $this->client->request('POST', '/api/tasks/'.$id.'/complete');
+        self::assertResponseStatusCodeSame(404);
+    }
+
+    // CA #7: restore -> back in the list with the status it had (RN-10)
+    public function testRestoreBringsTheTaskBackWithItsStatus(): void
+    {
+        $id = $this->createTask(['title' => 'Buy bread']);
+        $this->client->request('POST', '/api/tasks/'.$id.'/complete');
+        $this->client->request('DELETE', '/api/tasks/'.$id);
+
+        $this->client->request('POST', '/api/tasks/'.$id.'/restore');
+
+        self::assertResponseIsSuccessful();
+        self::assertTrue($this->body()['completed']);
+        self::assertNull($this->body()['deletedAt']);
+
+        $this->client->request('GET', '/api/tasks');
+        self::assertSame([$id], array_column($this->body(), 'id'));
+
+        $this->client->request('GET', '/api/tasks/trash');
+        self::assertSame([], $this->body());
+    }
+
+    // CA #7: restoring an active task -> 409 in problem+json
+    public function testRestoreActiveTaskReturns409(): void
+    {
+        $id = $this->createTask(['title' => 'Buy bread']);
+
+        $this->client->request('POST', '/api/tasks/'.$id.'/restore');
+
+        self::assertResponseStatusCodeSame(409);
+        self::assertResponseHeaderSame('Content-Type', 'application/problem+json');
+    }
+
+    // Unknown id -> 404
+    public function testRestoreUnknownTaskReturns404(): void
+    {
+        $this->client->request('POST', '/api/tasks/999999/restore');
+
+        self::assertResponseStatusCodeSame(404);
+    }
 }
