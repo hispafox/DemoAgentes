@@ -98,7 +98,7 @@ Con `/nueva-feature plan …` el skill termina aquí.
 
 ## 4. Preparar el terreno
 
-1. **Firmas:** comprueba la sección "Firmas" del CLAUDE.md. Si la regla de bloqueo está activa y falta una firma de la que depende el trabajo, detente y pídela. Si está suspendida, sigue y anota en "Pendientes de firma" lo que quede sin firmar.
+1. **Firmas (aviso):** mira la sección "Firmas" del CLAUDE.md. Si falta una firma de la que depende el trabajo, avisa en una línea ("⚠️ Sin firmar: …") y sigue; las firmas nunca bloquean. Anota en "Pendientes de firma" lo que quede sin firmar.
 2. **Issue:** no se implementa nada sin issue. Si no existe, créalo (`gh issue create`) con la historia, las F-xx/RN-xx, los criterios de aceptación Dado/Cuando/Entonces, sus etiquetas (`backend`, `frontend`, `test`…) y su milestone, y enlaza la sección del análisis.
 3. **Rama:** desde `main` actualizado (`git checkout main && git pull`), crea `feature/<nº>-descripcion-corta`. Comprueba con `git status --short` que no arrastras cambios ajenos.
 

@@ -52,7 +52,7 @@ análisis firmado ──► modelo ──► DTO y validación ──► servici
 
 1. **Lee** el CLAUDE.md, la sección 3 de `docs/analisis.md`, las reglas RN de `docs/app/lista-de-tareas.md` que cite cada campo y los ADR de `docs/decisiones/`.
 2. **Issue:** no se implementa nada sin issue de GitHub. Identifica el issue (`gh issue view <nº>`) y trabaja en su rama `feature/<nº>-descripcion`. Si no hay issue para el cambio, detente y propón crearlo.
-3. **Firmas:** comprueba la sección "Firmas" del CLAUDE.md. Si la regla de bloqueo está activa y el análisis o el backlog no están firmados, detente y pide la firma. Si está suspendida, sigue, pero anota lo que quede pendiente de firma.
+3. **Firmas (aviso):** mira la sección "Firmas" del CLAUDE.md. Si el análisis o el backlog no están firmados, avisa en una línea ("⚠️ Sin firmar: …") y sigue; las firmas nunca bloquean.
 4. **Estado del repositorio:** `git status --short`. No mezcles el modelo con cambios ajenos.
 
 ---

@@ -889,3 +889,35 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 - `CLAUDE.md` (estructura de carpetas) y `README.md` (cadena de skills).
 
 **Ficheros:** `CLAUDE.md`, `README.md`, `docs/bitacora.md` (modificados); `.claude/skills/nueva-feature/SKILL.md` (nuevo).
+
+## Paso 56 — Siete agentes de apoyo con sus comandos, y firmas en modo aviso (2026-11-25)
+
+**Qué hicimos:** creamos y probamos siete agentes de apoyo en `.claude/agents/`, cada uno con un comando para lanzarlo por separado (`.claude/commands/`). Son agentes adicionales a los de `docs/ARQUITECTURA-AGENTES*.md`: esos (orquestador, planificador, implementadores, verificador…) los crea hispafox en clase, y estos quedan como base para incluir alguno en el flujo. No tocamos el código de `backend/` ni `frontend/`. También pasamos las firmas a modo aviso permanente, para que no bloqueen la formación.
+
+**Agentes y comandos:**
+
+| Comando | Agente | Qué hace | Prueba |
+|---|---|---|---|
+| `/refinar-backlog` | `refinador-backlog` | Propone issues Dado/Cuando/Entonces y preguntas cerradas al PO, sin crearlos | v0.2: el issue #15 no está listo, con 9 preguntas para el PO y 2 borradores (backend y frontend) |
+| `/revisar-candado` | `guardian-candado` | Comprueba un cambio contra el CLAUDE.md: CUMPLE o NO CUMPLE | PR #22: CUMPLE, con un aviso (faltaba la fila de firmas del cambio de stack, ya añadida) |
+| `/trazar-reglas` | `trazador-reglas` | Matriz RN/F → análisis → issue → código → test | RN-01 a RN-13 y RN-18 cubiertas en el backend; el frontend, pendiente (#10 a #12); la 0.2, fuera de la versión |
+| `/probar-qa` | `qa-exploratorio` | Levanta el backend con `var/qa.db` en el puerto 8001 y prueba por HTTP | 54 pruebas de #8 y #9: 51 OK y 3 hallazgos |
+| `/revisar-seguridad` | `revisor-seguridad` | Revisión OWASP, `composer audit` y `npm audit` | Sin vulnerabilidades en dependencias; `APP_SECRET` real en `.env.dev` y `APP_ENV=dev` por defecto (media) |
+| `/disenar-ui` | `disenador-ui` | Especificación visual en `docs/diseno/` | `docs/diseno/pantallas-tareas.md` para el #10, con contraste AA |
+| `/presentar` | `presentador` | Guion de la demo en `docs/presentaciones/` | `docs/presentaciones/2026-11-26-clase-agentes.md` (10 diapositivas, unos 15 minutos) |
+
+Primero los probamos con subagentes genéricos que leían cada fichero de agente, porque la sesión carga los agentes al arrancar. Cuando la sesión los cargó, probamos un comando de punta a punta: `/trazar-reglas RN-12` lanzó el agente real `trazador-reglas`.
+
+**Ajustes tras las pruebas:**
+- `qa-exploratorio`: `export DATABASE_URL` no llegaba a `php -S`, porque el `php.ini` tiene `variables_order = GPCS`, y el primer `POST` de la prueba escribió una plantilla "Probe" en `var/data.db`. Ahora arranca con `php -d variables_order=EGPCS` y comprueba que `var/data.db` no cambia tras la primera escritura. Además pide resumir las trazas de `dev`, aclara que `recurrence` va en minúsculas y prueba con y sin cabecera `Accept`.
+- `refinador-backlog`: puede marcar con `(pregunta N)` los criterios que dependen de una pregunta sin responder, y la línea final cita solo las preguntas que bloquean.
+
+**Hallazgos de los agentes que quedan pendientes** (no se tocó código):
+- QA: un id no numérico (`/api/tasks/abc`) responde `404` en HTML, no en `problem+json`, si la petición no manda `Accept: application/json`.
+- QA: un `PUT` sin `recurrence` la pone a `null` (reemplazo total) y los campos desconocidos se ignoran sin avisar. Son decisiones a confirmar en el análisis.
+- Seguridad: `APP_SECRET` real versionado en `backend/.env.dev`; `APP_ENV=dev` por defecto. Para debatir: en `prod`, el `detail` del `409` es solo "Conflict", así que el aviso del frontend perdería la explicación.
+- Trazabilidad: RN-18 no la cita ningún issue, y `GET /api/tasks/trash` no tiene un test propio.
+
+**Firmas en modo aviso:** el CLAUDE.md sustituye la "regla de bloqueo suspendida" por un modo aviso permanente. Si falta una firma, el agente avisa en una línea y sigue. Siguen siendo obligatorios: issue, tests en verde para la PR y para el merge. Lo aplicamos a los skills `analisis-diseno`, `modelo`, `dto`, `servicio`, `api`, `frontend` y `nueva-feature`, y al agente `guardian-candado` (las firmas son siempre un aviso, nunca bloqueantes).
+
+**Ficheros:** `CLAUDE.md`, `README.md`, `docs/bitacora.md` y los `SKILL.md` de `analisis-diseno`, `modelo`, `dto`, `servicio`, `api`, `frontend` y `nueva-feature` (modificados); `.claude/agents/` (7 agentes), `.claude/commands/` (7 comandos), `docs/diseno/pantallas-tareas.md` y `docs/presentaciones/2026-11-26-clase-agentes.md` (nuevos).

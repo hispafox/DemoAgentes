@@ -59,6 +59,8 @@ DemoAgentes/
 ├── README.md                     ✅ Presentación del proyecto y puesta en marcha
 ├── docker-compose.yml               Entorno local: PHP-FPM, Nginx, BD, Node (Fase 0)
 ├── .claude/
+│   ├── agents/                   ✅ Agentes de apoyo (refinador, guardián, trazador, QA, seguridad, diseño, presentador)
+│   ├── commands/                 ✅ Un comando por agente (/revisar-candado, /probar-qa…)
 │   └── skills/                   ✅ Skills del proyecto
 │       ├── mensaje-commit/       ✅ Redacta los mensajes de commit
 │       ├── bitacora/             ✅ Registra pasos y retoma el proyecto en un chat nuevo
@@ -79,7 +81,9 @@ DemoAgentes/
 │   ├── aprendizajes.md           ✅ Lo aprendido (solo cuando se pide)
 │   ├── app/                      ✅ Documentación funcional: requisitos, casos de uso, mockups (Fase 1)
 │   ├── analisis.md               ✅ Análisis técnico: entidades, endpoints, pantallas (Fase 2)
-│   └── decisiones/               ✅ ADR: una decisión técnica por fichero (Fase 2)
+│   ├── decisiones/               ✅ ADR: una decisión técnica por fichero (Fase 2)
+│   ├── diseno/                   ✅ Especificaciones de UI del agente disenador-ui
+│   └── presentaciones/           ✅ Guiones del agente presentador
 ├── scripts/                      ✅ Scripts de PowerShell para instalar, arrancar y probar
 ├── backend/                      ✅ Symfony + Doctrine (Fase 4)
 │   ├── config/
@@ -195,11 +199,12 @@ Una firma deja tres huellas, y las tres deben coincidir:
 2. La cabecera del documento firmado: `Estado: aprobado — firmado por <persona> el <AAAA-MM-DD>` (en los ADR, `aceptado`).
 3. El `[x]` del CRITERIO en la "Lista de tareas".
 
-> ⏸️ **Regla de bloqueo SUSPENDIDA** desde el 2026-11-24 por decisión de hispafox, hasta que lo reactive en el chat. Mientras dure:
-> - El agente avanza sin esperar firmas, pero cada entregable nuevo lleva `Estado: pendiente de firma` y se anota en "Pendientes de firma" (abajo), para firmarlo al reactivar la regla.
-> - Siguen vigentes: no abrir PR con tests en rojo, no hacer merge con tests en rojo y no implementar sin issue.
+> ⚠️ **Firmas en modo aviso** (decisión de hispafox, 2026-11-25): este proyecto se usa para dar formación y una firma pendiente no puede bloquear la clase. Por eso:
+> - Ningún skill ni agente se detiene por una firma. Si un entregable del que depende el trabajo no está firmado, lo dice en **una línea de advertencia** y sigue.
+> - Cada entregable nuevo o cambiado lleva `Estado: pendiente de firma` y se anota en "Pendientes de firma" (abajo), para firmarlo cuando la persona quiera.
+> - Siguen siendo obligatorios: no implementar sin issue, no abrir PR con tests en rojo y no hacer merge con tests en rojo.
 
-**Regla de bloqueo:** antes de empezar cualquier paso, el agente comprueba que están firmados todos los entregables de los que depende. Si falta una firma, **se detiene**: dice qué falta y la pide. No crea issues, código, ramas ni PR mientras tanto.
+**Comprobación de firmas (aviso):** antes de empezar un paso, el agente mira si están firmados los entregables de los que depende, según la tabla. Si falta alguna firma, avisa ("⚠️ Sin firmar: …") y continúa.
 
 | Para hacer… | Debe estar firmado |
 |---|---|
@@ -208,9 +213,9 @@ Una firma deja tres huellas, y las tres deben coincidir:
 | Implementar un issue (Fases 4 a 6) | Backlog (Fase 3) y los ADR que afecten al issue |
 | Abrir una PR (Fase 7) | Tests en verde (Fase 5); si toca pantallas, su revisión funcional (Fase 6) |
 
-Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de nueva firma`) y lo que dependa de él se bloquea hasta que se vuelva a firmar. Las correcciones de erratas que no cambian el contenido no anulan la firma.
+Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de nueva firma`) y lo que dependa de él se avisa como "sin firmar" hasta que se vuelva a firmar. Las correcciones de erratas que no cambian el contenido no anulan la firma.
 
-### Pendientes de firma (regla suspendida)
+### Pendientes de firma
 
 | Entregable | Fase | Desde |
 |---|---|---|
@@ -220,6 +225,7 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 | `docs/analisis.md`: categorías (`Category`, `/api/categories`) | 2 | 2026-11-24 |
 | Backlog v0.2: issue #15 y milestone "Bloque C — Categorías" | 3 | 2026-11-24 |
 | `docs/app/lista-de-tareas.md` y `docs/analisis.md`: RN-18 (fecha de la siguiente ocurrencia al crear) | 1 y 2 | 2026-11-25 |
+| `CLAUDE.md`: stack del frontend (Angular 22 y Vitest), regla de merge, skills, agentes y comandos | 0.5 | 2026-11-25 |
 
 ### Registro de firmas
 
@@ -233,7 +239,7 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 ## Reglas para el agente
 
 - Este CLAUDE.md es el candado: ninguna implementación puede salirse de lo que define.
-- No avanzar si falta una firma: ver la sección "Firmas". Una firma solo la da una persona en el chat. *(Suspendida temporalmente: ver la sección "Firmas".)*
+- Firmas en modo aviso: si falta una firma, avisar en una línea y seguir (sección "Firmas"). Una firma solo la da una persona en el chat; el agente nunca firma por su cuenta.
 - Documentar cada paso que se dé en `docs/bitacora.md` con el skill `bitacora` (qué se hizo, por qué, ficheros afectados). En un chat nuevo, empezar con `/bitacora retomar`.
 - Añadir a `docs/aprendizajes.md` lo aprendido solo cuando el usuario lo pida.
 - No implementar nada sin issue de GitHub asociado.

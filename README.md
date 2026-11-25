@@ -96,6 +96,7 @@ Lanza los tests de Vitest y comprueba que la aplicación compila.
 ```
 DemoAgentes/
 ├── CLAUDE.md          El candado: diseño y reglas del proyecto
+├── .claude/agents/    Agentes de apoyo, cada uno con su comando en .claude/commands/
 ├── .claude/skills/    Skills del agente (bitácora, commits, análisis, modelo, DTO, servicios, API, pruebas, frontend y el orquestador nueva-feature)
 ├── docs/              Documentación funcional, análisis, ADR y bitácora
 ├── scripts/           Scripts de PowerShell para instalar, arrancar y probar
@@ -114,5 +115,21 @@ analisis-diseno ──► modelo ──► dto ──► servicio ──► api 
 ```
 
 `nueva-feature` es el orquestador: recibe una petición en lenguaje natural o un issue, detecta qué capas toca y encadena los skills de esas capas hasta la PR fusionada, sin implementar nada por su cuenta.
+
+## Agentes de apoyo
+
+Además de los skills, hay siete agentes en [.claude/agents/](.claude/agents/), cada uno con su comando para lanzarlo por separado:
+
+| Comando | Agente | Qué hace |
+|---|---|---|
+| `/refinar-backlog [alcance]` | `refinador-backlog` | Propone issues con criterios Dado/Cuando/Entonces y preguntas cerradas para el PO, sin crearlos |
+| `/revisar-candado [#PR o rango]` | `guardian-candado` | Comprueba que un cambio cumple el CLAUDE.md: veredicto CUMPLE o NO CUMPLE |
+| `/trazar-reglas [reglas]` | `trazador-reglas` | Matriz RN-xx/F-xx → análisis → issue → código → test |
+| `/probar-qa [#issue]` | `qa-exploratorio` | Levanta el backend con su propia base de datos y prueba por HTTP los criterios y casos raros |
+| `/revisar-seguridad [ámbito]` | `revisor-seguridad` | Revisión OWASP, dependencias y secretos |
+| `/disenar-ui [#issue]` | `disenador-ui` | Especificación visual de las pantallas en `docs/diseno/` |
+| `/presentar [tema]` | `presentador` | Guion de la demo en `docs/presentaciones/` |
+
+El agente orquestador y los que dependen de él (planificador, implementadores, verificador…) se crearán en clase siguiendo `docs/ARQUITECTURA-AGENTES*.md`.
 
 `bitacora` registra cada paso y, con `/bitacora retomar`, reconstruye el estado del proyecto al empezar una conversación nueva.

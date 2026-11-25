@@ -50,7 +50,7 @@ analisis-diseno ──► modelo ──► dto ──► servicio ──► api 
 
 1. **Lee** el CLAUDE.md, las secciones 4 y 6 del análisis y el issue (`gh issue view <nº>`), sobre todo sus criterios de aceptación.
 2. **Issue y rama:** no se implementa nada sin issue; trabaja en `feature/<nº>-descripcion`.
-3. **Firmas:** comprueba la sección "Firmas" del CLAUDE.md. Si la regla de bloqueo está activa y el análisis no está firmado, detente. Si está suspendida, sigue.
+3. **Firmas (aviso):** mira la sección "Firmas" del CLAUDE.md. Si el análisis no está firmado, avisa en una línea ("⚠️ Sin firmar: …") y sigue; las firmas nunca bloquean.
 4. **Estado del repositorio:** `git status --short`. No mezcles cambios ajenos.
 5. **Versiones:** `node -v` (Node 22 LTS o superior) y `npx @angular/cli version`. Usa la última versión estable de Angular y lo que genere su CLI por defecto; no copies patrones de versiones antiguas (NgModules, `*ngIf`, constructor con todos los servicios).
 

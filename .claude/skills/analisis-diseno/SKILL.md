@@ -53,9 +53,7 @@ doc. funcional firmada ──► analisis-diseno ──► backlog (issues) ─�
 ## 0. Antes de tocar nada (todos los modos que escriben)
 
 1. **Lee** el CLAUDE.md, la documentación funcional completa, el análisis completo y los ADR.
-2. **Firmas:** comprueba la sección "Firmas" del CLAUDE.md. El análisis depende de la documentación funcional firmada.
-   - Si la regla de bloqueo está **activa** y la documentación funcional no está firmada, detente y pide la firma.
-   - Si está **suspendida**, sigue, pero anota en "Pendientes de firma" lo que quede sin firmar.
+2. **Firmas (aviso):** mira la sección "Firmas" del CLAUDE.md. El análisis depende de la documentación funcional firmada: si no lo está, avisa en una línea ("⚠️ Sin firmar: …") y sigue. Anota en "Pendientes de firma" lo que quede sin firmar; las firmas nunca bloquean.
 3. **Issue:** el análisis es documentación, no implementación, así que no exige rama de issue. Si el cambio pertenece a un issue (por ejemplo, una funcionalidad nueva del backlog), cítalo en el commit: `docs: … (#<nº>)`.
 4. **Estado del repositorio:** `git status --short`. No mezcles el análisis con cambios ajenos. Si estás en una rama de feature y el cambio no es de ese issue, propón hacerlo en `main` con un worktree temporal (como en el paso 34 de la bitácora), para no perder de vista los ficheros de la rama.
 
