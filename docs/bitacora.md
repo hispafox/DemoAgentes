@@ -642,3 +642,28 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Pendiente:** actualizar la sección "Estado" del README cuando avancen los issues o se reactiven los tests.
 
 **Ficheros:** `README.md` (nuevo), `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 41 — Issue #5: DTO, TaskService y TaskController (2026-11-25)
+
+**Qué hicimos:** completamos el código del issue #5 en la rama `feature/5-gestionar-tareas`, siguiendo los skills `dto`, `servicio` y `api`: `GET /api/tasks`, `GET /api/tasks/{id}`, `POST` y `PUT`. Es la primera prueba de esos skills con un issue real. Con los tests suspendidos, **no escribimos ni ejecutamos tests**; probamos a mano con `curl`.
+
+**Cambios:**
+- `src/Dto/TaskInput.php`: `title` con `NotBlank` (recortando espacios) y `Length(max: 255)` (RN-01), y `recurrence` tipada con el enum (RN-03, RN-04). No acepta estado ni fechas.
+- `src/Dto/TaskOutput.php`: campos base con `fromEntity()`, `createdAt` en ISO 8601 y `nextOccurrenceDate` como `Y-m-d`.
+- `src/Service/RecurrenceCalculator.php`: suma 1 día, 1 semana o 1 mes; en meses, si el día no existe se usa el último del mes (RN-05, RN-18).
+- `src/Service/TaskService.php`: `list()`, `getTask()`, `create()` (fecha hoy + periodicidad, RN-18) y `update()` (recalcula la fecha solo si cambia la periodicidad; sin ella, `null`). Fechas siempre de `ClockInterface`.
+- `src/Service/Exception/ResourceNotFound.php` y, en `framework.yaml`, el mapeo `ResourceNotFound` → `404` y `DomainRuleViolation` → `409`.
+- `src/Controller/TaskController.php`: cuatro acciones, `201` + `Location` al crear y `format: 'json'` en la ruta para que los errores salgan en JSON aunque la petición no mande `Accept`.
+
+**Verificación:** `php -l`, `lint:container`, `doctrine:schema:validate` y `debug:router` (4 rutas `api_tasks_*`). A mano, con el servidor: `201` + `Location` y fecha `+7 días` para una semanal; `null` en una no repetitiva; `422` con título vacío y con `recurrence: "yearly"`; `400` con JSON roto; `404` en `GET` y `PUT` de un id inexistente; `PUT` a mensual recalcula la fecha, quitar la periodicidad la deja en `null` y `completed: true` se ignora.
+
+**Decisión:**
+- `TaskOutput` solo lleva los campos que ya tiene la entidad; `templateId` (#8), `deletedAt` (#7) y `categoryId` (#15) llegan con sus issues.
+- Sin `Accept: application/json`, Symfony devolvía los errores en HTML. Lo resolvimos con `format: 'json'` en la ruta del controlador, sin código nuevo.
+
+**Pendiente:**
+- Los errores salen con `Content-Type: application/json` y no `application/problem+json`. La solución es un *listener* en `src/EventListener/`, carpeta que no está en el CLAUDE.md: falta la aprobación.
+- Tests del #5 (servicio y endpoints) y los del paso 32, cuando se reactiven.
+- Abrir la PR del #5.
+
+**Ficheros:** `backend/src/Dto/TaskInput.php`, `backend/src/Dto/TaskOutput.php`, `backend/src/Service/RecurrenceCalculator.php`, `backend/src/Service/TaskService.php`, `backend/src/Service/Exception/ResourceNotFound.php`, `backend/src/Controller/TaskController.php` (nuevos), `backend/config/packages/framework.yaml`, `docs/bitacora.md` (modificados).
