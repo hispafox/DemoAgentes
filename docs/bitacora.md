@@ -944,3 +944,19 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 - Agente `disenador-ui`: comando exacto del script en este repositorio y comprobación del contraste antes de adoptar la paleta. `CLAUDE.md` y `docs/propuesta-skills.md` actualizados.
 
 **Ficheros:** `.claude/agents/disenador-ui.md`, `CLAUDE.md`, `docs/propuesta-skills.md`, `docs/bitacora.md` (modificados); `.claude/skills/ui-ux-pro-max/` (nuevo, 84 ficheros).
+
+## Paso 59 — Lista de tareas del CLAUDE.md al día (2026-11-26)
+
+**Qué hicimos:** pusimos al día la "Lista de tareas" del CLAUDE.md antes de la clase. Tenía sin marcar trabajo ya terminado de las Fases 4, 5 y 7.
+
+**Cambios:**
+- Marcadas como hechas, con una nota de qué las cubre:
+  - Fase 0: el MCP de GitHub, sustituido por la CLI `gh`.
+  - Fase 4: entidades y migraciones, servicios y API, validación y errores.
+  - Fase 5: tests unitarios, tests funcionales y criterios de aceptación cubiertos.
+  - Fase 7: una rama por issue y PR con `Closes #<nº>`.
+- Anotado lo que falta en las tareas abiertas: el tablero de GitHub Projects (permiso `project` del token), el entorno Docker, los servicios HTTP y los tests de las pantallas (#10 a #12) y la CI aparcada.
+- Nueva **Fase 8 — Agentes y skills**: hechos los skills por capa, el orquestador `nueva-feature`, los agentes de apoyo y `ui-ux-pro-max`. Pendientes: el agente orquestador y sus dependientes (en clase) y decidir qué propuestas se crean.
+- Los CRITERIO siguen sin marcar: son firmas, y solo las da una persona.
+
+**Ficheros:** `CLAUDE.md`, `docs/bitacora.md` (modificados).

@@ -128,10 +128,10 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 ### Fase 0 — Preparación del entorno
 - [x] Inicializar repositorio Git en local (rama `main`) y definir estrategia de ramas (`main`, `feature/<nº-issue>-descripcion`)
 - [x] Crear el repositorio remoto en GitHub y enlazarlo (`origin`)
-- [ ] Configurar el MCP de GitHub y comprobar lectura/escritura de issues y PRs (alternativa: CLI `gh`)
-- [ ] Crear el tablero en GitHub Projects (las etiquetas base `backend`, `frontend`, `test`, `docs` ya están creadas)
+- [x] Configurar el MCP de GitHub y comprobar lectura/escritura de issues y PRs (alternativa: CLI `gh`) — se usa la CLI `gh`
+- [ ] Crear el tablero en GitHub Projects (las etiquetas base `backend`, `frontend`, `test`, `docs` ya están creadas) — falta el permiso `project` del token (`gh auth refresh -s project,read:project`)
 - [x] Definir la estructura de carpetas (ver sección "Estructura de carpetas")
-- [ ] Crear las carpetas que faltan a medida que avance cada fase
+- [ ] Crear las carpetas que faltan a medida que avance cada fase — creadas `backend/`, `frontend/`, `.github/`, `scripts/` y `.claude/`; falta el entorno Docker
 - [ ] Definir entorno local (Docker Compose: PHP-FPM, Nginx, base de datos, Node)
 
 ### Fase 0.5 — Diseño del proyecto (① candado: CLAUDE.md)
@@ -163,33 +163,41 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 ### Fase 4 — Backend PHP (ISSUES → IA → PHP)
 - [x] Crear proyecto Symfony en `backend/`
 - [x] Configurar Doctrine y la conexión a la base de datos
-- [ ] Implementar entidades y migraciones según el análisis
-- [ ] Implementar servicios de dominio y controladores/API REST
-- [ ] Implementar validación de entrada y gestión de errores (la autenticación queda fuera de alcance según `docs/app/`)
-- [ ] Por cada issue: leer el issue vía MCP → implementar → mover en el tablero y comentar el avance
+- [x] Implementar entidades y migraciones según el análisis — `Task` y `TaskTemplate` (v0.1, issues #5 a #8); `Category` llega con la v0.2 (#15)
+- [x] Implementar servicios de dominio y controladores/API REST — `/api/tasks` (8 rutas) y `/api/task-templates` (6 rutas), issues #5 a #9
+- [x] Implementar validación de entrada y gestión de errores (la autenticación queda fuera de alcance según `docs/app/`) — DTO validados y errores en `problem+json`
+- [ ] Por cada issue: leer el issue vía MCP → implementar → mover en el tablero y comentar el avance — se hace con `gh` y PR por issue; falta el tablero
 
 ### Fase 5 — Tests
 
 > ▶️ Tests **reactivados** el 2026-11-25 por decisión de hispafox. Estuvieron suspendidos desde el 2026-11-24 (bitácora, pasos 33 y 42). El "bloqueo" de PHPUnit del paso 31 era lentitud del equipo (disco saturado por el antivirus), no un fallo del código.
 
 - [x] Configurar PHPUnit y base de datos de test
-- [ ] Tests unitarios de servicios y entidades
-- [ ] Tests funcionales de los endpoints
-- [ ] Cubrir cada criterio de aceptación del issue con al menos un test
+- [x] Tests unitarios de servicios y entidades
+- [x] Tests funcionales de los endpoints
+- [x] Cubrir cada criterio de aceptación del issue con al menos un test — issues del backend #5 a #9 (91 tests) y #3 (7 tests de Vitest)
 - [ ] **CRITERIO:** todos los tests en verde y cobertura acordada antes de abrir PR
 
 ### Fase 6 — Frontend Angular
 - [x] Crear proyecto Angular en `frontend/`
-- [ ] Servicios HTTP contra la API del backend
+- [ ] Servicios HTTP contra la API del backend — con las pantallas (#10, #11 y #12); el proxy y el interceptor de errores ya están (#3)
 - [ ] Componentes y rutas según las pantallas del análisis
-- [ ] Tests de componentes y servicios
+- [ ] Tests de componentes y servicios — hay tests del interceptor y del componente raíz; faltan los de las pantallas
 - [ ] **CRITERIO:** revisión funcional de las pantallas
 
 ### Fase 7 — Git y Pull Request (②)
-- [ ] Una rama por issue, con el número del issue en el nombre y en los commits
-- [ ] Abrir PR con descripción, `Closes #<nº>` y resumen de tests
-- [ ] CI con GitHub Actions: lint, análisis estático (PHPStan) y tests en cada PR (preparada en `.github/ci-pendiente.yml`; no hace falta para el curso)
+- [x] Una rama por issue, con el número del issue en el nombre y en los commits
+- [x] Abrir PR con descripción, `Closes #<nº>` y resumen de tests — plantilla en `.github/pull_request_template.md`
+- [ ] CI con GitHub Actions: lint, análisis estático (PHPStan) y tests en cada PR (preparada en `.github/ci-pendiente.yml`; no hace falta para el curso). PHPStan y PHP-CS-Fixer ya se ejecutan en local con `backend-test.ps1`
 - [ ] **CRITERIO:** el agente hace el merge con los tests en verde y una persona revisa lo fusionado; el issue se cierra solo al hacer merge
+
+### Fase 8 — Agentes y skills
+- [x] Skills por capa: `analisis-diseno`, `modelo`, `dto`, `servicio`, `api`, `frontend` y `pruebas`, más `bitacora` y `mensaje-commit`
+- [x] Skill orquestador `nueva-feature`
+- [x] Agentes de apoyo con su comando (`.claude/agents/` y `.claude/commands/`), probados sin tocar el código
+- [x] Skill `ui-ux-pro-max` instalado en el repositorio
+- [ ] Agente orquestador y los que dependen de él (planificador, implementadores, verificador…), según `docs/ARQUITECTURA-AGENTES*.md` — se crean en clase
+- [ ] Decidir qué skills y agentes de `docs/propuesta-skills.md` y `docs/propuesta-agentes.md` se crean
 
 ## Firmas (puertas de CRITERIO)
 
