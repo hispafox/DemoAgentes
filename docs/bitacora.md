@@ -921,3 +921,14 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 **Firmas en modo aviso:** el CLAUDE.md sustituye la "regla de bloqueo suspendida" por un modo aviso permanente. Si falta una firma, el agente avisa en una línea y sigue. Siguen siendo obligatorios: issue, tests en verde para la PR y para el merge. Lo aplicamos a los skills `analisis-diseno`, `modelo`, `dto`, `servicio`, `api`, `frontend` y `nueva-feature`, y al agente `guardian-candado` (las firmas son siempre un aviso, nunca bloqueantes).
 
 **Ficheros:** `CLAUDE.md`, `README.md`, `docs/bitacora.md` y los `SKILL.md` de `analisis-diseno`, `modelo`, `dto`, `servicio`, `api`, `frontend` y `nueva-feature` (modificados); `.claude/agents/` (7 agentes), `.claude/commands/` (7 comandos), `docs/diseno/pantallas-tareas.md` y `docs/presentaciones/2026-11-26-clase-agentes.md` (nuevos).
+
+## Paso 57 — Propuestas de skills y agentes nuevos (2026-11-25)
+
+**Qué hicimos:** a petición de hispafox, escribimos dos propuestas detalladas para ampliar el sistema. Son solo documentos: no se ha creado ningún skill ni agente de estas listas.
+
+**Cambios:**
+- `docs/propuesta-skills.md`, con 17 skills: `github-flow`, `backlog-issues`, `datos-demo`, `firmas`, `depurar`, `e2e-playwright`, `documentacion-api`, `actualizar-documentacion`, `accesibilidad`, `ci-github-actions`, `refactor-seguro`, `release`, `aprendizajes`, `entorno-docker`, `migrar-postgresql`, `manual-usuario` y `ejercicios-clase`. Incluye una tabla resumen con prioridad y esfuerzo, una ficha por skill (propósito, qué lee, qué escribe, qué no toca, prerrequisito, modos, pasos, verificación, entregable, riesgos y valor didáctico), un diagrama de cómo encajan en la cadena y el orden recomendado.
+- `docs/propuesta-agentes.md`, con 15 agentes: `triaje-bugs`, `evaluador-agentes`, `mentor`, `cronista`, `analista-funcional`, `arquitecto`, `tester-e2e`, `revisor-accesibilidad`, `documentador-tecnico`, `revisor-codigo`, `gestor-dependencias`, `release-manager`, `devops`, `migrador-bd` y `examinador`. Cada uno tiene comando propuesto y una ficha (propósito, cuándo, entradas, salidas, herramientas, qué puede editar, skills, relaciones, reglas, criterio de éxito, una prueba concreta y valor didáctico). Incluye además el diagrama del flujo completo con los agentes de la arquitectura, los de apoyo y los propuestos, el orden recomendado y una plantilla para crearlos.
+- Los dos diagramas Mermaid se han validado.
+
+**Ficheros:** `docs/bitacora.md` (modificado); `docs/propuesta-skills.md` y `docs/propuesta-agentes.md` (nuevos).
