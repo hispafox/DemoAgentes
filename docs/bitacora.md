@@ -685,3 +685,16 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 - Sigue en la consola la línea `[error] Uncaught ... NotFoundHttpException` del test de humo (paso 30).
 
 **Ficheros:** `CLAUDE.md`, `scripts/backend-test.ps1`, `.claude/skills/modelo/SKILL.md`, `.claude/skills/dto/SKILL.md`, `.claude/skills/servicio/SKILL.md`, `.claude/skills/api/SKILL.md`, `README.md`, `docs/bitacora.md` (modificados).
+
+## Paso 43 — Skill pruebas para escribir, ejecutar y revisar los tests (2026-11-25)
+
+**Qué hicimos:** con los tests reactivados (paso 42), creamos el skill de proyecto `pruebas`, el tramo que faltaba antes del commit y la PR en la cadena de skills del backend.
+
+**Cambios:**
+- Tres modos: `crear` (tabla de cobertura criterio/regla → test, escribe los tests del issue y los ejecuta), `ejecutar` (lanza las suites e interpreta el resultado) y `revisar` (criterios y reglas sin test, sin tocar nada).
+- Convenciones: unitarios de entidades, servicios (con `createMock`, `createStub` y `MockClock`) y calculadores; funcionales de endpoints con `WebTestCase`, `jsonRequest()`, DAMA y `ClockSensitiveTrait::mockTime()` para fijar la fecha.
+- No toca código de producción: si un test descubre un fallo, se detiene y propone el arreglo con el skill del tramo.
+- "Problemas conocidos": el falso bloqueo de PHPUnit por el antivirus y la línea de log del test de humo.
+- `CLAUDE.md`: el skill aparece en la estructura de carpetas.
+
+**Ficheros:** `.claude/skills/pruebas/SKILL.md` (nuevo), `CLAUDE.md`, `docs/bitacora.md` (modificados).
