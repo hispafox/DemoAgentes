@@ -15,8 +15,8 @@ use Psr\Clock\ClockInterface;
 /**
  * Business logic for tasks (docs/analisis.md §5).
  *
- * Issue #5 covers listing, reading, creating and updating, and #6 completing.
- * The trash (#7) and the link to a template (#8) are added by their own issues.
+ * Issue #5 covers listing, reading, creating and updating, #6 completing and
+ * #7 the trash. The link to a template (#8) is added by its own issue.
  */
 final class TaskService
 {
@@ -29,23 +29,62 @@ final class TaskService
     }
 
     /**
-     * F-01: all tasks, oldest first.
+     * F-01, RN-10: active tasks (not in the trash), oldest first.
      *
      * @return list<Task>
      */
     public function list(): array
     {
-        return $this->taskRepository->findBy([], ['createdAt' => 'ASC', 'id' => 'ASC']);
+        return $this->taskRepository->findActive();
     }
 
     /**
-     * F-02: a task by id.
+     * F-13: tasks in the trash.
      *
-     * @throws ResourceNotFound if it does not exist
+     * @return list<Task>
+     */
+    public function listTrash(): array
+    {
+        return $this->taskRepository->findDeleted();
+    }
+
+    /**
+     * F-02, RN-13: an active task by id. A task in the trash counts as not found.
+     *
+     * @throws ResourceNotFound if it does not exist or is in the trash
      */
     public function getTask(int $id): Task
     {
-        return $this->taskRepository->find($id) ?? throw ResourceNotFound::task($id);
+        $task = $this->taskRepository->find($id);
+        if (null === $task || $task->isDeleted()) {
+            throw ResourceNotFound::task($id);
+        }
+
+        return $task;
+    }
+
+    /**
+     * F-05, RN-10: moves the task to the trash; it is never removed.
+     */
+    public function moveToTrash(Task $task): void
+    {
+        $task->moveToTrash($this->clock->now());
+        $this->entityManager->flush();
+    }
+
+    /**
+     * F-14, RN-10: restores a task from the trash, keeping its status.
+     *
+     * @throws ResourceNotFound if the task does not exist
+     * @throws \App\Entity\Exception\DomainRuleViolation if it is not in the trash (409)
+     */
+    public function restore(int $id): Task
+    {
+        $task = $this->taskRepository->find($id) ?? throw ResourceNotFound::task($id);
+        $task->restore();
+        $this->entityManager->flush();
+
+        return $task;
     }
 
     /**

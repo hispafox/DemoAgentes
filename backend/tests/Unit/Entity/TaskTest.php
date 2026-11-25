@@ -147,4 +147,51 @@ final class TaskTest extends TestCase
 
         $task->complete();
     }
+
+    // RN-10
+    public function testMoveToTrashSetsTheDeletionDate(): void
+    {
+        $task = new Task('Water the plants', $this->now);
+        $deletedAt = new \DateTimeImmutable('2026-11-25 12:00:00');
+
+        $task->moveToTrash($deletedAt);
+
+        self::assertTrue($task->isDeleted());
+        self::assertSame($deletedAt, $task->getDeletedAt());
+    }
+
+    // RN-10
+    public function testMovingATaskAlreadyInTheTrashIsRejected(): void
+    {
+        $task = new Task('Water the plants', $this->now);
+        $task->moveToTrash($this->now);
+
+        $this->expectException(DomainRuleViolation::class);
+
+        $task->moveToTrash($this->now);
+    }
+
+    // RN-10: restoring keeps the status the task had
+    public function testRestoreBringsTheTaskBackWithItsStatus(): void
+    {
+        $task = new Task('Water the plants', $this->now);
+        $task->complete();
+        $task->moveToTrash($this->now);
+
+        $task->restore();
+
+        self::assertFalse($task->isDeleted());
+        self::assertNull($task->getDeletedAt());
+        self::assertTrue($task->isCompleted());
+    }
+
+    // RN-10: only a task in the trash can be restored
+    public function testRestoringAnActiveTaskIsRejected(): void
+    {
+        $task = new Task('Water the plants', $this->now);
+
+        $this->expectException(DomainRuleViolation::class);
+
+        $task->restore();
+    }
 }
