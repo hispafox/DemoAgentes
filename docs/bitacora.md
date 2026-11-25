@@ -737,3 +737,13 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 - Tabla "Escribe": incluye la sección `request.formats` de `framework.yaml`.
 
 **Ficheros:** `.claude/skills/api/SKILL.md`, `docs/bitacora.md` (modificados).
+
+## Paso 46 — Merge de la PR #16 (issue #5) (2026-11-25)
+
+**Qué hicimos:** el usuario decidió hacer el merge de las PR abiertas para no dejar ninguna pendiente, y el agente lo ejecutó. La única abierta era la #16: antes del merge pasamos la suite sobre la rama actualizada (42 tests en verde) y la fusionamos con `gh pr merge --merge --delete-branch`. El issue #5 se cerró solo por el `Closes #5` y borramos la rama `feature/5-gestionar-tareas`, en local y en GitHub.
+
+**Por qué el agente:** como en los pasos 27 y 31, la regla "No hacer merge" reserva la decisión a una persona; la tomó el usuario en el chat y el agente solo ejecutó el comando. No hay CI todavía (issue #4), así que la PR no tenía comprobaciones automáticas.
+
+**Verificación:** en `main`, las migraciones se aplican y `php bin/phpunit` termina en verde (42 tests).
+
+**Ficheros:** `docs/bitacora.md` (modificado).
