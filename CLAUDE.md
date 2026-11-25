@@ -68,9 +68,10 @@ DemoAgentes/
 │       ├── servicio/             ✅ Servicios de lógica de negocio, reloj y excepciones de dominio
 │       ├── api/                  ✅ Controladores, rutas, códigos HTTP y errores problem+json
 │       └── pruebas/              ✅ Tests PHPUnit a partir del plan de tests y los criterios de aceptación
-├── .github/
+├── .github/                      ✅
+│   ├── ci-pendiente.yml          ✅ Workflow de CI aparcado: falta el permiso "workflow" del token (#4)
 │   ├── workflows/                   GitHub Actions: lint, PHPStan, tests (Fase 7)
-│   └── pull_request_template.md     Plantilla de PR con "Closes #<nº>" (Fase 7)
+│   └── pull_request_template.md  ✅ Plantilla de PR con "Closes #<nº>" (Fase 7)
 ├── docs/                         ✅ Documentación del proyecto (en español)
 │   ├── bitacora.md               ✅ Registro de cada paso
 │   ├── aprendizajes.md           ✅ Lo aprendido (solo cuando se pide)
@@ -180,7 +181,7 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 ### Fase 7 — Git y Pull Request (②)
 - [ ] Una rama por issue, con el número del issue en el nombre y en los commits
 - [ ] Abrir PR con descripción, `Closes #<nº>` y resumen de tests
-- [ ] CI con GitHub Actions: lint, análisis estático (PHPStan) y tests en cada PR
+- [ ] CI con GitHub Actions: lint, análisis estático (PHPStan) y tests en cada PR (preparada en `.github/ci-pendiente.yml`; no hace falta para el curso)
 - [ ] **CRITERIO:** el agente hace el merge con los tests en verde y una persona revisa lo fusionado; el issue se cierra solo al hacer merge
 
 ## Firmas (puertas de CRITERIO)
@@ -248,7 +249,7 @@ Scripts de PowerShell en `scripts/` (desde la raíz del repositorio):
 .\scripts\backend-setup.ps1    # Composer local en .tools/, dependencias y migraciones
 .\scripts\backend-start.ps1    # Servidor en http://127.0.0.1:8000 (-Port, -Foreground)
 .\scripts\backend-stop.ps1     # Para el servidor
-.\scripts\backend-test.ps1     # Contenedor, mapeo de Doctrine y PHPUnit
+.\scripts\backend-test.ps1     # Contenedor, mapeo de Doctrine, PHP-CS-Fixer, PHPStan y PHPUnit
 ```
 
 Equivalentes manuales:

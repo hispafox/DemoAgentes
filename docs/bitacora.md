@@ -818,3 +818,21 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 - Tests (91 en total, todos en verde): 2 de servicio y 3 funcionales (los tres criterios de aceptación). El ayudante de los tests funcionales del #8 ya no guarda la tarea con Doctrine: ahora la crea con `instantiate`.
 
 **Ficheros:** `backend/src/Service/TaskTemplateService.php`, `backend/src/Controller/TaskTemplateController.php`, `backend/tests/Unit/Service/TaskTemplateServiceTest.php`, `backend/tests/Functional/Controller/TaskTemplateControllerTest.php`, `docs/bitacora.md` (modificados).
+
+## Paso 52 — Issue #4: CI con GitHub Actions y plantilla de PR (2026-11-25)
+
+**Qué hicimos:** trabajamos el issue #4 en la rama `feature/4-ci`: PHPStan (nivel 6), PHP-CS-Fixer, la plantilla de PR y el workflow de GitHub Actions. GitHub rechazó el push del workflow porque el token de `gh` no tiene el permiso `workflow`. Como la CI no hace falta para el curso, hispafox decidió no ampliar el permiso: el workflow queda aparcado en `.github/ci-pendiente.yml` y fusionamos el resto. El issue #4 sigue abierto hasta activarlo.
+
+**Cambios:**
+- `.github/ci-pendiente.yml` (el futuro `.github/workflows/ci.yml`), con dos jobs:
+  - `backend`: PHP 8.4 con SQLite, `composer install` con caché, PHP-CS-Fixer en modo `--dry-run`, PHPStan, `doctrine:schema:validate` y PHPUnit.
+  - `frontend`: ejecuta `npm ci` y los tests de Angular en cuanto exista `frontend/package.json` (issue #3); hasta entonces solo informa de que no hay nada que probar.
+- `.github/pull_request_template.md`: `Closes #<nº>`, qué incluye, resumen de tests y comprobaciones.
+- Backend: PHPStan con las extensiones de Symfony y Doctrine incluidas a mano en `phpstan.dist.neon` (sin el plugin `extension-installer`), y PHP-CS-Fixer con las reglas `@Symfony` (receta de Flex). PHPStan encontró una aserción redundante en `TaskTest` y PHP-CS-Fixer, un PHPDoc mal alineado; los corregimos.
+- `backend/.gitattributes` con `eol=lf`: en Windows los ficheros estaban en CRLF y PHP-CS-Fixer los marcaba todos. El repositorio ya los guardaba en LF, así que su contenido no cambia, y de paso desaparece el `reference.php` que salía modificado solo por los finales de línea.
+- `scripts/backend-test.ps1` ejecuta también PHP-CS-Fixer y PHPStan, para comprobar en local lo mismo que la CI.
+- `CLAUDE.md`: `.github/` marcado como existente, y la CI de la Fase 7 sigue sin marcar, con la nota de dónde está el workflow.
+
+**Para activar la CI:** `gh auth refresh -h github.com -s workflow`, mover `.github/ci-pendiente.yml` a `.github/workflows/ci.yml` (quitando las tres líneas del principio) y subirlo.
+
+**Ficheros:** `backend/composer.json`, `backend/composer.lock`, `backend/symfony.lock`, `backend/.gitignore`, `backend/src/Service/TaskService.php`, `backend/tests/Unit/Entity/TaskTest.php`, `scripts/backend-test.ps1`, `CLAUDE.md`, `docs/bitacora.md` (modificados); `.github/ci-pendiente.yml`, `.github/pull_request_template.md`, `backend/phpstan.dist.neon`, `backend/.php-cs-fixer.dist.php`, `backend/.gitattributes` (nuevos).
