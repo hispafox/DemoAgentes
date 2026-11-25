@@ -120,7 +120,7 @@ php -l src/Dto/<Fichero>.php        # cada fichero nuevo o cambiado
 php bin/console lint:container
 ```
 
-> Mientras el CLAUDE.md tenga los tests **suspendidos** (Fase 5), este skill no escribe ni ejecuta tests y lo indica en la entrega. Al reactivarlos, la validación de cada DTO se cubre en los tests funcionales del controlador (`422` con la violación en el campo correcto).
+**Tests:** la validación de cada DTO se cubre en los tests funcionales del controlador (`422` con la violación en el campo correcto), con el skill `pruebas`.
 
 ## Entrega
 

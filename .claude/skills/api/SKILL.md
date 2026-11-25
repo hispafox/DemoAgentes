@@ -117,11 +117,11 @@ php bin/console debug:router | grep api_
 
 Prueba manual con el servidor (`.\scripts\backend-start.ps1`) y `curl` o `Invoke-RestMethod`: el camino feliz de cada endpoint y al menos un `404`, un `422` y, si aplica, un `409`, comprobando código, cuerpo y cabecera. Para los `422` y `404`, con `curl -i` se ve la cabecera `Content-Type`.
 
-> Mientras el CLAUDE.md tenga los tests **suspendidos** (Fase 5), este skill no escribe ni ejecuta tests y lo indica en la entrega. La prueba manual no sustituye a los tests funcionales de §8 (`TaskControllerTest`…), que quedan pendientes para cuando se reactiven.
+**Tests:** la prueba manual no sustituye a los tests funcionales de §8 (`TaskControllerTest`…), que se escriben con el skill `pruebas` antes de abrir la PR.
 
 ## Entrega
 
 1. Tabla de endpoints creados o cambiados: verbo, ruta, método del servicio, códigos y funcionalidad (F-xx), y el resultado de la prueba manual.
 2. Si cambió el análisis, dilo: ha perdido la firma.
 3. Siguiente tramo: `frontend` (servicios HTTP y pantallas) o la PR del issue.
-4. Registra el paso con `bitacora` y haz commit con `mensaje-commit` (`feat: … (#<nº>)`). La PR lleva `Closes #<nº>` y, mientras dure la suspensión, "Tests diferidos (Fase 5 suspendida)". El merge lo decide una persona.
+4. Registra el paso con `bitacora` y haz commit con `mensaje-commit` (`feat: … (#<nº>)`). La PR lleva `Closes #<nº>` y solo se abre con los tests en verde. El merge lo decide una persona.

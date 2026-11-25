@@ -614,3 +614,21 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Pendiente:** actualizar la sección "Estado" del README cuando avancen los issues o se reactiven los tests.
 
 **Ficheros:** `README.md` (nuevo), `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 42 — Reactivación de los tests y causa del "bloqueo" de PHPUnit (2026-11-25)
+
+**Qué hicimos:** el usuario reactivó los tests en el chat. Antes de cambiar nada, investigamos el bloqueo de PHPUnit del paso 31 y ejecutamos las dos suites: **17 tests en verde** (Unit: 13, entre ellos los 11 de `TaskTest`, escritos sin ejecutar desde el paso 32; Functional: 4, en 11 segundos). Así se resuelven los pendientes de los pasos 31 y 32.
+
+**Causa:** no era un fallo del código. El disco estaba al 99 % y Microsoft Defender escaneaba cada fichero que carga PHPUnit (más de 5.600 en `vendor/`), así que la ejecución tardaba tanto que parecía colgada. Además, `timeout` de Git Bash no mataba el proceso de PHP en Windows, que se quedaba vivo. También quedó encendido un servidor de Symfony de las pruebas manuales del paso 41 (`backend-stop.ps1` falló), que paramos a mano. El usuario desactivó temporalmente la protección en tiempo real; la recomendación es reactivarla con una exclusión para la carpeta del repositorio o usar una unidad de desarrollo (Dev Drive).
+
+**Cambios:**
+- `CLAUDE.md`: el aviso de la Fase 5 pasa a "tests reactivados el 2026-11-25"; la regla "No abrir PR si los tests no pasan" y su mención en "Firmas" vuelven a estar vigentes sin excepción.
+- `scripts/backend-test.ps1`: PHPUnit vuelve a ejecutarse por defecto; `-SkipPhpUnit` lo omite.
+- Skills `modelo`, `dto`, `servicio` y `api`: quitamos las notas de suspensión; los tests se escriben con el futuro skill `pruebas` y la PR solo se abre en verde.
+- `README.md`: estado y uso del script actualizados.
+
+**Pendiente:**
+- Crear el skill `pruebas` y escribir los tests del #5 (`RecurrenceCalculatorTest`, `TaskServiceTest`, `TaskControllerTest`) antes de abrir su PR.
+- Sigue en la consola la línea `[error] Uncaught ... NotFoundHttpException` del test de humo (paso 30).
+
+**Ficheros:** `CLAUDE.md`, `scripts/backend-test.ps1`, `.claude/skills/modelo/SKILL.md`, `.claude/skills/dto/SKILL.md`, `.claude/skills/servicio/SKILL.md`, `.claude/skills/api/SKILL.md`, `README.md`, `docs/bitacora.md` (modificados).
