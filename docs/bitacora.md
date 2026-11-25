@@ -747,3 +747,15 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Verificación:** en `main`, las migraciones se aplican y `php bin/phpunit` termina en verde (42 tests).
 
 **Ficheros:** `docs/bitacora.md` (modificado).
+
+## Paso 47 — El agente hace el merge de las PR con los tests en verde (2026-11-25)
+
+**Qué hicimos:** el usuario aclaró que esto es una demo de clase y no un proyecto real, y que no quiere PR abiertas esperando. Cambiamos la regla del CLAUDE.md: el agente hace el merge de cada PR en cuanto los tests están en verde, sin pedir aprobación.
+
+**Cambios:**
+- `CLAUDE.md`, "Reglas para el agente": la regla "No hacer merge" pasa a "Merge de las PR" con la nueva condición (tests en verde) y la fecha de la decisión.
+- `CLAUDE.md`, Fase 7 y aviso de "Firmas": el CRITERIO de la PR pasa a ser una revisión de lo ya fusionado, y se mantiene la prohibición de fusionar con tests en rojo.
+
+**Decisión:** el control que queda es técnico (tests en verde) y no humano antes del merge. Es aceptable en una demo didáctica; en un proyecto real se mantendría la revisión antes de fusionar.
+
+**Ficheros:** `CLAUDE.md`, `docs/bitacora.md` (modificados).

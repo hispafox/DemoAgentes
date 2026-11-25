@@ -181,7 +181,7 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 - [ ] Una rama por issue, con el número del issue en el nombre y en los commits
 - [ ] Abrir PR con descripción, `Closes #<nº>` y resumen de tests
 - [ ] CI con GitHub Actions: lint, análisis estático (PHPStan) y tests en cada PR
-- [ ] **CRITERIO:** code review humana y merge; el issue se cierra solo al hacer merge
+- [ ] **CRITERIO:** el agente hace el merge con los tests en verde y una persona revisa lo fusionado; el issue se cierra solo al hacer merge
 
 ## Firmas (puertas de CRITERIO)
 
@@ -194,7 +194,7 @@ Una firma deja tres huellas, y las tres deben coincidir:
 
 > ⏸️ **Regla de bloqueo SUSPENDIDA** desde el 2026-11-24 por decisión de hispafox, hasta que lo reactive en el chat. Mientras dure:
 > - El agente avanza sin esperar firmas, pero cada entregable nuevo lleva `Estado: pendiente de firma` y se anota en "Pendientes de firma" (abajo), para firmarlo al reactivar la regla.
-> - Siguen vigentes: no abrir PR con tests en rojo, no hacer merge (lo decide una persona) y no implementar sin issue.
+> - Siguen vigentes: no abrir PR con tests en rojo, no hacer merge con tests en rojo y no implementar sin issue.
 
 **Regla de bloqueo:** antes de empezar cualquier paso, el agente comprueba que están firmados todos los entregables de los que depende. Si falta una firma, **se detiene**: dice qué falta y la pide. No crea issues, código, ramas ni PR mientras tanto.
 
@@ -235,7 +235,7 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 - Añadir a `docs/aprendizajes.md` lo aprendido solo cuando el usuario lo pida.
 - No implementar nada sin issue de GitHub asociado.
 - No abrir PR si los tests no pasan.
-- No hacer merge: el merge lo decide una persona (CRITERIO).
+- Merge de las PR: como es una demo de clase, el agente hace el merge de cada PR en cuanto los tests están en verde, sin esperar aprobación, y no deja PR abiertas (decisión de hispafox, 2026-11-25). Nunca con tests en rojo.
 - Respetar el análisis de `docs/analisis.md`; si hay que desviarse, proponer un ADR antes.
 - Commits con referencia al issue al final: `descripción breve (#<nº>)`. No empezar el mensaje por `#`: Git trata esas líneas como comentarios al editar el mensaje.
 - Código y comentarios en inglés; documentación y tickets en español.
