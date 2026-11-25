@@ -66,7 +66,8 @@ DemoAgentes/
 │       ├── modelo/               ✅ Crea, actualiza y revisa el modelo Doctrine a partir del análisis
 │       ├── dto/                  ✅ DTO de entrada y salida de la API y su validación
 │       ├── servicio/             ✅ Servicios de lógica de negocio, reloj y excepciones de dominio
-│       └── api/                  ✅ Controladores, rutas, códigos HTTP y errores problem+json
+│       ├── api/                  ✅ Controladores, rutas, códigos HTTP y errores problem+json
+│       └── pruebas/              ✅ Tests PHPUnit a partir del plan de tests y los criterios de aceptación
 ├── .github/
 │   ├── workflows/                   GitHub Actions: lint, PHPStan, tests (Fase 7)
 │   └── pull_request_template.md     Plantilla de PR con "Closes #<nº>" (Fase 7)
