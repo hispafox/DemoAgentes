@@ -645,3 +645,14 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 - `CLAUDE.md`: el skill aparece en la estructura de carpetas.
 
 **Ficheros:** `.claude/skills/pruebas/SKILL.md` (nuevo), `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 45 — Skill api actualizado con la solución de problem+json (2026-11-25)
+
+**Qué hicimos:** actualizamos el skill `api` con lo aprendido en el issue #5. Así se resuelve el pendiente del paso 44.
+
+**Cambios:**
+- Sección "Errores": la cabecera `application/problem+json` se consigue con `framework.request.formats` en `framework.yaml` (paso 44), en lugar del *listener* en `src/EventListener/` que proponía antes.
+- Convenciones: cada controlador lleva `format: 'json'` en su ruta de clase, para que los errores salgan en JSON aunque la petición no mande `Accept` (paso 41).
+- Tabla "Escribe": incluye la sección `request.formats` de `framework.yaml`.
+
+**Ficheros:** `.claude/skills/api/SKILL.md`, `docs/bitacora.md` (modificados).
