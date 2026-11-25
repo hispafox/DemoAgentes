@@ -33,7 +33,7 @@ analisis-diseno ──► modelo ──► dto ──► servicio ──► api 
 | | |
 |---|---|
 | **Lee** | `docs/analisis.md` §4 (endpoints, DTO y formato de errores); CLAUDE.md (convenciones de API); servicios y DTO ya creados |
-| **Escribe** | `backend/src/Controller/` y la configuración de errores (`backend/config/packages/framework.yaml`, sección `exceptions`) |
+| **Escribe** | `backend/src/Controller/` y la configuración de errores (`backend/config/packages/framework.yaml`, secciones `exceptions` y `request.formats`) |
 | **No toca** | Entidades, servicios, DTO ni frontend |
 | **Prerrequisito** | El análisis define el endpoint, y existen el servicio (skill `servicio`) y los DTO (skill `dto`) que usa. Si falta algo, el skill **se detiene** |
 | **Verificación mínima** | `php -l`, `lint:container`, `debug:router` con las rutas del análisis y una prueba manual con el servidor de desarrollo |
@@ -78,7 +78,7 @@ y termina proponiendo `crear` o `actualizar` para cada diferencia, sin aplicarlo
 
 ## Convenciones
 
-- **Un controlador por recurso:** `final class TaskController extends AbstractController` en `src/Controller/`, con `#[Route('/api/tasks', name: 'api_tasks_')]` en la clase y una acción por endpoint.
+- **Un controlador por recurso:** `final class TaskController extends AbstractController` en `src/Controller/`, con `#[Route('/api/tasks', name: 'api_tasks_', format: 'json')]` en la clase y una acción por endpoint. El `format: 'json'` hace que los errores salgan en JSON aunque la petición no mande `Accept: application/json`; sin él, Symfony los devuelve en HTML (bitácora, paso 41).
 - **Rutas** con verbo y requisito de id: `#[Route('/{id}', name: 'show', methods: ['GET'], requirements: ['id' => '\d+'])]`. Las rutas fijas (`/trash`) van antes que las de `{id}` o llevan el requisito para no confundirse.
 - **Entrada:** `#[MapRequestPayload] TaskInput $input`. Symfony devuelve solo `400` si el JSON está mal formado y `422` con la lista de violaciones si no pasa la validación.
 - **Carga del recurso:** por id con el servicio (`$this->taskService->getTask($id)`), no con `#[MapEntity]`, para que una tarea de la papelera responda `404` (RN-13).
@@ -104,7 +104,16 @@ Todas las respuestas de error van en `application/problem+json` (RFC 9457).
    ```
 
 2. **`InvalidInput` → `422`** con la violación en su campo: la acción la captura y lanza una `ValidationFailedException` con un `ConstraintViolationList`, para que salga con el mismo formato que la validación del DTO.
-3. **Cabecera:** comprueba con una petición real que los errores salen con `Content-Type: application/problem+json`. Por defecto Symfony responde `application/json` con la estructura correcta (paso 30 de la bitácora). Si es así, la solución es un *listener* de `kernel.response` que cambie la cabecera en las respuestas de error de `/api`. Ese listener necesita la carpeta `src/EventListener/`, que no está en la estructura del CLAUDE.md: **propón** añadirla y espera la aprobación antes de crearla.
+3. **Cabecera `application/problem+json`:** el renderizador de errores de Symfony usa el primer tipo MIME del formato de la petición. Ya está configurado en `framework.yaml` para que el formato `json` liste primero `application/problem+json` (bitácora, paso 44):
+
+   ```yaml
+   framework:
+       request:
+           formats:
+               json: ['application/problem+json', 'application/json']
+   ```
+
+   Las respuestas correctas no cambian, porque `JsonResponse` fija su propio `application/json`. No hace falta un *listener*. Cada controlador nuevo solo necesita `format: 'json'` en su ruta, y sus tests funcionales comprueban la cabecera con `assertResponseHeaderSame('Content-Type', 'application/problem+json')`.
 
 ## Verificación
 
