@@ -56,6 +56,7 @@ Las marcadas con ✅ ya existen; el resto se crean en su fase.
 DemoAgentes/
 ├── CLAUDE.md                     ✅ ① El candado: diseño y reglas del proyecto
 ├── .gitignore                    ✅
+├── README.md                     ✅ Presentación del proyecto y puesta en marcha
 ├── docker-compose.yml               Entorno local: PHP-FPM, Nginx, BD, Node (Fase 0)
 ├── .claude/
 │   └── skills/                   ✅ Skills del proyecto

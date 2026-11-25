@@ -600,3 +600,17 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 - Si Symfony no envía `application/problem+json`, el skill `api` propone un *listener* en `src/EventListener/`, carpeta que no está en el CLAUDE.md: hay que aprobarla antes de crearla.
 
 **Ficheros:** `.claude/skills/dto/SKILL.md`, `.claude/skills/servicio/SKILL.md`, `.claude/skills/api/SKILL.md` (nuevos), `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 40 — README del repositorio (2026-11-25)
+
+**Qué hicimos:** a petición del usuario, añadimos un `README.md` en la raíz, porque el repositorio no tenía ninguno.
+
+**Cambios:**
+- `README.md`: qué es la demo y la aplicación, estado actual, cómo se trabaja (candado, firmas, ramas y PR, bitácora), tabla de documentos, stack, puesta en marcha del backend con los scripts de PowerShell, estructura y cadena de skills.
+- `CLAUDE.md`: el `README.md` aparece en la estructura de carpetas.
+
+**Decisión:** el README presenta el proyecto y remite al CLAUDE.md para el detalle, sin repetir las reglas, para que no haya dos fuentes que mantener.
+
+**Pendiente:** actualizar la sección "Estado" del README cuando avancen los issues o se reactiven los tests.
+
+**Ficheros:** `README.md` (nuevo), `CLAUDE.md`, `docs/bitacora.md` (modificados).
