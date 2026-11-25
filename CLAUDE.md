@@ -68,7 +68,8 @@ DemoAgentes/
 │       ├── servicio/             ✅ Servicios de lógica de negocio, reloj y excepciones de dominio
 │       ├── api/                  ✅ Controladores, rutas, códigos HTTP y errores problem+json
 │       ├── pruebas/              ✅ Tests PHPUnit a partir del plan de tests y los criterios de aceptación
-│       └── frontend/             ✅ Proyecto Angular, servicios HTTP, pantallas y sus tests
+│       ├── frontend/             ✅ Proyecto Angular, servicios HTTP, pantallas y sus tests
+│       └── nueva-feature/        ✅ Orquestador: detecta el alcance de una petición y encadena los skills
 ├── .github/                      ✅
 │   ├── ci-pendiente.yml          ✅ Workflow de CI aparcado: falta el permiso "workflow" del token (#4)
 │   ├── workflows/                   GitHub Actions: lint, PHPStan, tests (Fase 7)

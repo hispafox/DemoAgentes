@@ -871,3 +871,21 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 **Verificación:** `npm run build` sin errores. Con el backend y `ng serve` levantados, `GET http://localhost:4200/api/tasks` responde `200` a través del proxy, y un `404` llega con `application/problem+json`.
 
 **Ficheros:** `CLAUDE.md`, `README.md`, `.github/ci-pendiente.yml`, `docs/bitacora.md` (modificados); `frontend/` (nuevo, sin `node_modules/`), `scripts/frontend-setup.ps1`, `scripts/frontend-start.ps1`, `scripts/frontend-test.ps1` (nuevos).
+
+## Paso 55 — Skill orquestador `nueva-feature` (2026-11-25)
+
+**Qué hicimos:** creamos el skill `nueva-feature`, el orquestador que describía `docs/skills-orquestacion.md` y que todavía faltaba. Recibe una petición en lenguaje natural o un issue, detecta qué capas toca y encadena los skills de esas capas hasta la PR fusionada, sin implementar nada por su cuenta. Lo usará el agente orquestador que hispafox creará en clase; los agentes de los documentos de arquitectura no se crean ahora.
+
+**Cambios:**
+- `.claude/skills/nueva-feature/SKILL.md`, en siete pasos:
+  1. Entender la petición: tipo, fuera de alcance y preguntas al PO.
+  2. Detectar el alcance con una tabla capa → skill → señales y reglas de propagación entre capas.
+  3. Presentar el plan, que es un punto de control (`/nueva-feature plan …` termina aquí).
+  4. Preparar el terreno: firmas, issue y rama.
+  5. Ejecutar la cadena cargando cada skill con la herramienta `Skill`.
+  6. Verificar el conjunto, con un bucle de corrección de 3 intentos como máximo.
+  7. Cerrar: bitácora, commit, PR y merge con los tests en verde.
+- Incluye ejemplos de alcance: un issue solo de frontend, una funcionalidad nueva que cruza todas las capas, un bug, un cambio técnico de contrato y una petición fuera de alcance.
+- `CLAUDE.md` (estructura de carpetas) y `README.md` (cadena de skills).
+
+**Ficheros:** `CLAUDE.md`, `README.md`, `docs/bitacora.md` (modificados); `.claude/skills/nueva-feature/SKILL.md` (nuevo).

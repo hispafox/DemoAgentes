@@ -96,7 +96,7 @@ Lanza los tests de Vitest y comprueba que la aplicación compila.
 ```
 DemoAgentes/
 ├── CLAUDE.md          El candado: diseño y reglas del proyecto
-├── .claude/skills/    Skills del agente (bitácora, commits, análisis, modelo, DTO, servicios, API, pruebas, frontend)
+├── .claude/skills/    Skills del agente (bitácora, commits, análisis, modelo, DTO, servicios, API, pruebas, frontend y el orquestador nueva-feature)
 ├── docs/              Documentación funcional, análisis, ADR y bitácora
 ├── scripts/           Scripts de PowerShell para instalar, arrancar y probar
 ├── backend/           Symfony: Controller → Service → Repository → Entity, con Dto/
@@ -112,5 +112,7 @@ Los skills de [.claude/skills/](.claude/skills/) encadenan el trabajo por capas.
 ```
 analisis-diseno ──► modelo ──► dto ──► servicio ──► api ──► frontend ──► pruebas ──► mensaje-commit
 ```
+
+`nueva-feature` es el orquestador: recibe una petición en lenguaje natural o un issue, detecta qué capas toca y encadena los skills de esas capas hasta la PR fusionada, sin implementar nada por su cuenta.
 
 `bitacora` registra cada paso y, con `/bitacora retomar`, reconstruye el estado del proyecto al empezar una conversación nueva.
