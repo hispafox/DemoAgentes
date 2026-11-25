@@ -61,6 +61,7 @@ DemoAgentes/
 │   └── skills/                   ✅ Skills del proyecto
 │       ├── mensaje-commit/       ✅ Redacta los mensajes de commit
 │       ├── bitacora/             ✅ Registra pasos y retoma el proyecto en un chat nuevo
+│       ├── analisis-diseno/      ✅ Crea, actualiza y revisa el análisis técnico a partir de la doc. funcional
 │       └── modelo/               ✅ Crea, actualiza y revisa el modelo Doctrine a partir del análisis
 ├── .github/
 │   ├── workflows/                   GitHub Actions: lint, PHPStan, tests (Fase 7)

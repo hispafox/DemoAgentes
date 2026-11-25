@@ -546,3 +546,25 @@ Ninguno lleva número de issue porque todavía no existen issues en GitHub.
 - El índice único solo atrapa duplicados exactos, porque un índice sin mayúsculas no es portable entre SQLite y PostgreSQL. La regla completa la garantiza el servicio.
 
 **Ficheros:** `docs/app/lista-de-tareas.md`, `docs/analisis.md`, `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 37 — Skill analisis-diseno para crear, actualizar y revisar el análisis (2026-11-24)
+
+**Qué hicimos:** creamos el skill de proyecto `analisis-diseno` en `.claude/skills/analisis-diseno/`. Mantiene `docs/analisis.md` y los ADR de `docs/decisiones/` a partir de la documentación funcional y del CLAUDE.md. Antes, con `/modelo revisar`, comprobamos que el código del modelo coincide con el análisis: falta lo de los issues #6, #7, #8 y #15, y el análisis no dice si `nextOccurrenceDate` es obligatoria al crear a mano una tarea repetitiva.
+
+**Por qué:** el usuario echó en falta el skill. Es el primer eslabón de la cadena de `docs/skills-orquestacion.md` y `-v2.md`, y el skill `modelo` da por hecho que existe un análisis firmado antes que él.
+
+**Cambios:**
+- Tres modos, como `modelo`:
+  - `crear <funcionalidad>`: diseña en el análisis lo que falte de una funcionalidad de la documentación funcional (modelo, API, lógica, pantallas, plan de tests y riesgos).
+  - `actualizar <cambio>`: distingue el cambio funcional (lo decide el PO y va primero a la documentación funcional) del técnico; propone un ADR si contradice uno vigente; el análisis pierde la firma y avisa de lo que queda desfasado en issues, código y tests.
+  - `revisar`: tabla de hallazgos (`falta`, `sobra`, `hueco`, `contradicción`, `incoherencia`) sin modificar nada.
+- Sección "Lugar en la orquestación", fronteras con la documentación funcional (el PO decide el qué) y con `modelo`, estructura fija de las 10 secciones del análisis, reglas de diseño del CLAUDE.md, validación de Mermaid y plantilla de ADR.
+- `CLAUDE.md`: el skill aparece en la estructura de carpetas.
+
+**Decisión:** la carpeta se llama `analisis-diseno`, sin ñ, para evitar problemas de codificación en Windows y Git. El skill no exige rama de issue, porque el análisis es documentación, no implementación.
+
+**Verificación:** el frontmatter se lee bien como YAML.
+
+**Pendiente:** decidir con el PO el hueco de `nextOccurrenceDate` antes de hacer `TaskService` (#5); se puede plantear con `/analisis-diseno revisar`.
+
+**Ficheros:** `.claude/skills/analisis-diseno/SKILL.md` (nuevo), `CLAUDE.md`, `docs/bitacora.md` (modificados).
