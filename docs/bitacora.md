@@ -960,3 +960,28 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 - Los CRITERIO siguen sin marcar: son firmas, y solo las da una persona.
 
 **Ficheros:** `CLAUDE.md`, `docs/bitacora.md` (modificados).
+
+## Paso 60 — Guion del lab del equipo de agentes (2026-11-26)
+
+**Qué hicimos:** preparamos el guion de la clase para crear el agente orquestador y los que dependen de él, como un lab con una demo de principio a fin. Los agentes **no** se crean en `.claude/agents/`: los crea hispafox en clase. Solo hay una solución de referencia aparte, como plan B.
+
+**Cambios:**
+- `docs/formacion/lab-agentes-orquestador.md`, de unas 2 horas y 15 minutos:
+  - Preparación y conceptos: skill, agente y comando; anatomía de un agente.
+  - Cuatro labs con especificación, pasos, prueba con resultado esperado y una pregunta para el grupo:
+    1. `verificador`
+    2. `planificador`
+    3. `implementador-backend` e `implementador-frontend`
+    4. `orquestador` con su comando `/orquestar`
+  - Demo `/orquestar #10` minuto a minuto, con los datos de ejemplo que hay que cargar antes y una tabla de plan B.
+  - Extensiones, preguntas de repaso y checklist de evaluación.
+- `docs/formacion/lab-agentes-orquestador-solucion.md`: el contenido completo de los cinco agentes y del comando `/orquestar`, listo para copiar si no da tiempo.
+- Basado en `docs/ARQUITECTURA-AGENTES-V2.md`: plan en `docs/planes/`, implementación por capas con los skills, verificador con un máximo de 3 vueltas, y además `guardian-candado` antes del cierre y la regla de merge del CLAUDE.md.
+
+**Comprobado en la documentación oficial de Claude Code** (consultada con el agente `claude-code-guide`):
+- Un subagente sí puede lanzar otros, hasta tres niveles por defecto (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`). El orquestador va en la conversación principal para poder preguntar en los CRITERIO, no por una limitación técnica. Corregimos el primer borrador del lab, que decía lo contrario.
+- `claude --agent <nombre>` existe, y también la clave `"agent"` en `.claude/settings.json`.
+- `model: inherit` es válido y la herramienta para lanzar subagentes se llama `Agent`.
+- Los agentes nuevos se detectan sin reiniciar la sesión. En el paso 56 los vimos aparecer al cabo de un rato, no al instante.
+
+**Ficheros:** `docs/bitacora.md` (modificado); `docs/formacion/lab-agentes-orquestador.md` y `docs/formacion/lab-agentes-orquestador-solucion.md` (nuevos).
