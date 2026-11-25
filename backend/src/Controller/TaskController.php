@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Dto\CompleteTaskOutput;
 use App\Dto\TaskInput;
 use App\Dto\TaskOutput;
 use App\Service\TaskService;
@@ -15,8 +16,8 @@ use Symfony\Component\Routing\Attribute\Route;
 /**
  * HTTP layer for /api/tasks (docs/analisis.md §4).
  *
- * Issue #5 covers list, detail, create and update. Delete, complete, trash and
- * restore arrive with issues #6 and #7.
+ * Issue #5 covers list, detail, create and update, and #6 complete. Delete,
+ * trash and restore arrive with issue #7.
  */
 // format: 'json' makes errors render as JSON even without an Accept header.
 #[Route('/api/tasks', name: 'api_tasks_', format: 'json')]
@@ -61,5 +62,14 @@ final class TaskController extends AbstractController
         $task = $this->taskService->update($this->taskService->getTask($id), $input);
 
         return $this->json(TaskOutput::fromEntity($task));
+    }
+
+    // F-06: complete a task and, if recurring, create the next occurrence (RN-05, RN-06, RN-11)
+    #[Route('/{id}/complete', name: 'complete', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function complete(int $id): JsonResponse
+    {
+        $result = $this->taskService->complete($this->taskService->getTask($id));
+
+        return $this->json(CompleteTaskOutput::fromResult($result));
     }
 }

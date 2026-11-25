@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * A personal task (docs/analisis.md §3).
  *
- * Issue #5 covers the base fields. Completing (#6), the trash (#7) and the
+ * Issue #5 covers the base fields and #6 completing. The trash (#7) and the
  * link to a template (#8) are added by their own issues.
  */
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
@@ -85,6 +85,19 @@ class Task
     public function isCompleted(): bool
     {
         return $this->completed;
+    }
+
+    /**
+     * RN-11: a completed task cannot be completed again, and there is no way
+     * back to pending.
+     */
+    public function complete(): void
+    {
+        if ($this->completed) {
+            throw new DomainRuleViolation('RN-11: the task is already completed.');
+        }
+
+        $this->completed = true;
     }
 
     public function getCreatedAt(): \DateTimeImmutable

@@ -15,8 +15,8 @@ use Psr\Clock\ClockInterface;
 /**
  * Business logic for tasks (docs/analisis.md §5).
  *
- * Issue #5 covers listing, reading, creating and updating. Completing (#6) and
- * the trash (#7) are added by their own issues.
+ * Issue #5 covers listing, reading, creating and updating, and #6 completing.
+ * The trash (#7) and the link to a template (#8) are added by their own issues.
  */
 final class TaskService
 {
@@ -84,6 +84,33 @@ final class TaskService
         $this->entityManager->flush();
 
         return $task;
+    }
+
+    /**
+     * F-06, RN-11, RN-05, RN-06: completes the task and, if it is recurring,
+     * creates the next occurrence (same title and recurrence, pending, with
+     * today + recurrence as its date). Both are saved in a single flush.
+     *
+     * @throws \App\Entity\Exception\DomainRuleViolation if it is already completed (RN-11)
+     */
+    public function complete(Task $task): CompleteResult
+    {
+        $task->complete();
+
+        $nextOccurrence = null;
+        if ($task->isRecurring()) {
+            $nextOccurrence = new Task(
+                $task->getTitle(),
+                $this->clock->now(),
+                $task->getRecurrence(),
+                $this->nextOccurrenceDate($task->getRecurrence()),
+            );
+            $this->entityManager->persist($nextOccurrence);
+        }
+
+        $this->entityManager->flush();
+
+        return new CompleteResult($task, $nextOccurrence);
     }
 
     private function nextOccurrenceDate(?Recurrence $recurrence): ?\DateTimeImmutable
