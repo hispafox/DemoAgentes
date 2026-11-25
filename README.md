@@ -4,7 +4,7 @@ Demo de **desarrollo asistido por agentes de IA**. Partimos de la documentación
 
 La aplicación que se construye es una **Lista de Tareas**: tareas personales con plantillas reutilizables, tareas repetitivas (al completar una se genera la siguiente) y papelera. Es una demo didáctica, así que se prioriza que el código sea claro antes que sofisticado.
 
-> **Estado:** en desarrollo, versión 0.1. El backend Symfony está creado y la entidad `Task` está en marcha (issue #5). El frontend Angular todavía no existe. Los tests de PHPUnit están activos.
+> **Estado:** en desarrollo, versión 0.1. El backend está completo (tareas, completar con recurrencia, papelera y plantillas) y probado con PHPUnit, PHPStan y PHP-CS-Fixer. El proyecto Angular está creado (issue #3); faltan sus pantallas (issues #10, #11 y #12).
 
 ## Cómo se trabaja
 
@@ -35,8 +35,8 @@ Los documentos `ARQUITECTURA-AGENTES*.md`, `skills-orquestacion*.md` y `analisis
 
 - **Backend:** PHP 8.3+, Symfony 7, Doctrine ORM y Doctrine Migrations.
 - **Base de datos:** SQLite en la versión 0.1 ([ADR-0003](docs/decisiones/0003-sqlite-en-la-version-0-1.md)); PostgreSQL en Docker más adelante ([ADR-0001](docs/decisiones/0001-base-de-datos-postgresql.md)).
-- **Frontend:** Angular con TypeScript estricto (pendiente).
-- **Tests:** PHPUnit en el backend; tests de Angular en el frontend.
+- **Frontend:** Angular 22 con TypeScript estricto.
+- **Tests:** PHPUnit en el backend; Vitest en el frontend.
 - **Gestión:** GitHub Issues, milestones, etiquetas y Pull Requests.
 
 ## Puesta en marcha (backend)
@@ -67,7 +67,29 @@ Para el servidor.
 .\scripts\backend-test.ps1
 ```
 
-Comprueba el contenedor y el mapeo de Doctrine y lanza PHPUnit (`-SkipPhpUnit` para omitirlo).
+Comprueba el contenedor, el mapeo de Doctrine, el estilo (PHP-CS-Fixer) y el análisis estático (PHPStan), y lanza PHPUnit (`-SkipPhpUnit` para omitirlo).
+
+## Puesta en marcha (frontend)
+
+Requisitos: **Node.js 22 LTS o superior**. Con el backend arrancado:
+
+```powershell
+.\scripts\frontend-setup.ps1
+```
+
+Instala las dependencias de npm.
+
+```powershell
+.\scripts\frontend-start.ps1
+```
+
+Sirve la aplicación en <http://localhost:4200>. Las llamadas a `/api` van al backend a través del proxy (`frontend/proxy.conf.json`), sin problemas de CORS.
+
+```powershell
+.\scripts\frontend-test.ps1
+```
+
+Lanza los tests de Vitest y comprueba que la aplicación compila.
 
 ## Estructura
 
@@ -77,7 +99,8 @@ DemoAgentes/
 ├── .claude/skills/    Skills del agente (bitácora, commits, análisis, modelo, DTO, servicios, API, pruebas, frontend)
 ├── docs/              Documentación funcional, análisis, ADR y bitácora
 ├── scripts/           Scripts de PowerShell para instalar, arrancar y probar
-└── backend/           Symfony: Controller → Service → Repository → Entity, con Dto/
+├── backend/           Symfony: Controller → Service → Repository → Entity, con Dto/
+└── frontend/          Angular: core/, shared/ y features/
 ```
 
 El detalle de carpetas y convenciones está en el [CLAUDE.md](CLAUDE.md).
