@@ -12,8 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * A personal task (docs/analisis.md §3).
  *
- * Issue #5 covers the base fields, #6 completing and #7 the trash. The link
- * to a template (#8) is added by its own issue.
+ * Issue #5 covers the base fields, #6 completing, #7 the trash and #8 the
+ * link to a template.
  */
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[ORM\Table(name: 'task')]
@@ -45,6 +45,11 @@ class Task
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $deletedAt = null;
 
+    /** Template the task was created from; null = created by hand (RN-08, RN-12). */
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'RESTRICT')]
+    private ?TaskTemplate $template = null;
+
     /**
      * RN-02: a new task is always pending and its creation date is set by the system.
      */
@@ -53,10 +58,12 @@ class Task
         \DateTimeImmutable $now,
         ?Recurrence $recurrence = null,
         ?\DateTimeImmutable $nextOccurrenceDate = null,
+        ?TaskTemplate $template = null,
     ) {
         $this->setTitle($title);
         $this->createdAt = $now;
         $this->setRecurrence($recurrence, $nextOccurrenceDate);
+        $this->template = $template;
     }
 
     public function getId(): ?int
@@ -176,5 +183,13 @@ class Task
         }
 
         $this->deletedAt = null;
+    }
+
+    /**
+     * RN-08: set only when the task is created; it never changes afterwards.
+     */
+    public function getTemplate(): ?TaskTemplate
+    {
+        return $this->template;
     }
 }
