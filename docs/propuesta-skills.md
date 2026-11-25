@@ -19,7 +19,7 @@ Este documento propone skills que completarían el sistema actual. Un **skill** 
 | `bitacora` | Registro de pasos y retomar en un chat nuevo | registrar, retomar |
 | `mensaje-commit` | Mensajes de commit con referencia al issue | — |
 
-También hay skills genéricos instalados en el repositorio (`docx`, `pdf`, `pptx`, `xlsx`) y la ficha de catálogo de `ui-ux-pro-max`, todavía sin sus datos ni scripts.
+También hay skills genéricos instalados en el repositorio (`docx`, `pdf`, `pptx`, `xlsx`) y `ui-ux-pro-max` completo (datos, scripts y referencias, instalado el 2026-11-26).
 
 ## 2. Resumen de la propuesta
 

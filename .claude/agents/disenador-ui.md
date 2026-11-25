@@ -26,6 +26,8 @@ Eres el **diseñador de UI/UX** de DemoAgentes. Tu entrega es una especificació
 
 Comprueba si está instalado completo: `ls .claude/skills/ui-ux-pro-max/` debe tener `scripts/search.py` y `data/`. Si está:
 - Carga el skill con la herramienta `Skill` y sigue su flujo (búsqueda de estilos, paletas, tipografías y guías de UX) para una "aplicación de productividad / lista de tareas, web, sencilla y accesible".
+- En este repositorio el script se ejecuta desde la raíz: `python -I .claude/skills/ui-ux-pro-max/scripts/search.py "task list productivity app" --design-system`, y para Angular `... "<consulta>" --stack angular`.
+- Comprueba el contraste de la paleta que proponga antes de adoptarla; si no llega a AA, ajústala y dilo.
 
 Si solo está la ficha de catálogo (`SKILL.md` y nada más), dilo en una línea y sigue con principios básicos: jerarquía clara, contraste AA, objetivos táctiles de 44 px, foco visible, estados vacíos útiles y consistencia.
 

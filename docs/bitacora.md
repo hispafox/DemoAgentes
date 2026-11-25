@@ -932,3 +932,15 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 - Los dos diagramas Mermaid se han validado.
 
 **Ficheros:** `docs/bitacora.md` (modificado); `docs/propuesta-skills.md` y `docs/propuesta-agentes.md` (nuevos).
+
+## Paso 58 — Skill `ui-ux-pro-max` instalado en el repositorio (2026-11-26)
+
+**Qué hicimos:** instalamos el skill completo `ui-ux-pro-max`, solo en este repositorio y no a nivel global, con la aprobación de hispafox. Hasta ahora solo estaba su ficha de catálogo, sin datos ni scripts. También borramos de `var/data.db` la plantilla "Probe" que dejó la prueba del agente QA (paso 56); no tenía tareas.
+
+**Cambios:**
+- Origen: <https://github.com/nextlevelbuilder/ui-ux-pro-max-skill>, commit `b73ee96`, licencia MIT. Lo descargamos en una carpeta temporal vacía y revisamos los scripts antes de instalarlo: no hacen llamadas de red ni ejecutan comandos externos, y solo escriben ficheros temporales o, si se pide, un sistema de diseño.
+- `.claude/skills/ui-ux-pro-max/`: `SKILL.md`, `data/` (estilos, paletas, tipografías, 141 guías de UX y guías por stack, Angular incluido), `references/`, `scripts/`, el `LICENSE` del original y un `ORIGEN.md` con la procedencia y cómo ejecutarlo desde la raíz.
+- Pruebas: `--design-system` para "task list productivity app" genera un sistema de diseño completo (estilo, colores, tipografía…), y `--stack angular` devuelve guías de Angular 22, por ejemplo cómo mostrar los errores de validación.
+- Agente `disenador-ui`: comando exacto del script en este repositorio y comprobación del contraste antes de adoptar la paleta. `CLAUDE.md` y `docs/propuesta-skills.md` actualizados.
+
+**Ficheros:** `.claude/agents/disenador-ui.md`, `CLAUDE.md`, `docs/propuesta-skills.md`, `docs/bitacora.md` (modificados); `.claude/skills/ui-ux-pro-max/` (nuevo, 84 ficheros).

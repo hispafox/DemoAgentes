@@ -71,6 +71,7 @@ DemoAgentes/
 │       ├── api/                  ✅ Controladores, rutas, códigos HTTP y errores problem+json
 │       ├── pruebas/              ✅ Tests PHPUnit a partir del plan de tests y los criterios de aceptación
 │       ├── frontend/             ✅ Proyecto Angular, servicios HTTP, pantallas y sus tests
+│       ├── ui-ux-pro-max/        ✅ Guías de UI/UX con búsqueda local (de terceros, MIT; ver ORIGEN.md)
 │       └── nueva-feature/        ✅ Orquestador: detecta el alcance de una petición y encadena los skills
 ├── .github/                      ✅
 │   ├── ci-pendiente.yml          ✅ Workflow de CI aparcado: falta el permiso "workflow" del token (#4)
