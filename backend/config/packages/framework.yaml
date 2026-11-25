@@ -14,6 +14,13 @@ framework:
         App\Service\Exception\ResourceNotFound: { status_code: 404 }
         App\Entity\Exception\DomainRuleViolation: { status_code: 409 }
 
+    # Errors rendered as JSON take the first MIME type of the "json" format, so
+    # listing application/problem+json first makes them RFC 9457 compliant.
+    # Successful responses are unaffected: JsonResponse sets application/json.
+    request:
+        formats:
+            json: ['application/problem+json', 'application/json']
+
 when@test:
     framework:
         test: true
