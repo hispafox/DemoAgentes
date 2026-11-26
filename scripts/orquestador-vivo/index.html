@@ -206,12 +206,15 @@ const STEP_NODE = {
   '6d_merge': 'MERGE', '7_revision_funcional': 'REVF',
 };
 const STEP_CLASS = { hecho: 'ok', no_aplica: 'noaplica', en_marcha: 'activo', corregir: 'corregir', bloqueado: 'fallo', revisar: 'fallo', pendiente: 'pendiente' };
-const FINAL_TEXT = { ABIERTO: 'En curso', FUSIONADO: 'Fusionado · falta la revisión funcional', CERRADO: 'Cerrado ✔', BLOQUEADO: 'Bloqueado: decide la persona', APARCADO: 'Aparcado' };
+const FINAL_TEXT = { ABIERTO: 'En curso', FUSIONADO: 'Fusionado · revisión funcional pendiente o diferida', CERRADO: 'Cerrado ✔', BLOQUEADO: 'Bloqueado: decide la persona', APARCADO: 'Aparcado' };
 
 // liveEvents: hook events of the same issue, to show which step is running right now
 function fromJson(d, liveEvents) {
   const s = { issue: d.issue, nodos: {}, vuelta: d.vuelta, revisar: false, noCumple: false, desde: d.creado, run: [] };
-  for (const [step, node] of Object.entries(STEP_NODE)) s.nodos[node] = STEP_CLASS[d.pasos[step]?.estado] || 'pendiente';
+  for (const [step, node] of Object.entries(STEP_NODE)) {
+    const st = d.pasos[step]?.estado;
+    s.nodos[node] = st === 'diferido' ? 'noaplica' : STEP_CLASS[st] || 'pendiente';
+  }
   for (const h of d.historial) {
     if (h.paso === '4_verificar' && h.estado === 'revisar') s.revisar = true;
     if (h.paso === '5_guardian' && h.estado === 'revisar') s.noCumple = true;
