@@ -1176,3 +1176,32 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 **Aviso:** este paso se registró mientras otra sesión tenía sin commit su paso 69 (prueba E2E del #10 con Playwright) y su fila de `CLAUDE.md`. El commit de este paso no incluye esos cambios.
 
 **Ficheros:** `scripts/presentaciones/` (`generar.js`, `corta.js`, `capturas.js`, `exportar-imagenes.ps1`, `config/extendida.json`, `config/bitacora.json`, `package.json`, `package-lock.json` y `README.md`), `scripts/presentaciones-generar.ps1` y `docs/presentaciones/img/recorte-lista.png` y `recorte-formulario.png` (nuevos); `.gitignore` y `docs/bitacora.md` (modificados).
+
+## Paso 71 — Agente planificador, primer agente del equipo (2026-11-26)
+
+**Qué hicimos:** empezamos a montar la arquitectura de agentes de `docs/ARQUITECTURA-AGENTES-V2.md` por el **planificador**, y solo por él. El orquestador, los implementadores y el verificador vienen después. Partimos de la solución de referencia del lab (`docs/formacion/agentes-referencia/agents/planificador.md`), que ya se había ensayado en los pasos 61 y 62.
+
+**Cambios:**
+- `.claude/agents/planificador.md`: lee el issue con `gh`, el CLAUDE.md, la documentación funcional, el análisis y el código actual. Detecta el alcance con `nueva-feature` en modo `plan` y escribe `docs/planes/plan-<nº>-<slug>.md` con una plantilla fija: objetivo, criterios, alcance por capa, pasos con agente y skill, tests por criterio y riesgos. Solo escribe en `docs/planes/`.
+- Ajustes sobre la referencia, sacados de las notas del plan del #23:
+  - No espera el visto bueno que pide `nueva-feature`, porque un subagente no puede preguntar. La revisión del plan la hace la persona después (CRITERIO).
+  - No menciona las firmas: a petición de hispafox, el planificador no las comprueba ni las anota.
+  - Si una petición no tiene issue, hace `plan-sin-issue-<slug>.md` y pide crear el issue antes de implementar.
+  - No sobrescribe un plan que ya existe (guarda una `-v2`).
+  - Lista los skills válidos y dice qué script ejecuta el verificador.
+- `.claude/commands/planificar.md`: comando `/planificar #<nº>` para lanzarlo suelto, como los agentes de apoyo.
+
+**Prueba con el #11 (papelera)**, lanzada con `/planificar el numero 11`: unos 35 segundos y 5 llamadas a herramientas.
+- Plan en `docs/planes/plan-11-pantalla-papelera-tareas.md`.
+- Alcance: frontend y pruebas. Descarta el análisis (ya recoge la ruta y la pantalla) y el backend (`GET /api/tasks/trash` y `POST /api/tasks/{id}/restore` existen con sus tests).
+- Detecta que `trash()` y `restore()` ya están en `TaskApiService` (#10), así que la primera tarea del issue sobra.
+- Pasos: 3 del `implementador-frontend`, 1 del `verificador` (`frontend-test.ps1`) y 1 del `orquestador` (cierre).
+- Preguntas abiertas, cada una con su recomendación:
+  1. ¿Hace falta diseño previo del `disenador-ui`? Recomienda reutilizar el estilo de la lista.
+  2. ¿Restaurar pide confirmación? Recomienda que no.
+  3. ¿Qué hace la pantalla si `restore` da 409? Recomienda mostrar el aviso y recargar.
+- Comprobado con `git status`: solo creó el fichero del plan.
+
+**Pendiente:** revisar el plan y responder las tres preguntas antes de implementar el #11.
+
+**Ficheros:** `.claude/agents/planificador.md`, `.claude/commands/planificar.md`, `docs/planes/plan-11-pantalla-papelera-tareas.md` (nuevos); `CLAUDE.md` y `docs/bitacora.md` (modificados).
