@@ -30,7 +30,7 @@
   .panel { background: var(--panel); border: 1px solid var(--line); border-radius: .6rem; overflow: auto; }
   #diagrama { display: flex; align-items: center; justify-content: center; padding: 1rem; }
   #diagrama svg { width: auto; height: calc(100vh - 110px); max-width: 100% !important; }
-  aside h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0; padding: .8rem 1rem; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--panel); }
+  aside h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0; padding: .8rem 1rem; border-bottom: 1px solid var(--line); background: var(--panel); }
   ol { list-style: none; margin: 0; padding: 0; }
   li { padding: .55rem 1rem; border-bottom: 1px solid var(--line); font-size: .85rem; }
   li .cab { display: flex; gap: .5rem; align-items: baseline; }
@@ -38,6 +38,11 @@
   li .txt { color: var(--muted); word-break: break-word; }
   .marca { font-size: .7rem; font-weight: 650; padding: .05rem .4rem; border-radius: .25rem; color: #fff; }
   .marca.activo { background: var(--blue); } .marca.ok { background: var(--green); } .marca.fallo { background: var(--red); } .marca.inicio { background: var(--muted); }
+  .marca.corregir { background: #d97706; } .marca.noaplica { background: var(--grey); }
+  li.issue { cursor: pointer; }
+  li.issue:hover { background: color-mix(in srgb, var(--blue) 6%, transparent); }
+  li.issue.elegido { box-shadow: inset 3px 0 0 var(--blue); background: color-mix(in srgb, var(--blue) 8%, transparent); }
+  li.issue .cab { justify-content: space-between; }
   .vacio { padding: 1rem; color: var(--muted); font-size: .85rem; }
   .leyenda { display: flex; flex-wrap: wrap; gap: .4rem .9rem; margin-top: .45rem; font-size: .75rem; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--muted); }
   .leyenda i { display: inline-block; width: .7rem; height: .7rem; border-radius: .15rem; margin-right: .3rem; vertical-align: -1px; border: 2px solid; }
@@ -64,7 +69,10 @@
 <main>
   <section class="panel" id="diagrama"></section>
   <aside class="panel">
-    <h2>Eventos
+    <h2>Issues del loop</h2>
+    <ol id="issues"><li class="vacio">Cargando…</li></ol>
+    <h2>Historial
+
       <span class="leyenda">
         <span><i style="border-color:var(--grey)"></i>pendiente</span>
         <span><i style="border-color:var(--blue)"></i>en marcha</span>
@@ -85,7 +93,7 @@ mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'default', theme
 const NAMES = {
   PREP: 'Preparar', PLAN: 'Planificador', CRIT: 'CRITERIO', BACK: 'Implementador backend',
   FRONT: 'Implementador frontend', VERIF: 'Verificador', GUARD: 'Guardián del candado',
-  BITA: 'Bitácora', COMMIT: 'Commit', PR: 'Pull Request', MERGE: 'Merge',
+  BITA: 'Bitácora', COMMIT: 'Commit', PR: 'Pull Request', MERGE: 'Merge', REVF: 'Revisión funcional',
 };
 
 // Flow of .claude/agents/orquestador.md. Edge order matters for linkStyle (6 = REVISAR, 8 = NO CUMPLE).
@@ -106,11 +114,14 @@ function diagram(s) {
     '  BITA["6 · Bitácora"] --> COMMIT["Commit"]',
     '  COMMIT --> PR["Pull Request"]',
     '  PR --> MERGE["Merge"]',
-    '  MERGE --> FIN([Fin])',
+    '  MERGE --> REVF{{"7 · Revisión funcional"}}',
+    '  REVF --> FIN([Fin])',
     '  classDef pendiente fill:#f4f4f5,stroke:#a1a1aa,color:#52525b',
     '  classDef activo fill:#dbeafe,stroke:#2563eb,stroke-width:3px,color:#1e3a8a',
     '  classDef ok fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#14532d',
     '  classDef fallo fill:#fee2e2,stroke:#dc2626,stroke-width:3px,color:#7f1d1d',
+    '  classDef corregir fill:#fef3c7,stroke:#d97706,stroke-width:3px,color:#78350f',
+    '  classDef noaplica fill:#fafafa,stroke:#d4d4d8,stroke-dasharray:5 4,color:#a1a1aa',
   ];
   for (const id of Object.keys(NAMES)) lines.push(`  class ${id} ${s.nodos[id] || 'pendiente'}`);
   if (s.revisar) lines.push('  linkStyle 6 stroke:#dc2626,stroke-width:3px');
@@ -136,6 +147,7 @@ function derive(events) {
 }
 
 function overall(s) {
+  if (s.finalText) return s.finalText;
   if (s.nodos.MERGE === 'ok') return 'Terminado ✔';
   const running = Object.keys(s.nodos).filter((n) => s.nodos[n] === 'activo');
   if (running.length) return 'En marcha: ' + running.map((n) => NAMES[n]).join(', ');
@@ -150,7 +162,10 @@ let renderCount = 0;
 let current = { run: [] };
 
 async function paint(events) {
-  const s = derive(events);
+  await paintState(derive(events));
+}
+
+async function paintState(s) {
   current = s;
   const text = diagram(s);
   if (text !== lastDiagram) {
@@ -164,8 +179,8 @@ async function paint(events) {
   const list = s.run.slice().reverse().map((e) => {
     const hour = new Date(e.t).toLocaleTimeString('es-ES');
     const tag = e.tipo === 'inicio' ? 'inicio' : e.estado;
-    const label = { activo: 'en marcha', ok: 'hecho', fallo: 'revisar', inicio: 'inicio' }[tag] || tag;
-    const title = e.tipo === 'inicio' ? `Issue #${e.issue}` : NAMES[e.nodo] || e.nodo;
+    const label = e.etiqueta || { activo: 'en marcha', ok: 'hecho', fallo: 'revisar', inicio: 'inicio', corregir: 'corregir', noaplica: 'no aplica' }[tag] || tag;
+    const title = e.tipo === 'inicio' ? `Issue #${e.issue}` : NAMES[e.nodo] || e.titulo || e.nodo;
     const li = document.createElement('li');
     li.innerHTML = `<div class="cab"><time></time><span class="marca ${tag}"></span><strong></strong></div><div class="txt"></div>`;
     li.querySelector('time').textContent = hour;
@@ -184,16 +199,82 @@ function tick() {
   $('tiempo').textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
 }
 
-// Live mode: poll estado.json every second
+// Loop state (docs/planes/estado-<n>.json, written by scripts/orq/loop.js) -> diagram
+const STEP_NODE = {
+  '1_preparar': 'PREP', '2_planificar': 'PLAN', '2a_criterio': 'CRIT', '3a_backend': 'BACK', '3b_frontend': 'FRONT',
+  '4_verificar': 'VERIF', '5_guardian': 'GUARD', '6a_bitacora': 'BITA', '6b_commit': 'COMMIT', '6c_pr': 'PR',
+  '6d_merge': 'MERGE', '7_revision_funcional': 'REVF',
+};
+const STEP_CLASS = { hecho: 'ok', no_aplica: 'noaplica', en_marcha: 'activo', corregir: 'corregir', bloqueado: 'fallo', revisar: 'fallo', pendiente: 'pendiente' };
+const FINAL_TEXT = { ABIERTO: 'En curso', FUSIONADO: 'Fusionado · falta la revisión funcional', CERRADO: 'Cerrado ✔', BLOQUEADO: 'Bloqueado: decide la persona', APARCADO: 'Aparcado' };
+
+// liveEvents: hook events of the same issue, to show which step is running right now
+function fromJson(d, liveEvents) {
+  const s = { issue: d.issue, nodos: {}, vuelta: d.vuelta, revisar: false, noCumple: false, desde: d.creado, run: [] };
+  for (const [step, node] of Object.entries(STEP_NODE)) s.nodos[node] = STEP_CLASS[d.pasos[step]?.estado] || 'pendiente';
+  for (const h of d.historial) {
+    if (h.paso === '4_verificar' && h.estado === 'revisar') s.revisar = true;
+    if (h.paso === '5_guardian' && h.estado === 'revisar') s.noCumple = true;
+    const known = STEP_CLASS[h.estado];
+    s.run.push({ t: h.t, nodo: STEP_NODE[h.paso], titulo: h.paso, estado: known || 'inicio', etiqueta: known ? null : h.estado, texto: h.detalle || '' });
+  }
+  for (const [node, state] of Object.entries(liveEvents)) {
+    if (state === 'activo' && s.nodos[node] !== 'ok') s.nodos[node] = 'activo';
+  }
+  const running = Object.keys(s.nodos).filter((n) => s.nodos[n] === 'activo');
+  s.finalText = d.final === 'ABIERTO' && running.length ? 'En marcha: ' + running.map((n) => NAMES[n]).join(', ') : FINAL_TEXT[d.final] || d.final;
+  return s;
+}
+
+// Last state of each node in the hooks' current run, if that run is this issue
+function liveNodes(hookEvents, issue) {
+  let start = -1;
+  hookEvents.forEach((e, i) => { if (e.tipo === 'inicio') start = i; });
+  if (start < 0 || String(hookEvents[start].issue) !== String(issue)) return {};
+  const nodes = {};
+  for (const e of hookEvents.slice(start + 1)) if (e.nodo) nodes[e.nodo] = e.estado;
+  return nodes;
+}
+
+let selected = null;      // issue shown from its state JSON; null = hooks only
+let boardKey = '';
+function paintBoard(list) {
+  const key = JSON.stringify(list.map((e) => [e.issue, e.final, e.siguiente, selected]));
+  if (key === boardKey) return;
+  boardKey = key;
+  if (!list.length) { $('issues').innerHTML = '<li class="vacio">Sin estados: <code>node scripts/orq/loop.js crear &lt;n&gt;</code></li>'; return; }
+  $('issues').replaceChildren(...list.map((e) => {
+    const li = document.createElement('li');
+    li.className = 'issue' + (e.issue === selected ? ' elegido' : '');
+    li.innerHTML = '<div class="cab"><strong></strong><span class="marca"></span></div><div class="txt"></div>';
+    li.querySelector('strong').textContent = `#${e.issue} ${e.titulo}`;
+    li.querySelector('.marca').textContent = e.final.toLowerCase();
+    li.querySelector('.marca').classList.add(e.final === 'ABIERTO' ? 'activo' : e.final === 'BLOQUEADO' ? 'fallo' : e.final === 'APARCADO' ? 'inicio' : 'ok');
+    li.querySelector('.txt').textContent = e.siguiente ? 'siguiente: ' + e.siguiente : 'sin pasos pendientes';
+    li.onclick = () => { selected = e.issue; boardKey = ''; poll(); };
+    return li;
+  }));
+}
+
+// Every second: the board, the selected issue (JSON) and the hooks' live events
 let simulating = false;
 async function poll() {
   if (simulating) return;
   try {
-    const res = await fetch('estado.json', { cache: 'no-store' });
-    const data = await res.json();
+    const [list, hooks] = await Promise.all([
+      fetch('estados', { cache: 'no-store' }).then((r) => r.json()),
+      fetch('estado.json', { cache: 'no-store' }).then((r) => r.json()),
+    ]);
     $('punto').classList.add('vivo');
     $('conexion').textContent = 'en vivo';
-    await paint(data.eventos || []);
+    if (selected === null && list.length) selected = (list.find((e) => e.final === 'ABIERTO') || list.find((e) => e.final !== 'APARCADO') || list[0]).issue;
+    paintBoard(list);
+    if (selected !== null) {
+      const d = await fetch('estados/' + selected, { cache: 'no-store' }).then((r) => r.json());
+      await paintState(fromJson(d, liveNodes(hooks.eventos || [], selected)));
+    } else {
+      await paint(hooks.eventos || []);
+    }
   } catch {
     $('punto').classList.remove('vivo');
     $('conexion').textContent = 'sin conexión';

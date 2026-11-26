@@ -196,7 +196,7 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 - [x] Skill orquestador `nueva-feature`
 - [x] Agentes de apoyo con su comando (`.claude/agents/` y `.claude/commands/`), probados sin tocar el código
 - [x] Skill `ui-ux-pro-max` instalado en el repositorio
-- [ ] Agente orquestador y los que dependen de él (planificador, implementadores, verificador…), según `docs/ARQUITECTURA-AGENTES*.md` — se crean en clase. Hecho el `planificador` con su comando `/planificar` (paso 71); el `implementador-backend` y el `implementador-frontend` (paso 73); el `orquestador` (paso 75) con su comando `/orquestar` (paso 77); el `verificador` (paso 76)
+- [ ] Agente orquestador y los que dependen de él (planificador, implementadores, verificador…), según `docs/ARQUITECTURA-AGENTES*.md` — se crean en clase. Hecho el `planificador` con su comando `/planificar` (paso 71); el `implementador-backend` y el `implementador-frontend` (paso 73); el `orquestador` (paso 75) con su comando `/orquestar` (paso 77); el `verificador` (paso 76); el loop del orquestador, skill `loop-orquestador` con el motor `scripts/orq/loop.js` y estado por issue en `docs/planes/estado-<nº>.json` (paso 82)
 - [ ] Decidir qué skills y agentes de `docs/propuesta-skills.md` y `docs/propuesta-agentes.md` se crean
 
 ## Firmas (puertas de CRITERIO)
@@ -275,6 +275,7 @@ Scripts de PowerShell en `scripts/` (desde la raíz del repositorio):
 .\scripts\frontend-start.ps1   # http://localhost:4200 con proxy de /api al backend
 .\scripts\frontend-test.ps1    # Tests de Vitest y build
 .\scripts\orquestador-vivo.ps1 # Vista en vivo del orquestador (diagrama Mermaid y grabaciones) en :4300
+node scripts/orq/loop.js cola  # Loop del orquestador: estado, siguiente, marcar con prueba y cola de issues
 ```
 
 Equivalentes manuales:

@@ -10,6 +10,7 @@ const PORT = Number(process.env.PORT || process.argv[2] || 4300);
 const STATE_FILE = path.join(__dirname, 'estado.json');
 const PAGE = path.join(__dirname, 'index.html');
 const RECORDINGS_DIR = path.join(__dirname, 'grabaciones');
+const PLANS_DIR = path.join(__dirname, '..', '..', 'docs', 'planes');
 
 function sendJson(res, body) {
   res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
@@ -28,6 +29,34 @@ const server = http.createServer((req, res) => {
     }
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
     res.end(body);
+    return;
+  }
+
+  // Loop state of each issue (docs/planes/estado-<n>.json, written by scripts/orq/loop.js)
+  if (url.pathname === '/estados') {
+    let list = [];
+    try {
+      list = fs.readdirSync(PLANS_DIR).filter((f) => /^estado-\d+\.json$/.test(f)).map((f) => {
+        const d = JSON.parse(fs.readFileSync(path.join(PLANS_DIR, f), 'utf8'));
+        const next = Object.entries(d.pasos).find(([, p]) => p.estado !== 'hecho' && p.estado !== 'no_aplica');
+        return { issue: d.issue, titulo: d.titulo, final: d.final, siguiente: next ? next[0] : null, actualizado: d.actualizado };
+      }).sort((a, b) => String(b.actualizado).localeCompare(String(a.actualizado)));
+    } catch {
+      // no states yet
+    }
+    sendJson(res, JSON.stringify(list));
+    return;
+  }
+
+  const state = url.pathname.match(/^\/estados\/(\d+)$/);
+  if (state) {
+    const file = path.join(PLANS_DIR, `estado-${state[1]}.json`);
+    if (!fs.existsSync(file)) {
+      res.writeHead(404);
+      res.end();
+      return;
+    }
+    sendJson(res, fs.readFileSync(file, 'utf8'));
     return;
   }
 

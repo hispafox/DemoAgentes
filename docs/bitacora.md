@@ -1395,3 +1395,22 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 - Reparamos a mano la grabación del #12 (un solo flujo, sin los dos "hecho" prematuros, y con el Merge añadido con la hora real de la PR #28).
 
 **Ficheros:** `scripts/orquestador-vivo/hook.js` y `docs/bitacora.md` (modificados).
+
+## Paso 82 — Loop del orquestador con estado JSON y cola de issues (2026-11-26)
+
+**Qué hicimos:** llevamos al orquestador el mecanismo del loop de bcursos (estado en JSON, motor que lo escribe y exige pruebas, skill que encadena pasos) adaptado a este proyecto, con una cola secuencial de issues. La vista en vivo pasa a leer ese estado.
+
+**Por qué:** hispafox quería el sistema de loop de bcursos aplicado aquí, solo en la parte del orquestador, como base para un "loop de loops". De bcursos solo se toma el mecanismo; las pruebas son las de DemoAgentes (plan, veredictos, tests, commit, PR y merge), sin linter de prosa ni rúbricas.
+
+**Cambios:**
+- `scripts/orq/loop.js` (Node, sin dependencias): único escritor de `docs/planes/estado-<nº>.json`. Pasos del orquestador `1_preparar` a `7_revision_funcional`; comandos `crear`, `estado`, `siguiente`, `marcar` (con prueba: rama o PR, plan en disco, ficheros de la capa en la rama o en su PR, veredicto y resumen de tests, bitácora con el #, commit con `(#<nº>)`, PR, merge en GitHub), `aprobar` (paradas humanas con lo que dijo la persona), `reabrir`, `aparcar`/`retomar` y `cola`. REVISAR y NO CUMPLE cuentan vueltas y devuelven el paso a las capas indicadas; a la tercera, BLOQUEADO.
+- `.claude/skills/loop-orquestador/SKILL.md`: el ciclo (leer estado, marcar en marcha, ejecutar con quien toca, cerrar con prueba, seguir) y el modo cola.
+- Vista en vivo: tablero "Issues del loop" con los `estado-*.json`; el diagrama se pinta desde el JSON (nodo nuevo "7 · Revisión funcional", "no aplica" en discontinuo y "corregir" en ámbar) y los hooks añaden en directo qué paso está en marcha.
+- `docs/planes/estado-12.json`: el #12 reconstruido con el motor y sus pruebas reales (PR #28, commit `fe06548`); queda FUSIONADO a falta de la revisión funcional. `docs/planes/estado-4.json`: el #4 aparcado (falta el permiso `workflow` del token), así que la cola sigue con el #15.
+- `CLAUDE.md`: comando en "Comandos" y nota en la Fase 8.
+
+**Decisión:** el estado en `docs/planes/` (se sube con el plan), cola secuencial en lugar de worktrees en paralelo, y la vista leyendo los JSON (las tres, de hispafox). Tras el merge, los últimos pasos del JSON se suben en un commit `chore:` aparte directo a `main`, porque se marcan cuando la rama ya está fusionada.
+
+**Pendiente:** probar el loop de verdad con el siguiente de la cola (#15, categorías). Paralelo con worktrees, si se quiere más adelante.
+
+**Ficheros:** `scripts/orq/loop.js`, `.claude/skills/loop-orquestador/SKILL.md`, `docs/planes/estado-12.json`, `docs/planes/estado-4.json` (nuevos); `scripts/orquestador-vivo/index.html`, `scripts/orquestador-vivo/servidor.js`, `CLAUDE.md` y `docs/bitacora.md` (modificados).
