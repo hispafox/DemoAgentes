@@ -1,0 +1,61 @@
+<section aria-labelledby="page-title">
+  <div class="page-head">
+    <h2 id="page-title">Plantillas</h2>
+    <a class="btn btn-primary" routerLink="/templates/new">Nueva plantilla</a>
+  </div>
+
+  @if (loading()) {
+    <p role="status">Cargando plantillas…</p>
+  } @else if (loadFailed()) {
+    <div class="empty">
+      <p>No se han podido cargar las plantillas.</p>
+      <button class="btn btn-secondary" type="button" (click)="load()">Reintentar</button>
+    </div>
+  } @else if (templates().length === 0) {
+    <div class="empty">
+      <p><strong>Todavía no tienes plantillas.</strong></p>
+      <p>Crea una para generar tareas que repites a menudo.</p>
+      <a class="btn btn-primary" routerLink="/templates/new">Crear plantilla</a>
+    </div>
+  } @else {
+    <ul class="template-list" aria-labelledby="page-title" data-testid="templates">
+      @for (template of templates(); track template.id) {
+        <li class="template-row">
+          <div class="template-main">
+            <span class="template-title">{{ template.title }}</span>
+            @if (template.recurrence) {
+              <span class="badge badge-info">{{ template.recurrence | recurrenceLabel }}</span>
+            }
+          </div>
+          <div class="template-actions">
+            <button
+              class="btn btn-primary"
+              type="button"
+              [disabled]="isBusy(template.id)"
+              [attr.aria-label]="'Crear tarea: ' + template.title"
+              (click)="createTask(template)"
+            >
+              Crear tarea
+            </button>
+            <a
+              class="btn btn-secondary"
+              [routerLink]="['/templates', template.id, 'edit']"
+              [attr.aria-label]="'Editar: ' + template.title"
+            >
+              Editar
+            </a>
+            <button
+              class="btn btn-danger"
+              type="button"
+              [disabled]="isBusy(template.id)"
+              [attr.aria-label]="'Eliminar: ' + template.title"
+              (click)="remove(template)"
+            >
+              Eliminar
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>
