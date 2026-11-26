@@ -37,6 +37,7 @@ node scripts/orq/loop.js marcar <nº> <paso> no_aplica --motivo ".."
 node scripts/orq/loop.js marcar <nº> 4_verificar revisar --capas back,front --motivo "<defectos>"
 node scripts/orq/loop.js aprobar <nº> <paso> --dijo "<lo que respondió la persona>"
 node scripts/orq/loop.js reabrir <nº> <paso> --motivo ".."
+node scripts/orq/loop.js diferir <nº> 7_revision_funcional --motivo ".."   # parada humana para más adelante
 node scripts/orq/loop.js aparcar <nº> --motivo ".."  |  retomar <nº>
 node scripts/orq/loop.js cola [--label <label>]
 ```
@@ -70,7 +71,7 @@ Si el motor se niega a marcar, **no se fuerza**: se hace el paso de verdad. `--s
 - **`2a_criterio`** con preguntas abiertas: pregunta y espera.
 - **Un implementador "bloqueado"**: explica por qué y las opciones.
 - **`BLOQUEADO`** tras 3 vueltas sin APROBADO (el motor lo calcula): informe de bloqueo y no hay commit. Lo desbloquea la persona; después, `reabrir`.
-- **`7_revision_funcional`**: no bloquea la cola. El issue queda `FUSIONADO` y se apunta en el resumen.
+- **`7_revision_funcional`**: no bloquea la cola. El issue queda `FUSIONADO` y se apunta en el resumen. Si la persona lo pide, `diferir` lo deja aplazado con su motivo; se cierra después con `aprobar`.
 
 En cada parada, deja escrito en la respuesta qué se ha hecho y qué se le pide a la persona.
 

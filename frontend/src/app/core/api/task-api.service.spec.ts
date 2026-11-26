@@ -16,6 +16,7 @@ describe('TaskApiService', () => {
     recurrence: 'weekly',
     nextOccurrenceDate: '2026-12-01',
     templateId: null,
+    categoryId: null,
     deletedAt: null,
   };
 
@@ -44,19 +45,19 @@ describe('TaskApiService', () => {
   });
 
   it('should create a task with its input', () => {
-    service.create({ title: 'Comprar pan', recurrence: null }).subscribe();
+    service.create({ title: 'Comprar pan', recurrence: null, categoryId: null }).subscribe();
 
     const req = httpTesting.expectOne('/api/tasks');
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ title: 'Comprar pan', recurrence: null });
+    expect(req.request.body).toEqual({ title: 'Comprar pan', recurrence: null, categoryId: null });
   });
 
   it('should update a task', () => {
-    service.update(7, { title: 'Regar', recurrence: 'daily' }).subscribe();
+    service.update(7, { title: 'Regar', recurrence: 'daily', categoryId: 3 }).subscribe();
 
     const req = httpTesting.expectOne('/api/tasks/7');
     expect(req.request.method).toBe('PUT');
-    expect(req.request.body).toEqual({ title: 'Regar', recurrence: 'daily' });
+    expect(req.request.body).toEqual({ title: 'Regar', recurrence: 'daily', categoryId: 3 });
   });
 
   it('should complete a task', () => {

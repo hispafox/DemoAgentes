@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Category;
 use App\Entity\Task;
 use App\Entity\TaskTemplate;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -62,6 +63,19 @@ class TaskRepository extends ServiceEntityRepository
             ->select('COUNT(t.id)')
             ->where('t.template = :template')
             ->setParameter('template', $template)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * RN-16: tasks with a category, including those in the trash.
+     */
+    public function countByCategory(Category $category): int
+    {
+        return (int) $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->where('t.category = :category')
+            ->setParameter('category', $category)
             ->getQuery()
             ->getSingleScalarResult();
     }

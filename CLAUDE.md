@@ -163,7 +163,7 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 ### Fase 4 — Backend PHP (ISSUES → IA → PHP)
 - [x] Crear proyecto Symfony en `backend/`
 - [x] Configurar Doctrine y la conexión a la base de datos
-- [x] Implementar entidades y migraciones según el análisis — `Task` y `TaskTemplate` (v0.1, issues #5 a #8); `Category` llega con la v0.2 (#15)
+- [x] Implementar entidades y migraciones según el análisis — `Task` y `TaskTemplate` (v0.1, issues #5 a #8) y `Category` (v0.2, #15)
 - [x] Implementar servicios de dominio y controladores/API REST — `/api/tasks` (8 rutas) y `/api/task-templates` (6 rutas), issues #5 a #9
 - [x] Implementar validación de entrada y gestión de errores (la autenticación queda fuera de alcance según `docs/app/`) — DTO validados y errores en `problem+json`
 - [ ] Por cada issue: leer el issue vía MCP → implementar → mover en el tablero y comentar el avance — se hace con `gh` y PR por issue; falta el tablero

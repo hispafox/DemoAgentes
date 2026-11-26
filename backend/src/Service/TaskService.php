@@ -5,24 +5,33 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Dto\TaskInput;
+use App\Entity\Category;
 use App\Entity\Recurrence;
 use App\Entity\Task;
+use App\Repository\CategoryRepository;
 use App\Repository\TaskRepository;
 use App\Service\Exception\ResourceNotFound;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Clock\ClockInterface;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 
 /**
  * Business logic for tasks (docs/analisis.md §5).
  *
  * Issue #5 covers listing, reading, creating and updating, #6 completing and
  * #7 the trash. Creating a task from a template is TaskTemplateService (#9).
+ * Version 0.2 (#15) adds the category of a task (F-19).
  */
 final class TaskService
 {
+    public const UNKNOWN_CATEGORY_MESSAGE = 'This category does not exist.';
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly TaskRepository $taskRepository,
+        private readonly CategoryRepository $categoryRepository,
         private readonly RecurrenceCalculator $recurrenceCalculator,
         private readonly ClockInterface $clock,
     ) {
@@ -88,11 +97,14 @@ final class TaskService
     }
 
     /**
-     * F-03, RN-02, RN-18: creates a pending task; if recurring, its next
-     * occurrence is today + recurrence.
+     * F-03, RN-02, RN-18, F-19: creates a pending task; if recurring, its next
+     * occurrence is today + recurrence. categoryId assigns a category.
+     *
+     * @throws ValidationFailedException if categoryId is not an existing category (422)
      */
     public function create(TaskInput $input): Task
     {
+        $category = $this->findCategory($input);
         $now = $this->clock->now();
         $task = new Task(
             $input->title,
@@ -100,6 +112,7 @@ final class TaskService
             $input->recurrence,
             $this->nextOccurrenceDate($input->recurrence),
         );
+        $task->setCategory($category);
 
         $this->entityManager->persist($task);
         $this->entityManager->flush();
@@ -110,11 +123,16 @@ final class TaskService
     /**
      * F-04, RN-03, RN-18: changes the title and the recurrence. The next
      * occurrence date is recalculated from today only if the recurrence changes.
-     * The status cannot be changed here (RN-11).
+     * The status cannot be changed here (RN-11). F-19, RN-15: categoryId
+     * replaces the category; null (or absent) removes it.
+     *
+     * @throws ValidationFailedException if categoryId is not an existing category (422)
      */
     public function update(Task $task, TaskInput $input): Task
     {
+        $category = $this->findCategory($input);
         $task->setTitle($input->title);
+        $task->setCategory($category);
 
         if ($input->recurrence !== $task->getRecurrence()) {
             $task->setRecurrence($input->recurrence, $this->nextOccurrenceDate($input->recurrence));
@@ -151,6 +169,20 @@ final class TaskService
         $this->entityManager->flush();
 
         return new CompleteResult($task, $nextOccurrence);
+    }
+
+    /**
+     * F-19: the category of categoryId, or null. An unknown id is a validation
+     * error on "categoryId", with the same violations format as the other 422.
+     */
+    private function findCategory(TaskInput $input): ?Category
+    {
+        if (null === $input->categoryId) {
+            return null;
+        }
+
+        return $this->categoryRepository->find($input->categoryId)
+            ?? throw new ValidationFailedException($input, new ConstraintViolationList([new ConstraintViolation(self::UNKNOWN_CATEGORY_MESSAGE, self::UNKNOWN_CATEGORY_MESSAGE, [], $input, 'categoryId', $input->categoryId)]));
     }
 
     private function nextOccurrenceDate(?Recurrence $recurrence): ?\DateTimeImmutable

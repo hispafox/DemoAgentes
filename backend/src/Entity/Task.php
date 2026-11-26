@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * A personal task (docs/analisis.md §3).
  *
  * Issue #5 covers the base fields, #6 completing, #7 the trash and #8 the
- * link to a template.
+ * link to a template. Version 0.2 (#15) adds the category.
  */
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[ORM\Table(name: 'task')]
@@ -49,6 +49,11 @@ class Task
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true, onDelete: 'RESTRICT')]
     private ?TaskTemplate $template = null;
+
+    /** Category of the task; null = no category (RN-15, RN-16). */
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'RESTRICT')]
+    private ?Category $category = null;
 
     /**
      * RN-02: a new task is always pending and its creation date is set by the system.
@@ -191,5 +196,18 @@ class Task
     public function getTemplate(): ?TaskTemplate
     {
         return $this->template;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    /**
+     * RN-15: a task has zero or one category; null removes it.
+     */
+    public function setCategory(?Category $category): void
+    {
+        $this->category = $category;
     }
 }

@@ -10,6 +10,7 @@
 //                                                       [--motivo ..] [--sin-prueba "<motivo>"]
 //   node scripts/orq/loop.js aprobar <n> <paso> --dijo "<lo que dijo la persona>"
 //   node scripts/orq/loop.js reabrir <n> <paso> --motivo "<motivo>"
+//   node scripts/orq/loop.js diferir <n> <paso> --motivo "<motivo>"   (solo paradas humanas)
 //   node scripts/orq/loop.js aparcar <n> --motivo "<motivo>"   |   retomar <n>
 //   node scripts/orq/loop.js cola [--label <label>]
 'use strict';
@@ -40,7 +41,7 @@ const STEPS = [
 const STEP_IDS = STEPS.map((s) => s[0]);
 const HUMAN = ['2a_criterio', '7_revision_funcional'];
 const IMPLEMENTERS = { back: '3a_backend', front: '3b_frontend' };
-const CLOSED = ['hecho', 'no_aplica'];
+const CLOSED = ['hecho', 'no_aplica', 'diferido'];
 
 // ---------- helpers ----------
 function sh(cmd, args) {
@@ -195,7 +196,7 @@ function checkOrder(d, paso) {
 function setFinal(d) {
   if (d.aparcado) d.final = 'APARCADO';
   else if (Object.values(d.pasos).some((p) => p.estado === 'bloqueado')) d.final = 'BLOQUEADO';
-  else if (CLOSED.includes(d.pasos['6d_merge'].estado)) d.final = CLOSED.includes(d.pasos['7_revision_funcional'].estado) ? 'CERRADO' : 'FUSIONADO';
+  else if (CLOSED.includes(d.pasos['6d_merge'].estado)) d.final = ['hecho', 'no_aplica'].includes(d.pasos['7_revision_funcional'].estado) ? 'CERRADO' : 'FUSIONADO';
   else d.final = 'ABIERTO';
 }
 
@@ -243,7 +244,7 @@ function cmdCrear(n, opt, quiet = false) {
 
 function cmdEstado(n) {
   const d = load(n);
-  const marks = { hecho: '✔', no_aplica: '–', pendiente: '·', en_marcha: '▶', corregir: '↺', bloqueado: '⛔', espera: '⏸' };
+  const marks = { hecho: '✔', no_aplica: '–', diferido: '⏭', pendiente: '·', en_marcha: '▶', corregir: '↺', bloqueado: '⛔', espera: '⏸' };
   console.log(`\n#${d.issue} ${d.titulo}\nrama ${d.rama} · plan ${d.plan || '—'} · vuelta ${d.vuelta}/${MAX_ROUNDS} · ${d.final}\n`);
   for (const [id, what] of STEPS) {
     const p = d.pasos[id];
@@ -328,6 +329,20 @@ function cmdReabrir(n, paso, opt) {
   console.log(`#${n}: reabierto desde ${paso} — «${opt.motivo}»`);
 }
 
+// A deferred step will be done later: it does not hold the loop back, but the issue is not CERRADO
+function cmdDiferir(n, paso, opt) {
+  const d = load(n);
+  if (!STEP_IDS.includes(paso)) fail(`Paso desconocido: ${paso}`);
+  if (!HUMAN.includes(paso)) fail(`Solo se difieren las paradas humanas (${HUMAN.join(', ')}): el resto se hace o es no_aplica.`);
+  if (!opt.motivo || opt.motivo === true) fail('diferir necesita --motivo.');
+  if (d.pasos[paso].estado === 'hecho') fail(`${paso} ya está hecho: no hay nada que diferir.`);
+  d.pasos[paso] = { estado: 'diferido', motivo: opt.motivo, fecha: now() };
+  log(d, paso, 'diferido', opt.motivo);
+  setFinal(d);
+  save(d);
+  console.log(`#${n} · ${paso} → diferido — «${opt.motivo}». Para hacerlo: aprobar ${n} ${paso} --dijo ...`);
+}
+
 // Parked issues stay out of the queue until they are resumed
 function cmdAparcar(n, opt) {
   if (!opt.motivo || opt.motivo === true) fail('aparcar necesita --motivo.');
@@ -379,10 +394,11 @@ switch (cmd) {
   case 'marcar': needIssue(); cmdMarcar(n, a, b, opt); break;
   case 'aprobar': needIssue(); cmdAprobar(n, a, opt); break;
   case 'reabrir': needIssue(); cmdReabrir(n, a, opt); break;
+  case 'diferir': needIssue(); cmdDiferir(n, a, opt); break;
   case 'aparcar': needIssue(); cmdAparcar(n, opt); break;
   case 'retomar': needIssue(); cmdRetomar(n); break;
   case 'cola': cmdCola(opt); break;
   default:
-    console.log('Uso: node scripts/orq/loop.js <crear|estado|siguiente|marcar|aprobar|reabrir|aparcar|retomar|cola> ...');
+    console.log('Uso: node scripts/orq/loop.js <crear|estado|siguiente|marcar|aprobar|reabrir|diferir|aparcar|retomar|cola> ...');
     process.exit(cmd ? 1 : 0);
 }

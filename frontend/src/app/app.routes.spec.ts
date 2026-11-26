@@ -9,6 +9,7 @@ import { TaskTrash } from './features/tasks/task-trash/task-trash';
 import { Task } from './core/models/task';
 import { TemplateForm } from './features/task-templates/template-form/template-form';
 import { TemplateList } from './features/task-templates/template-list/template-list';
+import { CategoryList } from './features/categories/category-list/category-list';
 
 // Issues #11 and #12: trash and template routes, and the way back to the task list.
 describe('routes', () => {
@@ -67,6 +68,16 @@ describe('routes', () => {
     expect(edit).toBeInstanceOf(TemplateForm);
   });
 
+  // Issue #15: the category screen.
+  it('should resolve /categories to CategoryList', async () => {
+    const harness = await RouterTestingHarness.create();
+
+    const screen = await harness.navigateByUrl('/categories', CategoryList);
+    httpTesting.expectOne('/api/categories').flush([]);
+
+    expect(screen).toBeInstanceOf(CategoryList);
+  });
+
   it('should show the new task in /tasks after instantiating', async () => {
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl('/templates', TemplateList);
@@ -95,5 +106,6 @@ const newTask: Task = {
   recurrence: null,
   nextOccurrenceDate: null,
   templateId: 4,
+  categoryId: null,
   deletedAt: null,
 };

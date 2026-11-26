@@ -36,6 +36,7 @@ final class TaskControllerTest extends WebTestCase
         self::assertSame('2026-11-25T10:00:00+00:00', $task['createdAt']);
         self::assertNull($task['recurrence']);
         self::assertNull($task['nextOccurrenceDate']);
+        self::assertNull($task['categoryId']);
     }
 
     // RN-18: a recurring task is created with today + recurrence
@@ -145,6 +146,82 @@ final class TaskControllerTest extends WebTestCase
         self::assertSame('monthly', $task['recurrence']);
         self::assertSame('2026-12-25', $task['nextOccurrenceDate']);
         self::assertFalse($task['completed']);
+    }
+
+    // CA #15-6: categoryId assigns the category on POST and changes it on PUT (F-19, RN-15)
+    public function testCreateAndUpdateWithCategoryId(): void
+    {
+        $home = $this->createCategory('Home');
+        $work = $this->createCategory('Work');
+
+        $this->client->jsonRequest('POST', '/api/tasks', ['title' => 'Buy bread', 'categoryId' => $home]);
+        self::assertResponseStatusCodeSame(201);
+        $created = $this->body();
+        self::assertSame($home, $created['categoryId']);
+        $id = $created['id'];
+
+        $this->client->jsonRequest('PUT', '/api/tasks/'.$id, ['title' => 'Buy bread', 'categoryId' => $work]);
+        self::assertResponseIsSuccessful();
+        $updated = $this->body();
+        self::assertSame($work, $updated['categoryId']);
+
+        $this->client->request('GET', '/api/tasks/'.$id);
+        $shown = $this->body();
+        self::assertSame($work, $shown['categoryId']);
+    }
+
+    // CA #15-6: categoryId null removes the category; so does leaving it out, because PUT replaces (RN-15)
+    public function testUpdateWithNullCategoryIdRemovesCategory(): void
+    {
+        $home = $this->createCategory('Home');
+        $id = $this->createTask(['title' => 'Buy bread', 'categoryId' => $home]);
+
+        $this->client->jsonRequest('PUT', '/api/tasks/'.$id, ['title' => 'Buy bread', 'categoryId' => null]);
+        self::assertResponseIsSuccessful();
+        self::assertNull($this->body()['categoryId']);
+
+        $this->client->jsonRequest('PUT', '/api/tasks/'.$id, ['title' => 'Buy bread', 'categoryId' => $home]);
+        $this->client->jsonRequest('PUT', '/api/tasks/'.$id, ['title' => 'Buy bread']);
+        self::assertResponseIsSuccessful();
+        self::assertNull($this->body()['categoryId']);
+    }
+
+    // CA #15-7: unknown categoryId on POST -> 422 with the violation on categoryId (F-19)
+    public function testCreateWithUnknownCategoryIdReturns422(): void
+    {
+        $this->client->jsonRequest('POST', '/api/tasks', ['title' => 'Buy bread', 'categoryId' => 999999]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertResponseHeaderSame('Content-Type', 'application/problem+json');
+        $problem = $this->body();
+        self::assertSame(422, $problem['status']);
+        self::assertSame('categoryId', $problem['violations'][0]['propertyPath']);
+
+        $this->client->request('GET', '/api/tasks');
+        self::assertSame([], $this->body());
+    }
+
+    // CA #15-7: unknown categoryId on PUT -> 422 and the task does not change (F-19)
+    public function testUpdateWithUnknownCategoryIdReturns422(): void
+    {
+        $id = $this->createTask(['title' => 'Buy bread']);
+
+        $this->client->jsonRequest('PUT', '/api/tasks/'.$id, ['title' => 'Buy milk', 'categoryId' => 999999]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertResponseHeaderSame('Content-Type', 'application/problem+json');
+        self::assertSame('categoryId', $this->body()['violations'][0]['propertyPath']);
+
+        $this->client->request('GET', '/api/tasks/'.$id);
+        self::assertSame('Buy bread', $this->body()['title']);
+    }
+
+    private function createCategory(string $name): int
+    {
+        $this->client->jsonRequest('POST', '/api/categories', ['name' => $name]);
+        self::assertResponseStatusCodeSame(201);
+
+        return $this->body()['id'];
     }
 
     /**

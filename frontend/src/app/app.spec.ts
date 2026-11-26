@@ -35,6 +35,15 @@ describe('App', () => {
     expect(link?.textContent?.trim()).toBe('Plantillas');
   });
 
+  // Issue #15: the category screen is reachable from the main navigation.
+  it('should link to the categories in the main navigation', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    const link = (fixture.nativeElement as HTMLElement).querySelector('nav a[href="/categories"]');
+    expect(link?.textContent?.trim()).toBe('Categorías');
+  });
+
   it('should show the last error and hide it when closed', async () => {
     const fixture = TestBed.createComponent(App);
     TestBed.inject(MessageService).showError('No se ha encontrado el elemento.');

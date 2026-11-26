@@ -18,4 +18,9 @@ final class ResourceNotFound extends \RuntimeException
     {
         return new self(sprintf('Task template %d not found.', $id));
     }
+
+    public static function category(int $id): self
+    {
+        return new self(sprintf('Category %d not found.', $id));
+    }
 }

@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-// Screens of docs/analisis.md §6: tasks (#10), trash (#11) and templates (#12).
+// Screens of docs/analisis.md §6: tasks (#10), trash (#11), templates (#12) and categories (#15).
 // 'tasks/trash' is a static path, so it never clashes with 'tasks/:id/edit'.
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'tasks' },
@@ -34,5 +34,10 @@ export const routes: Routes = [
     path: 'templates/:id/edit',
     loadComponent: () =>
       import('./features/task-templates/template-form/template-form').then((m) => m.TemplateForm),
+  },
+  {
+    path: 'categories',
+    loadComponent: () =>
+      import('./features/categories/category-list/category-list').then((m) => m.CategoryList),
   },
 ];

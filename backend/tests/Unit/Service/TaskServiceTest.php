@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service;
 
 use App\Dto\TaskInput;
+use App\Entity\Category;
 use App\Entity\Exception\DomainRuleViolation;
 use App\Entity\Recurrence;
 use App\Entity\Task;
 use App\Entity\TaskTemplate;
+use App\Repository\CategoryRepository;
 use App\Repository\TaskRepository;
 use App\Service\Exception\ResourceNotFound;
 use App\Service\RecurrenceCalculator;
@@ -17,19 +19,23 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 
 /**
- * Task business logic covered by issue #5 (F-01 to F-04, RN-02, RN-03, RN-18).
+ * Task business logic covered by issue #5 (F-01 to F-04, RN-02, RN-03, RN-18)
+ * and the category of a task from issue #15 (F-19, RN-15).
  */
 final class TaskServiceTest extends TestCase
 {
     private const NOW = '2026-11-25 10:00:00';
 
     private TaskRepository&Stub $taskRepository;
+    private CategoryRepository&Stub $categoryRepository;
 
     protected function setUp(): void
     {
         $this->taskRepository = $this->createStub(TaskRepository::class);
+        $this->categoryRepository = $this->createStub(CategoryRepository::class);
     }
 
     // RN-02: pending, creation date set by the system, persisted in one flush
@@ -111,11 +117,56 @@ final class TaskServiceTest extends TestCase
         $this->service()->getTask(999);
     }
 
+    // F-19, RN-15: categoryId assigns the category when creating
+    public function testCreateAssignsCategory(): void
+    {
+        $category = new Category('Home');
+        $this->categoryRepository->method('find')->willReturn($category);
+
+        $task = $this->service()->create(new TaskInput('Buy bread', categoryId: 3));
+
+        self::assertSame($category, $task->getCategory());
+    }
+
+    // F-19, RN-15: categoryId changes the category, and null removes it
+    public function testUpdateChangesAndRemovesCategory(): void
+    {
+        $home = new Category('Home');
+        $work = new Category('Work');
+        $task = new Task('Buy bread', new \DateTimeImmutable(self::NOW));
+        $task->setCategory($home);
+        $this->categoryRepository->method('find')->willReturn($work);
+
+        $this->service()->update($task, new TaskInput('Buy bread', categoryId: 4));
+        self::assertSame($work, $task->getCategory());
+
+        $this->service()->update($task, new TaskInput('Buy bread', categoryId: null));
+        self::assertNull($task->getCategory());
+    }
+
+    // F-19: an unknown categoryId is a validation error on categoryId (422) and nothing is saved
+    public function testCreateWithUnknownCategoryFails(): void
+    {
+        $this->categoryRepository->method('find')->willReturn(null);
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects(self::never())->method('persist');
+        $entityManager->expects(self::never())->method('flush');
+
+        try {
+            $this->service($entityManager)->create(new TaskInput('Buy bread', categoryId: 999));
+            self::fail('A ValidationFailedException was expected.');
+        } catch (ValidationFailedException $exception) {
+            self::assertCount(1, $exception->getViolations());
+            self::assertSame('categoryId', $exception->getViolations()[0]->getPropertyPath());
+        }
+    }
+
     private function service(?EntityManagerInterface $entityManager = null): TaskService
     {
         return new TaskService(
             $entityManager ?? $this->createStub(EntityManagerInterface::class),
             $this->taskRepository,
+            $this->categoryRepository,
             new RecurrenceCalculator(),
             new MockClock(self::NOW),
         );
@@ -172,6 +223,7 @@ final class TaskServiceTest extends TestCase
         $service = new TaskService(
             $this->createStub(EntityManagerInterface::class),
             $this->taskRepository,
+            $this->categoryRepository,
             new RecurrenceCalculator(),
             new MockClock('2027-01-31 18:00:00'),
         );
