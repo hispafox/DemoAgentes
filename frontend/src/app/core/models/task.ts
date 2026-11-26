@@ -9,12 +9,15 @@ export interface Task {
   recurrence: Recurrence | null;
   nextOccurrenceDate: string | null; // YYYY-MM-DD
   templateId: number | null;
+  categoryId: number | null; // F-19, RN-15: zero or one category
   deletedAt: string | null;
 }
 
+// PUT replaces the task: a missing categoryId removes the category, so it is always sent.
 export interface TaskInput {
   title: string;
   recurrence: Recurrence | null;
+  categoryId: number | null;
 }
 
 // Response of POST /api/tasks/{id}/complete.

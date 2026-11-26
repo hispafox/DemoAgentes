@@ -9,7 +9,7 @@ use App\Entity\Task;
 /**
  * Task as returned by the API (docs/analisis.md §4).
  *
- * categoryId (#15) is added with the issue that brings it to the entity.
+ * categoryId comes with version 0.2 (#15); null = no category.
  */
 final readonly class TaskOutput
 {
@@ -22,6 +22,7 @@ final readonly class TaskOutput
         public ?string $nextOccurrenceDate,
         public ?int $templateId,
         public ?string $deletedAt,
+        public ?int $categoryId,
     ) {
     }
 
@@ -36,6 +37,7 @@ final readonly class TaskOutput
             nextOccurrenceDate: $task->getNextOccurrenceDate()?->format('Y-m-d'),
             templateId: $task->getTemplate()?->getId(),
             deletedAt: $task->getDeletedAt()?->format(\DATE_ATOM),
+            categoryId: $task->getCategory()?->getId(),
         );
     }
 }

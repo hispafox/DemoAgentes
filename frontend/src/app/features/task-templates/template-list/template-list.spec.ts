@@ -101,6 +101,7 @@ describe('TemplateList', () => {
       recurrence: 'daily',
       nextOccurrenceDate: '2026-11-27',
       templateId: 4,
+      categoryId: null,
       deletedAt: null,
     };
     req.flush(task, { status: 201, statusText: 'Created' });

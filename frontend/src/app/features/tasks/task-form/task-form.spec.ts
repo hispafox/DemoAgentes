@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { errorInterceptor } from '../../../core/interceptors/error.interceptor';
 import { MessageService } from '../../../core/messages/message.service';
+import { Category } from '../../../core/models/category';
 import { Task } from '../../../core/models/task';
 import { TaskForm } from './task-form';
 
@@ -23,10 +24,15 @@ describe('TaskForm', () => {
     recurrence: 'monthly',
     nextOccurrenceDate: '2026-12-24',
     templateId: null,
+    categoryId: null,
     deletedAt: null,
   };
 
-  async function render(id: string | null): Promise<void> {
+  const home: Category = { id: 3, name: 'Casa' };
+  const work: Category = { id: 4, name: 'Trabajo' };
+
+  // The form always loads the categories for its selector (issue #15).
+  async function render(id: string | null, categories: Category[] = []): Promise<void> {
     TestBed.configureTestingModule({
       imports: [TaskForm],
       providers: [
@@ -46,6 +52,14 @@ describe('TaskForm', () => {
     fixture = TestBed.createComponent(TaskForm);
     element = fixture.nativeElement as HTMLElement;
     await fixture.whenStable();
+    httpTesting.expectOne('/api/categories').flush(categories);
+    await fixture.whenStable();
+  }
+
+  function choose(select: HTMLSelectElement, label: string): void {
+    const index = Array.from(select.options).findIndex((o) => o.textContent?.trim() === label);
+    select.selectedIndex = index;
+    select.dispatchEvent(new Event('change'));
   }
 
   function input<T extends HTMLElement>(selector: string): T {
@@ -97,7 +111,7 @@ describe('TaskForm', () => {
 
     const req = httpTesting.expectOne('/api/tasks');
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ title: 'Comprar pan', recurrence: null });
+    expect(req.request.body).toEqual({ title: 'Comprar pan', recurrence: null, categoryId: null });
     req.flush({ ...plants, id: 8, title: 'Comprar pan', recurrence: null }, { status: 201, statusText: 'Created' });
     await fixture.whenStable();
 
@@ -118,7 +132,7 @@ describe('TaskForm', () => {
     await submit();
 
     const req = httpTesting.expectOne('/api/tasks');
-    expect(req.request.body).toEqual({ title: 'Regar las plantas', recurrence: 'daily' });
+    expect(req.request.body).toEqual({ title: 'Regar las plantas', recurrence: 'daily', categoryId: null });
     req.flush(plants, { status: 201, statusText: 'Created' });
   });
 
@@ -137,7 +151,7 @@ describe('TaskForm', () => {
 
     const req = httpTesting.expectOne('/api/tasks/7');
     expect(req.request.method).toBe('PUT');
-    expect(req.request.body).toEqual({ title: 'Regar las plantas', recurrence: null });
+    expect(req.request.body).toEqual({ title: 'Regar las plantas', recurrence: null, categoryId: null });
     req.flush({ ...plants, recurrence: null, nextOccurrenceDate: null });
     await fixture.whenStable();
 
@@ -169,5 +183,49 @@ describe('TaskForm', () => {
     expect(navigate).not.toHaveBeenCalled();
     expect(input<HTMLInputElement>('#title').value).toBe('Comprar pan');
     expect(input<HTMLButtonElement>('button[type="submit"]').disabled).toBe(false);
+  });
+  // Issue #15 (criterion 11): category selector.
+  it('should list the categories and send the chosen categoryId', async () => {
+    await render(null, [home, work]);
+
+    const select = input<HTMLSelectElement>('#category');
+    expect(Array.from(select.options).map((o) => o.textContent?.trim())).toEqual(['Sin categoría', 'Casa', 'Trabajo']);
+
+    type('Comprar pan');
+    choose(select, 'Trabajo');
+    await submit();
+
+    const req = httpTesting.expectOne('/api/tasks');
+    expect(req.request.body).toEqual({ title: 'Comprar pan', recurrence: null, categoryId: 4 });
+    req.flush({ ...plants, id: 8, title: 'Comprar pan', recurrence: null, categoryId: 4 }, { status: 201, statusText: 'Created' });
+  });
+
+  it('should preselect the current category when editing', async () => {
+    await render('7', [home, work]);
+    httpTesting.expectOne('/api/tasks/7').flush({ ...plants, categoryId: 3 });
+    await fixture.whenStable();
+
+    const select = input<HTMLSelectElement>('#category');
+    expect(select.options[select.selectedIndex].textContent?.trim()).toBe('Casa');
+
+    // Saving without touching the selector keeps the category (PUT replaces the task).
+    await submit();
+    const req = httpTesting.expectOne('/api/tasks/7');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({ title: 'Regar las plantas', recurrence: 'monthly', categoryId: 3 });
+    req.flush({ ...plants, categoryId: 3 });
+  });
+
+  it('should send categoryId null when "Sin categoría" is chosen', async () => {
+    await render('7', [home, work]);
+    httpTesting.expectOne('/api/tasks/7').flush({ ...plants, categoryId: 3 });
+    await fixture.whenStable();
+
+    choose(input<HTMLSelectElement>('#category'), 'Sin categoría');
+    await submit();
+
+    const req = httpTesting.expectOne('/api/tasks/7');
+    expect(req.request.body).toEqual({ title: 'Regar las plantas', recurrence: 'monthly', categoryId: null });
+    req.flush(plants);
   });
 });

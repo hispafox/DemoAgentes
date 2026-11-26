@@ -2,8 +2,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { CategoryApiService } from '../../../core/api/category-api.service';
 import { TaskApiService } from '../../../core/api/task-api.service';
 import { MessageService } from '../../../core/messages/message.service';
+import { Category } from '../../../core/models/category';
 import { Recurrence, TaskInput } from '../../../core/models/task';
 
 // A title made only of spaces counts as empty, like NotBlank in the backend (RN-01).
@@ -11,7 +13,8 @@ function notBlank(control: AbstractControl<string>): ValidationErrors | null {
   return control.value.trim() === '' ? { required: true } : null;
 }
 
-// F-03: create a task; F-04: edit its title or recurrence. The mode depends on the :id route parameter.
+// F-03: create a task; F-04: edit its title or recurrence; F-19: choose its category (RN-15).
+// The mode depends on the :id route parameter.
 @Component({
   selector: 'app-task-form',
   imports: [ReactiveFormsModule, RouterLink],
@@ -20,6 +23,7 @@ function notBlank(control: AbstractControl<string>): ValidationErrors | null {
 })
 export class TaskForm implements OnInit {
   private readonly api = inject(TaskApiService);
+  private readonly categoryApi = inject(CategoryApiService);
   private readonly messages = inject(MessageService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -33,15 +37,24 @@ export class TaskForm implements OnInit {
   protected readonly notFound = signal(false);
   protected readonly saving = signal(false);
   protected readonly submitted = signal(false);
+  protected readonly categories = signal<Category[]>([]);
 
   // RN-01, RN-07: title required, at most 255 characters. RN-03: recurring implies a recurrence.
   protected readonly form = new FormGroup({
     title: new FormControl('', { nonNullable: true, validators: [Validators.required, notBlank, Validators.maxLength(255)] }),
     recurring: new FormControl(false, { nonNullable: true }),
     recurrence: new FormControl<Recurrence>('weekly', { nonNullable: true }),
+    // F-19, RN-15: optional; null means "Sin categoría".
+    categoryId: new FormControl<number | null>(null),
   });
 
   ngOnInit(): void {
+    // The interceptor shows the error if the categories cannot be loaded; the form still works.
+    this.categoryApi.list().subscribe({
+      next: (categories) => this.categories.set(categories),
+      error: () => this.categories.set([]),
+    });
+
     if (this.id === null) {
       return;
     }
@@ -52,6 +65,7 @@ export class TaskForm implements OnInit {
           title: task.title,
           recurring: task.recurrence !== null,
           recurrence: task.recurrence ?? 'weekly',
+          categoryId: task.categoryId,
         });
         this.loading.set(false);
       },
@@ -81,8 +95,9 @@ export class TaskForm implements OnInit {
       return;
     }
 
-    const { title, recurring, recurrence } = this.form.getRawValue();
-    const input: TaskInput = { title: title.trim(), recurrence: recurring ? recurrence : null };
+    // PUT replaces the task, so categoryId is always sent (a missing one would remove the category).
+    const { title, recurring, recurrence, categoryId } = this.form.getRawValue();
+    const input: TaskInput = { title: title.trim(), recurrence: recurring ? recurrence : null, categoryId };
     const request = this.id === null ? this.api.create(input) : this.api.update(this.id, input);
 
     this.saving.set(true);

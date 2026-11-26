@@ -42,6 +42,16 @@
       </div>
     }
 
+    <div class="field">
+      <label for="category">Categoría</label>
+      <select id="category" formControlName="categoryId">
+        <option [ngValue]="null">Sin categoría</option>
+        @for (category of categories(); track category.id) {
+          <option [ngValue]="category.id">{{ category.name }}</option>
+        }
+      </select>
+    </div>
+
     <div class="form-actions">
       <button class="btn btn-primary" type="submit" [disabled]="saving()">
         {{ saving() ? 'Guardando…' : 'Guardar' }}

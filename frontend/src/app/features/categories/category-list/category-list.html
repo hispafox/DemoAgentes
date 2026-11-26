@@ -1,0 +1,96 @@
+<section aria-labelledby="page-title">
+  <div class="page-head">
+    <h2 id="page-title">Categorías</h2>
+  </div>
+
+  <form class="create-form" [formGroup]="createForm" (ngSubmit)="create()" novalidate aria-label="Nueva categoría">
+    <div class="field" [class.has-error]="newNameInvalid">
+      <label for="new-name">Nueva categoría</label>
+      <div class="inline">
+        <input
+          #newNameInput
+          id="new-name"
+          type="text"
+          formControlName="name"
+          maxlength="100"
+          autocomplete="off"
+          [attr.aria-invalid]="newNameInvalid"
+          [attr.aria-describedby]="newNameInvalid ? 'new-name-error' : null"
+        />
+        <button class="btn btn-primary" type="submit" [disabled]="creating()">
+          {{ creating() ? 'Creando…' : 'Crear' }}
+        </button>
+      </div>
+      @if (newNameInvalid) {
+        <p class="field-error" id="new-name-error">Error: {{ nameError(newName) }}</p>
+      }
+    </div>
+  </form>
+
+  @if (loading()) {
+    <p role="status">Cargando categorías…</p>
+  } @else if (loadFailed()) {
+    <div class="empty">
+      <p>No se han podido cargar las categorías.</p>
+      <button class="btn btn-secondary" type="button" (click)="load()">Reintentar</button>
+    </div>
+  } @else if (categories().length === 0) {
+    <div class="empty">
+      <p><strong>Todavía no tienes categorías.</strong></p>
+      <p>Crea una para agrupar tus tareas.</p>
+    </div>
+  } @else {
+    <ul class="category-list" aria-labelledby="page-title" data-testid="categories">
+      @for (category of categories(); track category.id) {
+        <li class="category-row">
+          @if (editingId() === category.id) {
+            <form class="edit-form" [formGroup]="editForm" (ngSubmit)="rename(category)" novalidate [attr.aria-label]="'Renombrar: ' + category.name">
+              <div class="field" [class.has-error]="editNameInvalid">
+                <label [for]="'edit-name-' + category.id">Nombre</label>
+                <div class="inline">
+                  <input
+                    #editNameInput
+                    [id]="'edit-name-' + category.id"
+                    type="text"
+                    formControlName="name"
+                    maxlength="100"
+                    autocomplete="off"
+                    [attr.aria-invalid]="editNameInvalid"
+                    [attr.aria-describedby]="editNameInvalid ? 'edit-name-error' : null"
+                  />
+                  <button class="btn btn-primary" type="submit" [disabled]="isBusy(category.id)">Guardar</button>
+                  <button class="btn btn-secondary" type="button" (click)="cancelEdit()">Cancelar</button>
+                </div>
+                @if (editNameInvalid) {
+                  <p class="field-error" id="edit-name-error">Error: {{ nameError(editName) }}</p>
+                }
+              </div>
+            </form>
+          } @else {
+            <span class="category-name">{{ category.name }}</span>
+            <div class="category-actions">
+              <button
+                class="btn btn-secondary"
+                type="button"
+                [disabled]="isBusy(category.id)"
+                [attr.aria-label]="'Editar: ' + category.name"
+                (click)="startEdit(category)"
+              >
+                Editar
+              </button>
+              <button
+                class="btn btn-danger"
+                type="button"
+                [disabled]="isBusy(category.id)"
+                [attr.aria-label]="'Eliminar: ' + category.name"
+                (click)="remove(category)"
+              >
+                Eliminar
+              </button>
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  }
+</section>

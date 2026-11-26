@@ -23,6 +23,7 @@ describe('TaskList', () => {
       recurrence: null,
       nextOccurrenceDate: null,
       templateId: null,
+      categoryId: null,
       deletedAt: null,
       ...overrides,
     };

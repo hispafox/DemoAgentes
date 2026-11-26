@@ -1414,3 +1414,36 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 **Pendiente:** probar el loop de verdad con el siguiente de la cola (#15, categorías). Paralelo con worktrees, si se quiere más adelante.
 
 **Ficheros:** `scripts/orq/loop.js`, `.claude/skills/loop-orquestador/SKILL.md`, `docs/planes/estado-12.json`, `docs/planes/estado-4.json` (nuevos); `scripts/orquestador-vivo/index.html`, `scripts/orquestador-vivo/servidor.js`, `CLAUDE.md` y `docs/bitacora.md` (modificados).
+
+## Paso 83 — Issue #15 con el loop del orquestador: categorías de tareas (2026-11-26)
+
+**Qué hicimos:** implementamos el #15 (categorías, F-15 a F-19, RN-14 a RN-17, versión 0.2), backend y frontend, en el primer recorrido real del loop del paso 82 (`/loop-orquestador` en modo cola; el #4 estaba aparcado). Todo el estado quedó en `docs/planes/estado-15.json`, con la prueba de cada paso.
+
+**Cambios:**
+- Preparar: rama `feature/15-categorias-de-tareas` desde `main`.
+- Planificar: `planificador` → `docs/planes/plan-15-categorias-de-tareas.md`, con 11 pasos y 11 criterios (9 de API del issue y 2 de pantalla sacados del análisis §6).
+- CRITERIO: hispafox aceptó las seis recomendaciones. El 422 de `categoryId` inexistente y de nombre duplicado sale del servicio con `ValidationFailedException`; sin `disenador-ui`; la lista de tareas no muestra la categoría; sin reasignar al eliminar (RN-16); `GET /api/categories` por id; renombrar con botón Editar.
+- Backend (`implementador-backend`): entidad `Category`, `Task.category` con `ON DELETE RESTRICT`, `CategoryRepository` (`existsWithName`, `findAllOrdered`), `countByCategory`, migración `Version20261126121937`, DTO, `CategoryService`, `CategoryController` (4 rutas) y `ValidationFailedExceptionSubscriber` para convertir esa excepción en un 422 con `violations`. La migración generada por Doctrine quitaba el `ON DELETE RESTRICT` de `template_id` al reconstruir `task` en SQLite, lo que rompía RN-12. Se reescribió a mano para conservarlo.
+- Frontend (`implementador-frontend`): modelo `Category`, `CategoryApiService`, pantalla `/categories` (crear, Editar con Guardar y Cancelar, eliminar con aviso del 409), enlace "Categorías", selector en `TaskForm` (envía siempre `categoryId`) y `categoryId` en los mocks existentes.
+- Verificar, vuelta 1: `verificador` → **APROBADO**. PHPUnit 129 tests y 374 aserciones (antes 98), PHPStan y CS-Fixer limpios; Vitest 85/85 y build correcto; 11/11 criterios con test.
+- Revisar reglas: `guardian-candado` → **CUMPLE**, con dos notas: el suscriptor del 422 y el `Location` sin `GET` de detalle, que coincide con el análisis.
+- Revisión funcional: **diferida** por decisión de la persona (`diferir`, paso 84).
+- `CLAUDE.md`: `Category` en la tarea de entidades de la Fase 4.
+
+**Pendiente:**
+- La revisión funcional de `/categories` y del selector: cerrarla con `node scripts/orq/loop.js aprobar 15 7_revision_funcional --dijo ...`.
+- Alinear los skills `servicio` y `api`, que hablan de una excepción `InvalidInput` para estos 422.
+- Las bases de datos locales necesitan `doctrine:migrations:migrate` (o `backend-setup.ps1`).
+- Los mensajes de las violaciones 422 llegan en inglés al aviso global.
+
+**Ficheros:** `docs/planes/plan-15-categorias-de-tareas.md`, `docs/planes/estado-15.json`, `backend/` (20 ficheros: entidades, repositorios, migración, DTO, servicios, controlador, suscriptor y tests), `frontend/` (19 ficheros: modelos, servicio, `category-list`, `task-form`, rutas, navegación y specs); `CLAUDE.md` y `docs/bitacora.md` (modificados).
+
+## Paso 84 — `diferir` en el motor del loop (2026-11-26)
+
+**Qué hicimos:** añadimos a `scripts/orq/loop.js` el comando `diferir <nº> <paso> --motivo`, porque hispafox pidió aplazar la revisión funcional del #15 y el motor solo sabía de `no_aplica`, que significa otra cosa.
+
+**Cambios:**
+- `diferir` solo vale para las paradas humanas (`2a_criterio` y `7_revision_funcional`) y exige motivo. Un paso diferido no frena el loop. Si el diferido es la revisión funcional, el issue queda FUSIONADO y no CERRADO, y se cierra después con `aprobar`.
+- La vista lo pinta en discontinuo, y el skill `loop-orquestador` lo documenta.
+
+**Ficheros:** `scripts/orq/loop.js`, `scripts/orquestador-vivo/index.html`, `.claude/skills/loop-orquestador/SKILL.md` y `docs/bitacora.md` (modificados).

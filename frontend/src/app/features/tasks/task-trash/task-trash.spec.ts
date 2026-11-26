@@ -23,6 +23,7 @@ describe('TaskTrash', () => {
       recurrence: null,
       nextOccurrenceDate: null,
       templateId: null,
+      categoryId: null,
       deletedAt: '2026-11-25T18:30:00+01:00',
       ...overrides,
     };
