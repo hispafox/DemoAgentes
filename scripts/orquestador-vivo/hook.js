@@ -73,6 +73,18 @@ function lastRunningAgentNode() {
   return running.pop() || null;
 }
 
+// True when the current run is for this issue, has gone past PREP and has not been merged yet
+function sameOpenRun(issue) {
+  const events = readState().eventos;
+  let start = -1;
+  events.forEach((e, i) => { if (e.tipo === 'inicio') start = i; });
+  if (start < 0 || events[start].issue !== issue) return false;
+  const run = events.slice(start + 1);
+  const pastPrep = run.some((e) => e.nodo && e.nodo !== 'PREP');
+  const merged = run.some((e) => e.nodo === 'MERGE' && e.estado === 'ok');
+  return pastPrep && !merged;
+}
+
 function toText(value) {
   if (value == null) return '';
   if (typeof value === 'string') return value;
@@ -105,7 +117,12 @@ function verdict(node, text) {
     if (v.startsWith('NO CUMPLE')) return 'fallo';
     if (v.startsWith('CUMPLE')) return 'ok';
   }
-  if (/\bbloquead[oa]\b/i.test(text) && (node === 'BACK' || node === 'FRONT')) return 'fallo';
+  if (node === 'VERIF' || node === 'GUARD') return null;
+  if (node === 'BACK' || node === 'FRONT') {
+    if (/\bbloquead[oa]\b/i.test(text)) return 'fallo';
+    return /\bterminad[oa]\b/i.test(text) ? 'ok' : null;
+  }
+  if (node === 'PLAN') return /plan-\d+/.test(text) ? 'ok' : null;
   return text ? 'ok' : null;
 }
 
@@ -145,9 +162,10 @@ function handle(input) {
     const node = AGENT_NODES[input.agent_type] || lastRunningAgentNode();
     if (!node) return;
     const text = toText(input.last_assistant_message) || lastAssistantText(input.agent_transcript_path);
-    // Without the final text the verdict is unknown: PostToolUse of the Agent tool will set it
-    if (!text && (node === 'VERIF' || node === 'GUARD')) return;
-    push({ nodo: node, estado: verdict(node, text) || 'ok', texto: summary(text) });
+    // A subagent also "stops" while it waits for background work: only its final report counts
+    const result = verdict(node, text);
+    if (!result) return;
+    push({ nodo: node, estado: result, texto: summary(text) });
     return;
   }
 
@@ -169,6 +187,8 @@ function handle(input) {
     for (const { re, node } of COMMAND_NODES) {
       const match = command.match(re);
       if (!match) continue;
+      // Subagents also read the issue: the same issue in an unfinished run is not a new run
+      if (node === 'PREP' && sameOpenRun(match[1])) return;
       if (event === 'PreToolUse') {
         if (node === 'PREP') push({ tipo: 'inicio', issue: match[1] });
         push({ nodo: node, estado: 'activo', texto: command.slice(0, 120) });
