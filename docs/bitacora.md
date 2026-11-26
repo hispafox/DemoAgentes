@@ -1009,4 +1009,9 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 
 **Ramas locales (sin push, no fusionar):** `ensayo/lab-orquestador` (los agentes) y `ensayo/10-pantallas-tareas` (el resultado, como plan B si la demo falla).
 
+**Lo que el ensayo no cubrió:**
+- El `implementador-backend` no llegó a trabajar, porque el #10 es solo de frontend.
+- `/orquestar` no se lanzó como comando: la sesión principal hizo de orquestador siguiendo su fichero paso a paso.
+- Los agentes no se volvieron a ensayar después de las correcciones; los datos de ejemplo nuevos sí se probaron.
+
 **Ficheros:** `docs/formacion/lab-agentes-orquestador.md`, `docs/formacion/lab-agentes-orquestador-solucion.md` y `docs/bitacora.md` (modificados).
