@@ -4,9 +4,9 @@
   "rama": "feature/15-categorias-de-tareas",
   "plan": "docs/planes/plan-15-categorias-de-tareas.md",
   "creado": "2026-11-26T12:15:07.844Z",
-  "actualizado": "2026-11-26T12:37:46.850Z",
+  "actualizado": "2026-11-26T12:40:35.905Z",
   "vuelta": 0,
-  "final": "ABIERTO",
+  "final": "FUSIONADO",
   "pasos": {
     "1_preparar": {
       "estado": "hecho",
@@ -51,14 +51,19 @@
       "fecha": "2026-11-26T12:37:46.682Z"
     },
     "6b_commit": {
-      "estado": "en_marcha",
-      "desde": "2026-11-26T12:37:46.848Z"
+      "estado": "hecho",
+      "prueba": "cbb6eb0 feat: categorías de tareas (#15)",
+      "fecha": "2026-11-26T12:38:04.677Z"
     },
     "6c_pr": {
-      "estado": "pendiente"
+      "estado": "hecho",
+      "prueba": "https://github.com/hispafox/DemoAgentes/pull/32",
+      "fecha": "2026-11-26T12:38:25.045Z"
     },
     "6d_merge": {
-      "estado": "pendiente"
+      "estado": "hecho",
+      "prueba": "PR #32 fusionada el 2026-11-26T12:38:33Z · en main: PHPUnit OK (129 tests, 374 aserciones) con PHPStan y CS-Fixer; Vitest 85/85 y build",
+      "fecha": "2026-11-26T12:40:35.903Z"
     },
     "7_revision_funcional": {
       "estado": "diferido",
@@ -171,6 +176,34 @@
       "t": "2026-11-26T12:37:46.849Z",
       "paso": "6b_commit",
       "estado": "en_marcha"
+    },
+    {
+      "t": "2026-11-26T12:38:04.679Z",
+      "paso": "6b_commit",
+      "estado": "hecho",
+      "detalle": "cbb6eb0 feat: categorías de tareas (#15)"
+    },
+    {
+      "t": "2026-11-26T12:38:04.962Z",
+      "paso": "6c_pr",
+      "estado": "en_marcha"
+    },
+    {
+      "t": "2026-11-26T12:38:25.047Z",
+      "paso": "6c_pr",
+      "estado": "hecho",
+      "detalle": "https://github.com/hispafox/DemoAgentes/pull/32"
+    },
+    {
+      "t": "2026-11-26T12:38:25.182Z",
+      "paso": "6d_merge",
+      "estado": "en_marcha"
+    },
+    {
+      "t": "2026-11-26T12:40:35.905Z",
+      "paso": "6d_merge",
+      "estado": "hecho",
+      "detalle": "PR #32 fusionada el 2026-11-26T12:38:33Z · en main: PHPUnit OK (129 tests, 374 aserciones) con PHPStan y CS-Fixer; Vitest 85/85 y build"
     }
   ]
 }
