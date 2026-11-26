@@ -1,5 +1,8 @@
 <header class="header">
   <h1>Lista de tareas</h1>
+  <nav aria-label="Principal">
+    <a routerLink="/tasks" routerLinkActive="active" ariaCurrentWhenActive="page">Tareas</a>
+  </nav>
 </header>
 
 <main class="content">
@@ -9,6 +12,8 @@
       <button type="button" (click)="messages.clear()" aria-label="Cerrar aviso">×</button>
     </div>
   }
+
+  <p class="sr-only" role="status" aria-live="polite">{{ messages.status() }}</p>
 
   <router-outlet />
 </main>
