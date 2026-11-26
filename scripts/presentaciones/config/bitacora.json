@@ -1,0 +1,17 @@
+{
+  "title": "La bitácora de DemoAgentes: tres días, paso a paso",
+  "annexFrom": "docs/bitacora.md",
+  "cover": {
+    "kicker": "DEMOAGENTES · BITÁCORA · 24 A 26 DE NOVIEMBRE DE 2026",
+    "title1": "La bitácora:",
+    "title2": "tres días, paso a paso",
+    "subtitle": "Cómo se hizo, en orden: las decisiones, los tropiezos y lo que aprendimos, de la pizarra a la clase",
+    "tags": [
+      "9 secciones",
+      "26 diapositivas + anexo",
+      "Unos 25 minutos",
+      "Todos los pasos"
+    ],
+    "notes": "Presentación de la bitácora completa (docs/bitacora.md), agrupada por etapas. Unos 25 minutos. Al final, un anexo de consulta con todos los pasos, generado automáticamente desde las cabeceras de la bitácora."
+  }
+}

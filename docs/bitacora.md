@@ -1154,3 +1154,25 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 **Pendiente:** revisión funcional de las pantallas (CRITERIO de la Fase 6) y firma de `docs/diseno/pantallas-tareas.md`. La prueba manual en el navegador la hace la persona.
 
 **Ficheros:** `frontend/src/app/core/models/task.ts`, `frontend/src/app/core/api/task-api.service.ts` y `.spec.ts`, `frontend/src/app/shared/recurrence-label.pipe.ts` y `.spec.ts`, `frontend/src/app/features/tasks/task-list/*` y `frontend/src/app/features/tasks/task-form/*` (nuevos); `frontend/src/app/app.ts`, `app.html`, `app.css`, `app.routes.ts`, `frontend/src/app/core/messages/message.service.ts`, `frontend/src/styles.css`, `CLAUDE.md` y `docs/bitacora.md` (modificados); `.gitkeep` de `core/api/`, `shared/` y `features/` (eliminados).
+
+## Paso 70 — Generador de presentaciones en el repositorio (2026-11-26)
+
+**Qué hicimos:** guardamos en el repositorio el generador de diapositivas de los pasos 65 a 67, que estaba en la carpeta temporal de la sesión, para poder regenerar las presentaciones cuando cambie un guion o la bitácora.
+
+**Cambios:**
+- `scripts/presentaciones/`:
+  - `generar.js` lee un guion del `presentador` y aplica a cada diapositiva la plantilla de su línea `Visual:`.
+  - `corta.js` genera la versión corta.
+  - `config/` tiene la portada de cada presentación y el anexo automático de la bitácora.
+  - `capturas.js` saca capturas con Edge sin ventana.
+  - `exportar-imagenes.ps1` exporta las diapositivas a PNG para revisarlas.
+  - El `README.md` explica el formato del guion.
+- `scripts/presentaciones-generar.ps1`: genera las tres presentaciones de una vez (`-Solo` para una). La primera vez instala pptxgenjs (MIT) en `scripts/presentaciones/node_modules/`, que no se sube a Git.
+- `docs/presentaciones/img/recorte-*.png`: los recortes de las capturas que usa la diapositiva de pantallas.
+- Comprobado: el script regenera las tres presentaciones (10, 41 y 34 diapositivas con la portada). No se suben los `.pptx` regenerados: los de los pasos 65 a 67 siguen siendo los publicados.
+
+**Decisión:** el generador es código propio y solo depende de pptxgenjs, que es MIT. No incluye nada del skill `pptx` de Anthropic, cuya licencia no permite distribuirlo, así que puede estar en el repositorio público.
+
+**Aviso:** este paso se registró mientras otra sesión tenía sin commit su paso 69 (prueba E2E del #10 con Playwright) y su fila de `CLAUDE.md`. El commit de este paso no incluye esos cambios.
+
+**Ficheros:** `scripts/presentaciones/` (`generar.js`, `corta.js`, `capturas.js`, `exportar-imagenes.ps1`, `config/extendida.json`, `config/bitacora.json`, `package.json`, `package-lock.json` y `README.md`), `scripts/presentaciones-generar.ps1` y `docs/presentaciones/img/recorte-lista.png` y `recorte-formulario.png` (nuevos); `.gitignore` y `docs/bitacora.md` (modificados).

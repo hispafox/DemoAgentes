@@ -1,0 +1,17 @@
+{
+  "title": "De la pizarra a un equipo de agentes (versión extendida)",
+  "annexFrom": null,
+  "cover": {
+    "kicker": "CLASE · 26 DE NOVIEMBRE DE 2026 · VERSIÓN EXTENDIDA",
+    "title1": "De la pizarra",
+    "title2": "a un equipo de agentes",
+    "subtitle": "Cómo una IA lleva una app de la documentación funcional a una PR fusionada, y qué aprendimos al repartir el trabajo entre agentes",
+    "tags": [
+      "12 secciones",
+      "40 diapositivas",
+      "Unos 55 minutos",
+      "Después, el lab"
+    ],
+    "notes": "Versión extendida de la apertura: 40 diapositivas en 12 secciones, unos 55 minutos con la demo en vivo. Después empieza el lab (docs/formacion/lab-agentes-orquestador.md)."
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "demoagentes-presentaciones",
+  "version": "1.0.0",
+  "description": "Genera las presentaciones .pptx de docs/presentaciones/ a partir de los guiones del agente presentador",
+  "scripts": {},
+  "license": "UNLICENSED",
+  "dependencies": {
+    "pptxgenjs": "^4.0.1"
+  },
+  "private": true
+}

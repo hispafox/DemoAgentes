@@ -29,3 +29,10 @@ Thumbs.db
 
 # --- Herramientas locales (composer.phar) ---
 .tools/
+
+# Playwright MCP (snapshots and screenshots)
+.playwright-mcp/
+
+# --- Generador de presentaciones (scripts/presentaciones) ---
+/scripts/presentaciones/node_modules/
+/scripts/presentaciones/edge-profile/
