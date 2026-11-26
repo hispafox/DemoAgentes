@@ -985,3 +985,28 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 - Los agentes nuevos se detectan sin reiniciar la sesión. En el paso 56 los vimos aparecer al cabo de un rato, no al instante.
 
 **Ficheros:** `docs/bitacora.md` (modificado); `docs/formacion/lab-agentes-orquestador.md` y `docs/formacion/lab-agentes-orquestador-solucion.md` (nuevos).
+
+## Paso 61 — Ensayo de la demo `/orquestar #10` (2026-11-26)
+
+**Qué hicimos:** ensayamos la demo del lab en ramas locales, con los agentes de la solución de referencia copiados tal cual. No hicimos push, PR ni merge: el issue #10 sigue abierto para hacerlo en clase. El backend usó una base de datos propia (`var/ensayo.db`, borrada al terminar); `var/data.db` no se tocó.
+
+**Resultado:**
+
+| Paso | Agente | Tiempo | Resultado |
+|---|---|---|---|
+| Plan | planificador | 40 s | Plan con el backend descartado y sin preguntas de negocio |
+| Implementar | implementador-frontend | 5,5 min | Pantallas, servicio, pipe y rutas; 42 tests de Vitest y build en verde |
+| Verificar | verificador | 40 s | `APROBADO` a la primera |
+| Revisar reglas | guardian-candado | 25 s | `CUMPLE` |
+| Pantallas | a mano, en el navegador | 3 min | Los cinco criterios del issue funcionan |
+
+**Lo que falló o no encajaba, y se corrigió en el guion y la solución:**
+1. Los agentes nuevos tardaron unos 7 minutos en aparecer en la sesión; el comando, al momento. Mientras tanto, el planificador y el implementador se ensayaron como `general-purpose` con su fichero como instrucciones.
+2. El id de la plantilla de los datos de ejemplo estaba escrito a mano y daba 404 con `data.db`. Ahora se toma de la respuesta, y se añade una tarea completada.
+3. El verificador y el guardián miraban `main..HEAD`, pero el commit llega al final del flujo. Ahora revisan también los cambios sin commit.
+4. El planificador asignó los tests a un agente inexistente (`implementador-pruebas`). Ahora solo puede usar los agentes que existen.
+5. Los skills terminan con bitácora, commit y PR, lo que choca con los implementadores. Ahora se les dice que se salten esa parte.
+
+**Ramas locales (sin push, no fusionar):** `ensayo/lab-orquestador` (los agentes) y `ensayo/10-pantallas-tareas` (el resultado, como plan B si la demo falla).
+
+**Ficheros:** `docs/formacion/lab-agentes-orquestador.md`, `docs/formacion/lab-agentes-orquestador-solucion.md` y `docs/bitacora.md` (modificados).

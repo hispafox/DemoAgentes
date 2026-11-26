@@ -73,6 +73,8 @@ gh auth status
 
 **Comprobación:** los dos scripts de tests terminan con "Todo en verde" (91 tests del backend y 7 del frontend) y `gh` está autenticado. Abre Claude Code en la carpeta del repositorio.
 
+> ⏱️ En el ensayo, los agentes nuevos tardaron **unos 7 minutos** en aparecer en una sesión ya abierta (los comandos aparecen al momento). Si no quieres esperar en cada lab, abre una sesión nueva de Claude Code después de crear cada agente, o crea los ficheros de los cinco agentes al principio y rellénalos lab a lab.
+
 > 💡 Si PHPUnit "se cuelga", es el antivirus analizando `vendor/` (bitácora, paso 31): añade una exclusión para la carpeta del repositorio.
 
 ---
@@ -141,7 +143,7 @@ Eres el guardián del candado…     ← instrucciones: qué lee, qué hace, reg
 
 1. Crea el fichero con el frontmatter de la especificación.
 2. Escribe las instrucciones con cuatro apartados: **Qué lees**, **Qué ejecutas**, **Reglas** y **Qué devuelves**.
-3. Comprueba que aparece en `/agents`. Claude Code vigila `.claude/agents/` y lo detecta en unos segundos, sin reiniciar. Si no aparece, revisa que `name` y `description` estén bien escritos en el frontmatter.
+3. Comprueba que aparece en `/agents`. Claude Code vigila `.claude/agents/` y lo detecta sin reiniciar, pero puede tardar varios minutos (unos 7 en el ensayo). Si tienes prisa, abre una sesión nueva. Si tampoco aparece ahí, revisa que `name` y `description` estén bien escritos en el frontmatter.
 
 ### Prueba
 
@@ -278,20 +280,16 @@ claude --agent orquestador
 ```
 
 ```powershell
-Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/api/task-templates -ContentType 'application/json' -Body '{"title":"Regar las plantas","recurrence":"weekly"}'
+$api = 'http://127.0.0.1:8000/api'
+$plantilla = Invoke-RestMethod -Method Post -Uri "$api/task-templates" -ContentType 'application/json' -Body '{"title":"Regar las plantas","recurrence":"weekly"}'
+Invoke-RestMethod -Method Post -Uri "$api/task-templates/$($plantilla.id)/instantiate"
+$hecha = Invoke-RestMethod -Method Post -Uri "$api/tasks" -ContentType 'application/json' -Body '{"title":"Llamar al taller"}'
+Invoke-RestMethod -Method Post -Uri "$api/tasks/$($hecha.id)/complete"
+Invoke-RestMethod -Method Post -Uri "$api/tasks" -ContentType 'application/json' -Body '{"title":"Comprar pan"}'
+Invoke-RestMethod -Method Post -Uri "$api/tasks" -ContentType 'application/json' -Body '{"title":"Pagar el alquiler","recurrence":"monthly"}'
 ```
 
-```powershell
-Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/api/tasks -ContentType 'application/json' -Body '{"title":"Comprar pan"}'
-```
-
-```powershell
-Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/api/tasks -ContentType 'application/json' -Body '{"title":"Pagar el alquiler","recurrence":"monthly"}'
-```
-
-```powershell
-Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/api/task-templates/1/instantiate
-```
+> Los ids se toman de cada respuesta, no se escriben a mano: en `var/data.db` el contador de plantillas ya no empieza en 1 (se probó y se borró una), y `task-templates/1/instantiate` daría un 404 en plena clase. La tarea "Llamar al taller" se completa para que la lista enseñe desde el principio pendientes **y** completadas (primer criterio del issue).
 
 3. Ten abierta la pestaña del repositorio en GitHub (issues y PR).
 
@@ -306,20 +304,45 @@ Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/api/task-templates/1/i
 | 15–18 | El verificador ejecuta `frontend-test.ps1` y `backend-test.ps1` | Lee el veredicto. Si sale `REVISAR`, es la mejor parte de la demo: el bucle de corrección en directo |
 | 18–20 | El guardián revisa `main..HEAD` | `CUMPLE` / `NO CUMPLE`: "Otro agente, con otro contexto, comprueba que nadie se ha salido del candado." |
 | 20–24 | Bitácora, commit, PR con `Closes #10` y merge | Enseña la PR en GitHub y el issue #10 cerrado solo |
-| 24–28 | `.\scripts\frontend-start.ps1` y abre <http://localhost:4200/tasks> | Recorre los criterios del issue: lista con pendientes y completadas, formulario con título vacío, completar una repetitiva, eliminar |
+| 24–28 | `.\scripts\frontend-start.ps1` y abre <http://localhost:4200/tasks> | Recorre los criterios del issue: lista con pendientes y completadas, formulario con título vacío, completar una repetitiva (aparece la siguiente) y eliminar (pide confirmación del navegador). Para el error de la API, abre `/tasks/999/edit` |
 | 28–30 | Resumen final del orquestador | La tabla de agentes y veredictos: "Esto es lo que firmaría una persona." |
 
 ### Si algo sale mal (plan B)
 
 | Problema | Qué hacer |
 |---|---|
-| Un agente no aparece | Revisa el frontmatter (`name`, `description`) y el nombre en `/agents`; como último recurso, reinicia Claude Code |
+| Un agente no aparece | Puede tardar varios minutos: abre una sesión nueva de Claude Code. Si sigue sin aparecer, revisa el frontmatter (`name`, `description`) |
+| `git switch -c feature/10-…` falla porque la rama ya existe | Quedó de un intento anterior: `git branch -D feature/10-pantallas-tareas` |
 | El orquestador intenta implementar él mismo | Revisa que no tenga `Edit` ni `Write`. Es un buen momento para explicar por qué los permisos importan |
 | El orquestador no se para a preguntar en el plan | Se ha lanzado como subagente: usa el comando `/orquestar` o `claude --agent orquestador` |
 | El verificador da `REVISAR` 3 veces | Es el comportamiento correcto: enseña el informe de bloqueo y explica que no hay commit automático |
 | Se acaba el tiempo | Para después del verificador; enseña el plan, el diff (`git diff --stat main`) y el veredicto. El cierre se hace al día siguiente |
 | Hay que volver a empezar | `git switch main`, `git branch -D feature/10-pantallas-tareas` y borra el plan de `docs/planes/` |
 | No da tiempo a crear los agentes | Copia los de [la solución de referencia](lab-agentes-orquestador-solucion.md) en `.claude/agents/` y `.claude/commands/` |
+
+## Ensayo del 2026-11-26
+
+La demo se ensayó en ramas locales (`ensayo/lab-orquestador` con los agentes y `ensayo/10-pantallas-tareas` con el resultado), sin push, sin PR y sin tocar el issue #10, que sigue abierto para la clase. El backend usó una base de datos propia (`var/ensayo.db`).
+
+| Paso | Agente | Tiempo | Resultado |
+|---|---|---|---|
+| Plan | planificador | 40 s | `docs/planes/plan-10-pantallas-tareas.md`; backend descartado con su motivo, sin preguntas de negocio |
+| Implementar | implementador-frontend | 5,5 min | `TaskApiService`, pipe, `task-list`, `task-form` y rutas; 42 tests de Vitest y build en verde a la primera |
+| Verificar | verificador | 40 s | `APROBADO` en la primera vuelta (91 + 42 tests; los 5 criterios con su test) |
+| Revisar reglas | guardian-candado | 25 s | `CUMPLE`; solo notas: commit, bitácora y PR pendientes del cierre |
+| Pantallas | (a mano) | 3 min | Lista, completar una repetitiva, título vacío y eliminar, sin errores de consola |
+
+En total, unos **8 minutos de agentes**: sobra tiempo en el bloque de 30 minutos para comentar cada paso.
+
+**Lo que se corrigió después del ensayo:**
+
+1. **Los agentes nuevos tardaron unos 7 minutos en aparecer** en la sesión (el comando `/orquestar`, en cambio, apareció al momento). Por eso el bloque 0 pide crear o copiar los agentes al principio, y el plan B dice que se abra una sesión nueva si no aparecen.
+2. **Los ids de los datos de ejemplo** estaban escritos a mano y el de la plantilla daba 404 con la base de datos de desarrollo. Ahora se toman de cada respuesta.
+3. **El verificador y el guardián miraban `main..HEAD`**, pero el commit llega al final del flujo: habrían revisado un diff vacío. Ahora miran también los cambios sin commit.
+4. **El planificador inventó un agente** (`implementador-pruebas`) para los tests. Ahora solo puede asignar los agentes que existen, y los tests los escribe el implementador de cada capa.
+5. **Los skills `frontend` y `nueva-feature` terminan con bitácora, commit y PR**, lo que choca con los agentes que no hacen commits. Las instrucciones de cada agente dicen ahora que el cierre es del orquestador.
+
+**Si la demo en directo falla**, el resultado del ensayo sirve de plan B: `git diff --stat main ensayo/10-pantallas-tareas` enseña lo que hicieron los agentes y `git switch ensayo/10-pantallas-tareas` permite ver las pantallas.
 
 ---
 
