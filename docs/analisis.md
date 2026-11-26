@@ -4,7 +4,7 @@
 >
 > Adapta `docs/analisis-diseño.md` (AppTodoList, en .NET). Las diferencias con ese documento se explican en la sección 9.
 >
-> Estado: **pendiente de nueva firma** — firmado por hispafox el 2026-11-24 (CRITERIO de la Fase 2); cambiado después para añadir las categorías de tareas (versión 0.2) y la fecha de la siguiente ocurrencia al crear y modificar (RN-18).
+> Estado: **pendiente de nueva firma** — firmado por hispafox el 2026-11-24 (CRITERIO de la Fase 2); cambiado después para añadir las categorías de tareas (versión 0.2) y la fecha de la siguiente ocurrencia al crear y modificar (RN-18), y los errores `404`/`405` de rutas de `/api` en problem+json (issue #23).
 
 ## 1. Stack
 
@@ -233,9 +233,12 @@ Todas las respuestas de error usan `application/problem+json` (RFC 9457, el form
 ```
 
 - `400`: JSON mal formado.
-- `404`: recurso inexistente.
+- `404`: recurso inexistente, y también ruta de `/api` que no existe (por ejemplo `/api/nope` o `/api/tasks/abc`).
+- `405`: la ruta existe pero no admite ese verbo (por ejemplo `PATCH /api/tasks/1`); lleva la cabecera `Allow` con los verbos admitidos.
 - `409`: acción no permitida por el estado (completar una tarea ya completada, restaurar una tarea que no está en la papelera, eliminar una plantilla con tareas).
 - `422`: datos que no cumplen las reglas de validación.
+
+Toda petición bajo `/api` responde los errores en problem+json aunque no envíe la cabecera `Accept` ni coincida con ninguna ruta: un *subscriber* de `kernel.request` fija el formato de la petición a `json` antes de que actúe el router (issue #23). Las rutas fuera de `/api` conservan el comportamiento por defecto de Symfony.
 
 ## 5. Lógica de negocio
 
@@ -337,6 +340,7 @@ frontend/src/app/
 | Unit — `CategoryTest` *(v0.2)* | Nombre obligatorio al crear y al renombrar (RN-14). |
 | Functional — `CategoryRepositoryTest` *(v0.2)* | `existsWithName()` encuentra "Casa" al buscar " casa " y excluye la propia categoría al renombrar (RN-17). |
 | Functional — `CategoryControllerTest` *(v0.2)* | Los 4 endpoints; borrar con tareas, también en la papelera, devuelve `409` (RN-16); `categoryId` inexistente en una tarea devuelve `422`. |
+| Functional — `ApiErrorFormatTest` | Errores de `/api` en problem+json sin cabecera `Accept`: ruta inexistente (`404`), id no numérico (`404`), verbo no admitido (`405` con `Allow`); las rutas fuera de `/api` no cambian (issue #23). |
 | Angular | Servicios HTTP con `HttpTestingController`; componentes de lista y formulario. |
 
 ## 9. Diferencias con el análisis de referencia (.NET)

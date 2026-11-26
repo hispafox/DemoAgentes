@@ -19,7 +19,8 @@ use Symfony\Component\Routing\Attribute\Route;
  *
  * Issue #8 covers the CRUD and #9 instantiate.
  */
-// format: 'json' makes errors render as JSON even without an Accept header.
+// format: 'json' makes errors render as JSON even without an Accept header;
+// for /api requests that match no route, see ApiJsonFormatSubscriber.
 #[Route('/api/task-templates', name: 'api_task_templates_', format: 'json')]
 final class TaskTemplateController extends AbstractController
 {

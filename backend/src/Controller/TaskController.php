@@ -20,7 +20,8 @@ use Symfony\Component\Routing\Attribute\Route;
  * Issue #5 covers list, detail, create and update, #6 complete and #7 the
  * trash (delete, list and restore).
  */
-// format: 'json' makes errors render as JSON even without an Accept header.
+// format: 'json' makes errors render as JSON even without an Accept header;
+// for /api requests that match no route, see ApiJsonFormatSubscriber.
 #[Route('/api/tasks', name: 'api_tasks_', format: 'json')]
 final class TaskController extends AbstractController
 {

@@ -1015,3 +1015,29 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 - Los agentes no se volvieron a ensayar después de las correcciones; los datos de ejemplo nuevos sí se probaron.
 
 **Ficheros:** `docs/formacion/lab-agentes-orquestador.md`, `docs/formacion/lab-agentes-orquestador-solucion.md` y `docs/bitacora.md` (modificados).
+
+## Paso 62 — Errores en problem+json para rutas de la API que no existen (#23) (2026-11-26)
+
+**Qué hicimos:** arreglamos el fallo que encontró el agente `qa-exploratorio`: sin cabecera `Accept`, los 404 y 405 de rutas de `/api` que no existen salían en HTML. Lo hicimos como **segundo ensayo del equipo de agentes**, esta vez de verdad: `/orquestar #23` lanzado como comando, con los agentes ya corregidos, creados sin commit en `.claude/agents/` como se hará en clase, y el implementador de backend con la cadena de skills.
+
+**Cambios:**
+- `ApiJsonFormatSubscriber` (`kernel.request`, prioridad 33, antes del router): fija `_format=json` para `/api` y `/api/*`, así que cualquier error de la API sale en `application/problem+json`. Fuera de `/api` no cambia nada.
+- 4 tests funcionales nuevos en `ApiErrorFormatTest`, uno por criterio: ruta inexistente, `/api/tasks/abc`, `PATCH` (405 con `Allow`) y una ruta fuera de `/api`. Ahora hay 95 tests y 267 aserciones.
+- `docs/analisis.md` §4 y §8: el 404 de rutas sin coincidencia, el 405 y la fila del test. Sigue pendiente de nueva firma; anotado en el CLAUDE.md.
+- Plan en `docs/planes/plan-23-errores-problem-json.md`.
+
+**Agentes y veredictos:**
+
+| Agente | Tiempo | Resultado |
+|---|---|---|
+| planificador | 30 s | Plan: capa `api` y pruebas; frontend descartado |
+| implementador-backend | 2,5 min | Skills `analisis-diseno`, `api` y `pruebas`; 95 tests en verde |
+| verificador | 20 s | `APROBADO` a la primera |
+| guardian-candado | 25 s | `CUMPLE` |
+
+**Lo que salió en el ensayo:**
+- Ningún agente del equipo podía actualizar el análisis: el planificador solo escribe en `docs/planes/`, el orquestador no edita y el implementador solo toca `backend/`. En el ensayo se dejó que el implementador lo hiciera con `analisis-diseno`, y así queda en la solución.
+- El skill `api` decía "no hace falta un listener", y aquí hacía falta. Se corrige en el skill.
+- El CLAUDE.md no cita el `405` en su lista de códigos. Es una decisión del candado, así que queda propuesto para que lo apruebe hispafox.
+
+**Ficheros:** `backend/src/EventListener/ApiJsonFormatSubscriber.php`, `docs/planes/plan-23-errores-problem-json.md` (nuevos); `backend/src/Controller/TaskController.php`, `backend/src/Controller/TaskTemplateController.php`, `backend/tests/Functional/ApiErrorFormatTest.php`, `docs/analisis.md`, `CLAUDE.md` y `docs/bitacora.md` (modificados).
