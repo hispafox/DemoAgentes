@@ -1255,3 +1255,91 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 **Pendiente:** probarlos con el #11 (solo frontend) cuando estén respondidas las tres preguntas del plan; quedan el verificador y el orquestador.
 
 **Ficheros:** `.claude/agents/implementador-backend.md`, `.claude/agents/implementador-frontend.md` (nuevos); `CLAUDE.md` (nota en la Fase 8) y `docs/bitacora.md` (modificados).
+
+## Paso 74 — Prueba de los implementadores con el #11 (2026-11-26)
+
+**Qué hicimos:** probamos los dos implementadores del paso 73, sin comandos: los lanzamos directamente con la herramienta `Agent`, en paralelo, sobre `docs/planes/plan-11-pantalla-papelera-tareas.md`, en la rama `feature/11-pantalla-papelera-tareas`. Hicimos de orquestador: creamos la rama y les pasamos las respuestas a las preguntas abiertas (las tres recomendaciones del plan).
+
+**Cambios:**
+- `implementador-backend` (prueba negativa, unos 43 s y 5 herramientas): vio que el plan no tenía pasos de backend, no editó nada (comprobado con `git status`) y confirmó que `trash` y `restore` existen con sus tests y que el 409 de RN-10 ya está. Aun así ejecutó `backend-test.ps1` (PHPUnit 95/95, PHPStan sin errores), aunque no hacía falta.
+- `implementador-frontend` (unos 3 min 20 s y 14 herramientas): creó `TaskTrash` (carga, vacío, error con "Reintentar", "Restaurar" por fila y recarga con 409), la ruta perezosa `tasks/trash` antes de `tasks/:id/edit` y el enlace "Papelera". Reutilizó `trash()` y `restore()` de `TaskApiService`. Añadió 10 tests y `frontend-test.ps1` quedó en verde al primer intento (Vitest 43/43 y build), algo que comprobamos ejecutándolo también nosotros. Solo tocó `frontend/`.
+- Prueba en el navegador con el MCP de Playwright (backend y frontend levantados):
+  - Criterio 1: `/tasks/trash` muestra la tarea 4 (que quedó en la papelera en el paso 69) con "Pendiente" y "Eliminada el 26 nov 2026, 10:30".
+  - Criterio 2: al pulsar "Restaurar" sale "Tarea restaurada." y luego "La papelera está vacía.". En `/tasks`, la tarea vuelve a Pendientes.
+  - Detalle visto: el aviso "Tarea restaurada." sigue en pantalla al volver a `/tasks`, porque los avisos son globales.
+- Notas del frontend: el enlace "Tareas" usa ahora `exact: true` (ya no se marca en `/tasks/new` ni en la edición); un 404 al restaurar no recarga la papelera, porque el plan solo lo pide para el 409; y el CSS repite el de `task-list`.
+
+**Pendiente:**
+- Ajustar al implementador-backend: si no hay pasos suyos, que termine sin ejecutar los tests.
+- Cerrar el #11 (verificación, commit, PR y merge) y hacer la revisión funcional de la pantalla.
+
+**Ficheros:** `frontend/src/app/features/tasks/task-trash/*` y `frontend/src/app/app.routes.spec.ts` (nuevos); `frontend/src/app/app.html`, `app.routes.ts`, `app.spec.ts` y `docs/bitacora.md` (modificados).
+
+## Paso 75 — Agente orquestador (2026-11-26)
+
+**Qué hicimos:** creamos el **orquestador** de `docs/ARQUITECTURA-AGENTES-V2.md`, el agente que coordina al resto. Partimos de la solución de referencia del lab (`docs/formacion/agentes-referencia/agents/orquestador.md`), como con los anteriores.
+
+**Cambios:**
+- `.claude/agents/orquestador.md`: flujo en seis pasos (preparar, planificar, implementar, verificar con un máximo de 3 vueltas, revisar reglas con `guardian-candado` y cerrar con bitácora, commit, PR y merge). No edita ficheros: los cambios los hacen los implementadores. Tiene que ir en la conversación principal (`claude --agent orquestador`) para poder preguntar en los CRITERIO.
+- Ajustes sobre la referencia, sacados de los pasos 71 a 74:
+  - Si la rama del issue ya existe, sigue desde lo que haya, sin descartar los cambios sin commit (caso del #11).
+  - Si ya hay plan en `docs/planes/`, lo reutiliza y no relanza al planificador.
+  - Pregunta a la persona las preguntas abiertas del plan y pasa las respuestas a los implementadores.
+  - Solo lanza a los implementadores que tienen pasos en el plan (en el paso 74, el de backend ejecutó los tests sin tener nada que hacer).
+  - Hace el merge sin pedir permiso con los tests en verde, como dice el CLAUDE.md.
+  - No comprueba ni menciona las firmas.
+- Sin comando `/orquestar` por ahora.
+
+**Pendiente:** crear el `verificador`, del que depende el paso 4 del flujo, y probar el orquestador cerrando el #11.
+
+**Ficheros:** `.claude/agents/orquestador.md` (nuevo); `CLAUDE.md` (nota en la Fase 8) y `docs/bitacora.md` (modificados).
+
+## Paso 76 — Agente verificador (2026-11-26)
+
+**Qué hicimos:** creamos el **verificador** de `docs/ARQUITECTURA-AGENTES-V2.md`, el agente del que depende el paso 4 del orquestador (pendiente del paso 75). Partimos de la solución de referencia del lab (`docs/formacion/agentes-referencia/agents/verificador.md`), como con los anteriores.
+
+**Por qué:** antes de probar el orquestador con el #11 hacía falta su verificador. Se decidió crearlo y parar, sin tocar todavía el #11.
+
+**Cambios:**
+- `.claude/agents/verificador.md`: lee el plan y los cambios (con y sin commit), ejecuta los tests, cruza cada criterio de aceptación con su test y devuelve `APROBADO` o `REVISAR` con los defectos asignados a backend o frontend. No edita, no hace commits ni cambia de rama. Modelo `sonnet`, como la referencia.
+- Ajustes sobre la referencia:
+  - Solo ejecuta los scripts de las capas tocadas por el plan o el diff (la referencia lanzaba siempre `backend-test.ps1`); con cambios solo de documentación no ejecuta nada. Es lo mismo que se ajustó en el orquestador tras el paso 74.
+  - Quitamos el `doctrine:schema:validate` aparte: `backend-test.ps1` ya valida el mapeo.
+  - Añadimos la comprobación del contrato: los endpoints que consume el frontend tienen que estar en `docs/analisis.md` §4 y en un `#[Route]` del backend (lo pedía la arquitectura V2 y lo preparan los informes del implementador-frontend).
+  - Los ficheros fuera del plan son observaciones, no defectos.
+  - Un fallo de entorno (disco lento, puerto ocupado) se repite una vez y, si sigue, se informa como bloqueo de entorno, no como defecto de una capa (lección del paso 31).
+  - No arranca la aplicación ni prueba en el navegador: eso es de `qa-exploratorio` y de la revisión funcional.
+- Sin comando `/verificar`: se lanza desde el orquestador.
+
+**Pendiente:** probar el orquestador (con el verificador) cerrando el #11; queda en la rama el trabajo sin commit del paso 74.
+
+**Ficheros:** `.claude/agents/verificador.md` (nuevo); `CLAUDE.md` (nota en la Fase 8) y `docs/bitacora.md` (modificados).
+
+## Paso 77 — Comando `/orquestar` (2026-11-26)
+
+**Qué hicimos:** creamos el comando `/orquestar` para el agente orquestador del paso 75, a partir de la solución de referencia del lab (`docs/formacion/agentes-referencia/commands/orquestar.md`).
+
+**Cambios:**
+- `.claude/commands/orquestar.md`: la conversación principal hace de orquestador, leyendo `.claude/agents/orquestador.md` y siguiendo su flujo. No se lanza como subagente, porque tiene que poder preguntar a la persona en los CRITERIO. Recibe el número del issue; si no se le pasa, pregunta cuál y enseña los issues abiertos (`gh issue list --state open`).
+
+**Pendiente:** probar `/orquestar` cerrando el #11, con el trabajo sin commit del paso 74 que sigue en la rama.
+
+**Ficheros:** `.claude/commands/orquestar.md` (nuevo); `CLAUDE.md` (nota en la Fase 8) y `docs/bitacora.md` (modificados).
+
+## Paso 78 — Issue #11 cerrado con `/orquestar` (2026-11-26)
+
+**Qué hicimos:** probamos por primera vez el comando `/orquestar` (paso 77) cerrando el #11, la pantalla de papelera de tareas. Así se resuelve el pendiente de los pasos 74 a 77. La conversación principal hizo de orquestador y siguió los seis pasos de `.claude/agents/orquestador.md`.
+
+**Cambios:**
+- Preparar: el issue estaba abierto y la rama ya existía, con el trabajo del paso 74 sin commit. Seguimos desde ahí, sin descartar nada.
+- Planificar: ya existía `docs/planes/plan-11-pantalla-papelera-tareas.md`, así que no se lanzó al planificador. En el CRITERIO, hispafox aceptó las tres recomendaciones de las preguntas abiertas: estilo de la lista sin diseño previo, restaurar sin confirmación, y aviso más recarga ante un 409.
+- Implementar: no se relanzó a ningún implementador, porque el frontend ya estaba hecho (paso 74) y el plan no tenía pasos de backend.
+- Verificar, vuelta 1: `verificador` → **APROBADO**, unos 78 s. `frontend-test.ps1` pasó con Vitest 43/43 en 8 ficheros y build correcto. Los dos criterios tienen test, el contrato es correcto y no hay defectos.
+- Revisar reglas: `guardian-candado` → **CUMPLE**, sin hallazgos bloqueantes. Las firmas no se evaluaron porque el proyecto está en modo aviso.
+- Cerrar: dos commits en la rama (agentes y comando por un lado, el feat del #11 por otro), PR con `Closes #11` y merge.
+
+**Decisión:** los agentes `orquestador` y `verificador`, el comando `/orquestar` y sus notas en CLAUDE.md (pasos 75 a 77) seguían sin commit en esta rama, así que entran en la misma PR, en un commit `docs:` aparte del `feat:`.
+
+**Pendiente:** revisión funcional de la pantalla `/tasks/trash` (ya se probó con Playwright en el paso 74).
+
+**Ficheros:** `docs/bitacora.md` (modificado).
