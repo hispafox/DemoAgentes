@@ -1233,3 +1233,25 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 - `docs/herramientas-mcp-playwright.docx`: guía en Word de las herramientas del MCP de Playwright (`@playwright/mcp` 0.0.86) y de cómo usarlas para probar la Lista de Tareas. Complementa el paso 69.
 
 **Ficheros:** `.claude/skills/docx/`, `.claude/skills/pdf/`, `.claude/skills/pptx/`, `.claude/skills/xlsx/`, `docs/herramientas-mcp-playwright.docx` (nuevos); `docs/bitacora.md` (modificado).
+
+## Paso 73 — Agentes de desarrollo: implementador-backend e implementador-frontend (2026-11-26)
+
+**Qué hicimos:** creamos a la vez los dos agentes de desarrollo de `docs/ARQUITECTURA-AGENTES-V2.md`, con la misma estructura. Partimos de las soluciones de referencia del lab (`docs/formacion/agentes-referencia/agents/`), como con el planificador.
+
+**Por qué a la vez:** son casi simétricos. Los dos leen el plan de `docs/planes/`, delegan en los skills de su capa, terminan con su script de tests en verde y no tocan Git. Solo cambian la carpeta (`backend/` o `frontend/`) y los skills. Ejecutarlos en paralelo es otra cosa: solo es seguro si el contrato de la API (`docs/analisis.md` §4) ya está cerrado, y eso lo decide el orquestador.
+
+**Cambios:**
+- `.claude/agents/implementador-backend.md`: hace los pasos del plan en el orden `analisis-diseno` → `modelo` → `dto` → `servicio` → `api` → `pruebas`, cada uno con su skill, y termina con `backend-test.ps1` en verde.
+- `.claude/agents/implementador-frontend.md`: hace los pasos con el skill `frontend` y la especificación de `docs/diseno/` (si no existe, reutiliza el estilo de las pantallas que ya hay) y termina con `frontend-test.ps1` en verde. Lee el contrato de la API pero no lo toca.
+- Ajustes sobre la referencia:
+  - Comprueban que están en la rama del plan, pero no la crean ni cambian de rama: eso es del orquestador.
+  - Un subagente no puede preguntar: si un skill dice "espera el visto bueno", siguen cuando la duda está resuelta y, si no, devuelven el paso como bloqueo. Para las preguntas abiertas del plan, aplican la respuesta que les pasen o, si no hay respuesta, la recomendación del plan, y lo dicen.
+  - El contrato manda: ninguno de los dos cambia endpoints ni DTO por su cuenta. El backend informa de los cambios de contrato, y el frontend informa de los endpoints que consume, para el verificador.
+  - Máximo 3 intentos para dejar los tests en verde; si siguen en rojo, devuelven "bloqueado" con la salida.
+  - Nada fuera del plan; las mejoras que vean van a "Notas".
+  - No mencionan las firmas.
+- No añadimos comandos `/implementar-…`: se lanzan desde el orquestador.
+
+**Pendiente:** probarlos con el #11 (solo frontend) cuando estén respondidas las tres preguntas del plan; quedan el verificador y el orquestador.
+
+**Ficheros:** `.claude/agents/implementador-backend.md`, `.claude/agents/implementador-frontend.md` (nuevos); `CLAUDE.md` (nota en la Fase 8) y `docs/bitacora.md` (modificados).

@@ -196,7 +196,7 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 - [x] Skill orquestador `nueva-feature`
 - [x] Agentes de apoyo con su comando (`.claude/agents/` y `.claude/commands/`), probados sin tocar el código
 - [x] Skill `ui-ux-pro-max` instalado en el repositorio
-- [ ] Agente orquestador y los que dependen de él (planificador, implementadores, verificador…), según `docs/ARQUITECTURA-AGENTES*.md` — se crean en clase. Hecho el `planificador` con su comando `/planificar` (paso 71)
+- [ ] Agente orquestador y los que dependen de él (planificador, implementadores, verificador…), según `docs/ARQUITECTURA-AGENTES*.md` — se crean en clase. Hecho el `planificador` con su comando `/planificar` (paso 71); el `implementador-backend` y el `implementador-frontend` (paso 73)
 - [ ] Decidir qué skills y agentes de `docs/propuesta-skills.md` y `docs/propuesta-agentes.md` se crean
 
 ## Firmas (puertas de CRITERIO)
