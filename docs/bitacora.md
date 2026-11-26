@@ -1086,3 +1086,30 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 **Licencias:** los skills `docx`, `pdf`, `pptx` y `xlsx` de `.claude/skills/` son de Anthropic, con todos los derechos reservados, y su licencia prohíbe distribuirlos. Siguen sin añadir a Git, porque el repositorio es público. Esta sesión también los tiene como plugin oficial (`anthropic-skills:*`).
 
 **Ficheros:** `docs/presentaciones/2026-11-26-clase-agentes.pptx` (nuevo); `docs/presentaciones/2026-11-26-clase-agentes.md`, `docs/formacion/lab-agentes-orquestador.md`, `README.md` y `docs/bitacora.md` (modificados).
+
+## Paso 66 — Presentación extendida de la clase (2026-11-26)
+
+**Qué hicimos:** preparamos una versión extendida, "con todo lujo de detalles", de la presentación de la clase: 40 diapositivas en 12 secciones, unos 55 minutos con la demo en vivo, más la portada.
+
+**Cambios:**
+- `docs/presentaciones/2026-11-26-clase-agentes-extendida.md`: guion del agente `presentador`.
+  - Una diapositiva separadora por sección.
+  - Extractos reales de código: `CLAUDE.md`, el issue #6, `ApiJsonFormatSubscriber`, `ApiErrorFormatTest`, un `SKILL.md` y el frontmatter de `guardian-candado`.
+  - Una diapositiva por agente de apoyo con su resultado real.
+  - Los dos ensayos con datos y los 7 fallos con su corrección.
+  - Tabla de cifras con su fuente.
+- `docs/presentaciones/img/`: dos capturas reales de las pantallas del primer ensayo, la lista y el formulario con el error.
+  - Se sacaron con la rama `ensayo/10-pantallas-tareas` en un *worktree* aparte y una base de datos de usar y tirar, con Edge sin ventana.
+  - Los datos de ejemplo se cargaron con el bloque del guion del lab, que así quedó probado otra vez.
+- `docs/presentaciones/2026-11-26-clase-agentes-extendida.pptx`: el PowerPoint, generado con el skill `pptx` (pptxgenjs).
+  - Un script lee el guion en Markdown y aplica a cada diapositiva la plantilla de su tipo de visual: código, tabla, diagrama, cifras o captura.
+  - Se revisó en tres pasadas visuales, dos de ellas con subagentes en paralelo.
+  - Se corrigieron una tabla que se salía, columnas que partían rutas, código demasiado pequeño, capturas ilegibles (ahora recortadas), la numeración (1 a 40) y viñetas de color distinto.
+  - En las diapositivas de código y de tablas largas se dejan 3 puntos y el resto pasa a las notas del orador.
+
+**Avisos:**
+- En la diapositiva 22, la fila de RN-12 es la traza esperada según el análisis y el plan de tests, no la salida literal del agente. La diapositiva lo dice; se puede regenerar con `/trazar-reglas RN-12`.
+- Al preparar las capturas aparecieron dos servidores `ng serve` del primer ensayo que seguían vivos (puertos 4200 y 4210): el `TaskStop` cerraba la consola, pero no el proceso `node`. Se pararon.
+- Una sustitución de texto en el guion cambió por error cinco `: ` entre dos fragmentos de código; se restauraron.
+
+**Ficheros:** `docs/presentaciones/2026-11-26-clase-agentes-extendida.md`, `docs/presentaciones/2026-11-26-clase-agentes-extendida.pptx`, `docs/presentaciones/img/captura-lista.png` y `docs/presentaciones/img/captura-formulario.png` (nuevos); `docs/bitacora.md` (modificado).
