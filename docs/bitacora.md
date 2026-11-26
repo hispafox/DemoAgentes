@@ -1391,6 +1391,7 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 - Los hooks también se disparan dentro de los subagentes: el planificador ejecutó `gh issue view 12` y se abrió un segundo flujo, con la grabación partida en dos. Ahora un `gh issue view` del mismo issue, con el flujo ya pasado de Preparar y sin merge, no abre flujo nuevo.
 - `SubagentStop` también salta cuando un subagente se para a esperar trabajo en segundo plano (tests): el verificador salió como "hecho" a los 3 segundos. Ahora solo cuenta el informe final: `Veredicto:` en el verificador y el guardián, "terminado" o "bloqueado" en los implementadores y la ruta del plan en el planificador.
 - Un comando que mezclaba `gh pr merge` con `gh issue view` del mismo issue se tomaba por Preparar y se descartaba, así que el Merge no llegaba a la vista. Ahora el hook sigue buscando el resto de comandos (commit, PR, merge).
+- Un flujo terminado con el merge queda cerrado: el hook no le añade más eventos hasta el siguiente `gh issue view` (antes, el commit y la PR del arreglo se sumaban al flujo del #12).
 - Reparamos a mano la grabación del #12 (un solo flujo, sin los dos "hecho" prematuros, y con el Merge añadido con la hora real de la PR #28).
 
 **Ficheros:** `scripts/orquestador-vivo/hook.js` y `docs/bitacora.md` (modificados).
