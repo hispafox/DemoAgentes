@@ -71,7 +71,7 @@ git pull
 gh auth status
 ```
 
-**Comprobación:** los dos scripts de tests terminan con "Todo en verde" (91 tests del backend y 7 del frontend) y `gh` está autenticado. Abre Claude Code en la carpeta del repositorio.
+**Comprobación:** los dos scripts de tests terminan con "Todo en verde" (95 tests del backend y 7 del frontend) y `gh` está autenticado. Abre Claude Code en la carpeta del repositorio.
 
 > ⏱️ En el ensayo, los agentes nuevos tardaron **unos 7 minutos** en aparecer en una sesión ya abierta (los comandos aparecen al momento). Si no quieres esperar en cada lab, abre una sesión nueva de Claude Code después de crear cada agente, o crea los ficheros de los cinco agentes al principio y rellénalos lab a lab.
 
@@ -149,7 +149,7 @@ Eres el guardián del candado…     ← instrucciones: qué lee, qué hace, reg
 
 > Usa el agente verificador para verificar el estado actual de `main`. No hay plan: limítate a los tests.
 
-**Resultado esperado:** `Veredicto: APROBADO`, con 91 tests del backend y 7 del frontend en verde, y ningún fichero modificado (`git status` limpio).
+**Resultado esperado:** `Veredicto: APROBADO`, con 95 tests del backend y 7 del frontend en verde, y ningún fichero modificado (`git status` limpio).
 
 **Pregunta para el grupo:** ¿qué pasaría si le diéramos `Edit` al verificador?
 
@@ -332,7 +332,7 @@ La demo se ensayó en ramas locales (`ensayo/lab-orquestador` con los agentes y 
 | Revisar reglas | guardian-candado | 25 s | `CUMPLE`; solo notas: commit, bitácora y PR pendientes del cierre |
 | Pantallas | (a mano) | 3 min | Lista, completar una repetitiva, título vacío y eliminar, sin errores de consola |
 
-En total, unos **8 minutos de agentes**: sobra tiempo en el bloque de 30 minutos para comentar cada paso.
+En total, unos **7 minutos de agentes** (435 s): sobra tiempo en el bloque de 30 minutos para comentar cada paso.
 
 **Lo que se corrigió después del ensayo:**
 

@@ -16,7 +16,7 @@ Documentación funcional ──► Análisis técnico ──► Issues en GitHub
 
 - **[CLAUDE.md](CLAUDE.md)** es "el candado": define el stack, la arquitectura, las convenciones y las reglas dentro de las que trabaja el agente. Si algo no encaja, primero se cambia el CLAUDE.md, con aprobación.
 - Cada entregable se **firma**: una persona lo aprueba en el chat y queda registrado.
-- Cada issue termina en una rama `feature/<nº>-descripcion` y una PR con `Closes #<nº>`. El merge lo decide siempre una persona.
+- Cada issue termina en una rama `feature/<nº>-descripcion` y una PR con `Closes #<nº>`. Con los tests en verde, el agente hace el merge y una persona revisa lo fusionado (regla de merge del `CLAUDE.md`).
 - Cada paso queda anotado en la **[bitácora](docs/bitacora.md)**, que sirve para retomar el proyecto en otra conversación.
 
 ## Documentación

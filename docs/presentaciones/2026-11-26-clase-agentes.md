@@ -1,162 +1,193 @@
-# Clase del 2026-11-26: agentes de IA que construyen una app de principio a fin
+# Clase del 2026-11-26: de la documentación a la PR fusionada, con un equipo de agentes
 
-**Mensaje principal:** una IA con buenas reglas (un `CLAUDE.md`), skills especializados y puntos de control humanos puede llevar una app desde la documentación funcional hasta código probado y fusionado en Git.
+**Mensaje principal:** con un `CLAUDE.md` que cierra el marco, skills por capa y puntos de control humanos, una IA lleva una app de la documentación funcional a una PR fusionada. Hoy aprendemos a repartir ese trabajo entre agentes que no se pisan.
 
-**Duración estimada:** 15 minutos (10 diapositivas, unos 1,5 minutos cada una, más la demo en vivo de 3 a 4 minutos incluida en ese tiempo).
+**Duración estimada:** 20 minutos de apertura (10 diapositivas de 1,5 a 2 minutos, con la demo corta de 2 a 3 minutos dentro de la diapositiva 7). Después empieza el lab (`docs/formacion/lab-agentes-orquestador.md`), que no se repite aquí.
 
-**Fuentes:** `docs/bitacora.md` (pasos 1 a 55), `CLAUDE.md`, `README.md` y GitHub (`gh issue list`, `gh pr list`). Cifras tomadas del estado de GitHub y de la bitácora del 2026-11-25.
+**Fuentes:** `docs/bitacora.md` (pasos 1 a 64), `CLAUDE.md`, `README.md`, `docs/formacion/lab-agentes-orquestador.md` (incluidos los dos ensayos y los planes B), `docs/propuesta-agentes.md`, `.claude/agents/`, `.claude/skills/` y GitHub (`gh issue list --state all`, `gh pr list --state all`), consultados el 2026-11-26.
 
 ---
 
 ## Diapositiva 1. De la pizarra a la Pull Request
 
-- Una demo de desarrollo asistido por agentes de IA.
-- Partimos de un dibujo en una pizarra y de una carpeta vacía (paso 1).
+- Una demo de desarrollo asistido por agentes de IA, que empezó el 2026-11-24 con un dibujo en una pizarra (paso 1).
 - La app: una Lista de Tareas con plantillas, tareas repetitivas y papelera.
-- Stack: PHP, Symfony, Doctrine y SQLite en el backend; Angular en el frontend.
+- Stack: PHP 8.3, Symfony 7, Doctrine y SQLite; Angular 22 con Vitest.
+- Hoy: cómo se construyó y cómo pasamos de un agente solo a un equipo.
 
-**Notas del orador:** abre contando que el proyecto empezó con un diagrama en una pizarra y ninguna línea de código. Enseña en pantalla el repositorio en GitHub (`hispafox/DemoAgentes`, privado). Aclara que es una demo didáctica: se prioriza que el código sea claro, no sofisticado.
+**Notas del orador:** abre con una frase: "hace tres días esto era una pizarra". Enseña el repositorio en GitHub. Aclara que es una demo didáctica: se prioriza la claridad del código. Anuncia el plan: 20 minutos de contexto y después construimos el equipo de agentes con las manos.
 
-## Diapositiva 2. El flujo de trabajo: con puntos de control humanos
+## Diapositiva 2. La idea y el flujo
 
-- La documentación se convierte en issues de GitHub (vía MCP o `gh`).
-- En paralelo se genera un análisis técnico.
-- La IA implementa cada issue y abre una PR con `Closes #<nº>`.
-- En cada salida hay un CRITERIO: una persona revisa antes de avanzar.
+- La documentación se convierte en issues y en un análisis técnico.
+- La IA implementa cada issue dentro del marco del `CLAUDE.md`.
+- Cada issue acaba en una rama y una PR con `Closes #<nº>`.
+- En cada salida hay un CRITERIO: un punto de control humano.
 
 ```mermaid
 flowchart LR
-    DOC[Documentación funcional] --> ISS[Issues de GitHub]
+    DOC[Documentación funcional] -->|MCP o gh| ISS[Issues de GitHub]
     DOC --> ANA[Análisis técnico]
-    ISS --> IA[Agente + skills]
+    ISS --> IA[IA con skills]
     ANA --> IA
-    CL{{"CLAUDE.md (el candado)"}} -.acota.-> IA
+    CL{{"CLAUDE.md: el candado"}} -.acota.-> IA
     IA --> APP[App PHP + Angular]
-    APP --> PR[Pull Request]
+    APP --> PR[PR fusionada]
     DOC -. CRITERIO .-> ANA
     ANA -. CRITERIO .-> ISS
     APP -. CRITERIO .-> PR
 ```
 
-**Notas del orador:** es la pizarra del paso 1, pasada a limpio. Insiste en el candado: el `CLAUDE.md` es el diseño que acota lo que puede hacer la IA (paso 3). Si algo no encaja, se cambia primero el `CLAUDE.md`, nunca el código por libre. Enseña el fichero `CLAUDE.md` abierto.
+**Notas del orador:** es la pizarra del paso 1 pasada a limpio. Enseña `CLAUDE.md` abierto. El mensaje: si algo no encaja, se cambia primero el candado, con aprobación, y no el código por libre. Cuenta que el MCP de GitHub se sustituyó por la CLI `gh` (paso 59).
 
-## Diapositiva 3. El candado: `CLAUDE.md` y las firmas
+## Diapositiva 3. El candado y las firmas en modo aviso
 
-- El `CLAUDE.md` fija stack, arquitectura, convenciones y reglas del agente.
-- Las firmas: solo una persona aprueba, el agente nunca firma por su cuenta (paso 21).
-- Si un documento firmado cambia, pierde la firma (pasos 34 y 35).
-- La regla de bloqueo se suspendió para ir más rápido y todo quedó anotado como "pendiente de firma" (paso 24).
+- `CLAUDE.md` fija stack, capas, convenciones de API y reglas del agente.
+- Una firma la da una persona en el chat; el agente nunca firma por su cuenta.
+- Modo aviso (decisión del 2026-11-25): una firma pendiente no bloquea la clase; se avisa en una línea y se sigue (paso 56).
+- Siguen siendo obligatorios: no implementar sin issue, y no abrir PR ni fusionar con tests en rojo.
+- Las reglas se negocian y dejan rastro: el `405` entró en el candado con aprobación expresa (pasos 62 a 64).
 
-**Notas del orador:** cuenta que las reglas también se negocian: suspendimos la regla de firmas a petición del usuario, pero sin borrarla. Enseña la tabla "Pendientes de firma" del `CLAUDE.md`. Mensaje: un control que se suspende debe dejar rastro.
+**Notas del orador:** enseña la tabla "Pendientes de firma" del `CLAUDE.md`: hay 9 filas ahora mismo. Mensaje: un control que se relaja debe dejar rastro; aquí lo deja la tabla. Pregunta al grupo: "¿qué prefieres, un control que bloquea o uno que avisa?" y cuenta por qué aquí se eligió avisar (formación). En un proyecto real, el merge lo revisaría una persona antes de fusionar (paso 47).
 
-## Diapositiva 4. Documentar y analizar antes de programar
+## Diapositiva 4. Lo construido (1): backend y frontend base
 
-- Documentación funcional: F-01 a F-19 y RN-01 a RN-18 (pasos 16, 35, 36 y 38).
-- El PO responde las preguntas abiertas y el análisis se actualiza (pasos 18, 19 y 36).
-- Se cambió Jira por GitHub: épica = milestone, historia = issue (paso 7).
-- Backlog inicial: 12 issues en 3 milestones, con criterios Dado/Cuando/Entonces (paso 25).
+- Backlog en GitHub: 14 issues en 4 milestones (Infraestructura, Bloque A, Bloque B y Bloque C), con criterios Dado/Cuando/Entonces.
+- Backend de la v0.1 completo: `/api/tasks` (8 rutas) y `/api/task-templates` (6 rutas), issues #5 a #9.
+- Tests y calidad en local: 95 tests de PHPUnit (267 aserciones), PHPStan y PHP-CS-Fixer con `backend-test.ps1`.
+- Frontend base (#3): Angular 22, proxy a la API, interceptor de `problem+json` y 7 tests de Vitest.
+- Cifras de GitHub: 9 issues cerrados, 5 abiertos, 10 PR fusionadas.
 
-**Notas del orador:** enseña `docs/app/lista-de-tareas.md` y el diagrama ER de `docs/analisis.md` (paso 29). Cuenta un ejemplo: al revisar el análisis (paso 38) el agente detectó un hueco, la fecha de la siguiente ocurrencia al crear una tarea a mano, y el PO lo resolvió como RN-18. El agente pregunta; no inventa reglas.
+**Notas del orador:** enseña `gh issue list --state all` o la pestaña de PR. Cada PR cierra su issue sola. Pasa rápido: lo importante no es la app, es cómo se fabricó. Aclara que quedan abiertos #10, #11 y #12 (pantallas), #15 (categorías de la v0.2) y #4 (CI).
 
-## Diapositiva 5. Los skills: un especialista por capa (pasos 37 a 45)
+## Diapositiva 5. Lo construido (2): skills y agentes de apoyo
 
-- `mensaje-commit` y `bitacora` (pasos 6 y 11), más `modelo` (paso 28).
-- Paso 37: `analisis-diseno`. Paso 39: `dto`, `servicio` y `api`. Paso 43: `pruebas`.
-- Cada skill tiene tres modos: `crear`, `actualizar` y `revisar`.
-- Cada uno declara qué lee, qué escribe, qué no toca y cómo se verifica.
+- Cadena de skills por capa: `analisis-diseno` → `modelo` → `dto` → `servicio` → `api` → `frontend` → `pruebas`, más `bitacora` y `mensaje-commit`.
+- El skill `nueva-feature` es el orquestador de skills: detecta qué capas toca una petición y encadena los skills. No implementa nada por su cuenta.
+- Siete agentes de apoyo, cada uno con su comando: `refinador-backlog`, `guardian-candado`, `trazador-reglas`, `qa-exploratorio`, `revisor-seguridad`, `disenador-ui` y `presentador`.
+- Ya dieron frutos: el QA encontró el fallo que acabó siendo el issue #23.
 
-**Notas del orador:** explica la idea: en vez de un prompt gigante, una cadena de pequeños especialistas con fronteras claras. Enseña la carpeta `.claude/skills/` y abre un `SKILL.md`, por ejemplo el de `modelo`. Detalle útil: los skills se crearon justo antes de necesitarlos, para probarlos con un issue real (paso 39).
+| Comando | Agente | Qué hace |
+|---|---|---|
+| `/revisar-candado` | `guardian-candado` | CUMPLE o NO CUMPLE contra el `CLAUDE.md` |
+| `/probar-qa` | `qa-exploratorio` | Prueba la API por HTTP con su propia base de datos |
+| `/trazar-reglas` | `trazador-reglas` | Matriz regla → análisis → issue → código → test |
 
-## Diapositiva 6. Los tests se suspenden y se reactivan (pasos 33, 42 y 44)
+**Notas del orador:** enseña `.claude/skills/` y `.claude/agents/` en el explorador. Cuenta una prueba real del paso 56: `qa-exploratorio` hizo 54 pruebas sobre #8 y #9 (51 OK y 3 hallazgos); uno de ellos, rutas inexistentes con respuesta en HTML, es el #23 que veremos arreglado. Menciona también la prueba del `refinador-backlog`: el #15 no estaba listo para implementar y devolvió 9 preguntas para el PO.
 
-- Los tests se suspendieron el 24 de noviembre porque PHPUnit parecía colgado (paso 33).
-- Se reactivaron el 25 de noviembre (paso 42): 17 tests en verde.
-- El skill `pruebas` escribió los tests del issue #5: 42 tests y 94 aserciones (paso 44).
-- Se resolvió la cabecera `application/problem+json` con configuración, sin código nuevo.
+## Diapositiva 6. Skill, agente y comando
 
-**Notas del orador:** pregunta a la clase por qué creen que PHPUnit "se colgaba" y revela la respuesta en la diapositiva 9. Enseña `php bin/phpunit` en verde. Remarca la regla que nunca se suspendió del todo: sin tests en verde no hay PR ni merge.
+| | Skill | Agente | Comando |
+|---|---|---|---|
+| Responde a | Cómo se hace | Quién lo hace | Cómo se lanza |
+| Vive en | `.claude/skills/` | `.claude/agents/` | `.claude/commands/` |
+| Contexto | El de quien lo usa | Propio y limpio | El de la conversación |
+| Ejemplo | `api`, `nueva-feature` | `guardian-candado` | `/revisar-candado` |
 
-## Diapositiva 7. El backend de la 0.1, issue a issue (pasos 41 y 48 a 51)
+- Permisos mínimos: el guardián no tiene `Edit` ni `Write`, así que no puede corregir.
+- Salida con formato fijo: `CUMPLE` o `NO CUMPLE`, `APROBADO` o `REVISAR`. Lo lee otro agente.
+- Dos reglas de oro: **quien verifica no corrige** y **quien coordina no implementa**.
 
-- #5: gestionar tareas (crear, listar, consultar y modificar).
-- #6: completar una tarea y generar la siguiente ocurrencia (RN-05, RN-06).
-- #7: papelera (eliminar, ver y restaurar). #8: CRUD de plantillas. #9: crear una tarea desde una plantilla.
-- Cada issue sigue la misma cadena: `modelo` → `dto` → `servicio` → `api` → `pruebas` → PR → merge.
-- Resultado: backend de la 0.1 completo y 91 tests en verde (paso 51).
+**Notas del orador:** abre `.claude/agents/guardian-candado.md` y señala `description` (cuándo usarlo), `tools` (qué puede hacer) y el formato de salida. Pregunta retórica: "¿qué pasaría si el verificador pudiera editar?" Respuesta: marcaría en verde lo que él mismo ha tocado. Es el hilo que retomamos en el lab; aquí solo se plantea.
 
-**Notas del orador:** enseña en GitHub la lista de PR fusionadas y cómo cada una cierra su issue con `Closes #<nº>`. Cuenta cómo creció la suite: 42 tests tras el #5, 53 tras el #6, 67 tras el #7, 86 tras el #8 y 91 tras el #9. Decisión que conviene contar: el merge lo hace el agente en cuanto los tests están en verde, porque es una demo de clase (paso 47); en un proyecto real se mantendría la revisión previa.
+## Diapositiva 7. El equipo de agentes (y demo corta)
 
-## Diapositiva 8. Infraestructura y frontend: #4, #3 y los skills `frontend` y `nueva-feature` (pasos 52 a 55)
+- Cinco agentes que se crean hoy en el lab: `orquestador`, `planificador`, `implementador-backend`, `implementador-frontend` y `verificador`.
+- Se suma `guardian-candado`, que ya existe, antes del cierre.
+- El orquestador trabaja en la conversación principal, con el comando `/orquestar`, para poder parar y preguntar en los CRITERIO.
+- El plan se guarda en `docs/planes/plan-<nº>-<slug>.md`; el verificador da como máximo 3 vueltas de corrección.
 
-- #4: PHPStan nivel 6, PHP-CS-Fixer y plantilla de PR. El workflow de CI queda aparcado en `.github/ci-pendiente.yml` (paso 52).
-- Skill `frontend` (paso 53) y proyecto Angular 22 con Vitest, proxy `/api` e interceptor de errores `problem+json` (paso 54, 7 tests en verde).
-- Skill orquestador `nueva-feature` (paso 55): recibe una petición o un issue y encadena los demás skills hasta la PR fusionada.
-- El orquestador coordina, no implementa, y para en cada punto de control.
+```mermaid
+flowchart LR
+    U([Persona]) -->|/orquestar| O[Orquestador]
+    O --> P[Planificador]
+    P -.plan.-> O
+    O --> B[Implementador backend]
+    O --> F[Implementador frontend]
+    O --> V[Verificador]
+    V -.REVISAR, máx. 3 vueltas.-> O
+    O --> G[guardian-candado]
+    O --> GH[(Bitácora, commit, PR y merge)]
+```
 
-**Notas del orador:** enseña `proxy.conf.json` y cómo un `404` llega al navegador como mensaje en castellano. El orquestador es el cierre natural de la cadena: un solo comando, `/nueva-feature #<nº>`, para el resto de issues. Aclara que los agentes de los documentos de arquitectura aún no se han creado (paso 55).
+**Notas del orador:** el diagrama es el del lab; no lo expliques paso a paso, eso es el lab. Una idea: cada agente es un sombrero que antes llevaba una sola conversación.
 
-## Diapositiva 9. Los números reales (a 2026-11-25)
+### Demo en vivo (2 a 3 minutos)
 
-- Issues: 13 en total, 8 cerrados (#1, #2, #3, #5, #6, #7, #8, #9) y 5 abiertos (#4, #10, #11, #12, #15).
-- Pull Requests fusionadas: 9 (#13, #14, #16 a #22).
-- Tests: 91 en el backend y 7 en el frontend, todos en verde.
-- Bitácora: 55 pasos registrados en dos días de trabajo.
-- Skills de proyecto: 10 (`mensaje-commit`, `bitacora`, `analisis-diseno`, `modelo`, `dto`, `servicio`, `api`, `pruebas`, `frontend`, `nueva-feature`).
+Objetivo: ver un agente real en acción y su veredicto, sin pisar la demo larga del lab (`/orquestar #10`). Se usa el guardián sobre el trabajo del #23, que ya está fusionado.
 
-**Notas del orador:** enseña `gh issue list --state all` y `gh pr list --state merged`. Qué falta, dicho con honestidad: pantallas de Angular (#10, #11, #12), categorías de la 0.2 (#15) y activar la CI (#4). Tests de la suite completa tras el último merge del frontend: el backend se contó en el paso 51 y no se ha vuelto a medir (pendiente de confirmar el recuento exacto el día de la clase).
+1. Abre Claude Code en la raíz del repositorio y escribe `/agents`. Enseña los siete agentes de apoyo (todavía no están los cinco del lab).
+2. Lanza el guardián sobre la PR del #23:
 
-## Diapositiva 10. Lo que salió mal y aprendimos
+   ```
+   /revisar-candado #24
+   ```
 
-- **El antivirus que "colgaba" PHPUnit (pasos 31 y 42).** Defender escaneaba más de 5.600 ficheros de `vendor/` con el disco al 99 %. No era un fallo del código. Solución: exclusión de la carpeta del repositorio.
-- **El token sin permiso `workflow` (paso 52).** GitHub rechazó el push del workflow. La CI no hacía falta para el curso, así que se aparcó en `.github/ci-pendiente.yml` y el issue #4 sigue abierto.
-- **El tablero de Projects sin crear (paso 25).** Al token de `gh` le faltaba el permiso `project`.
-- **Errores en HTML en vez de JSON (paso 41).** Resuelto con `format: 'json'` en la ruta.
-- **Frontmatter de un skill que no cargaba (paso 9).** Los dos puntos sin comillas en YAML; se arregló con `description: >-`.
-- **El modelo "desapareció" del editor (paso 33).** Solo era otra rama; el código seguía en `feature/5-gestionar-tareas`.
+   Mientras trabaja (unos 25 segundos en el ensayo), abre `docs/planes/plan-23-errores-problem-json.md` y enseña capas afectadas y descartadas.
+3. Enseña el veredicto. En el ensayo fue `CUMPLE`. Señala que no ha modificado ningún fichero: `git status`.
+4. Cierra con la frase: "dentro de una hora, esto será una pieza más del equipo".
 
-**Notas del orador:** es la diapositiva con más valor para la clase. Mensaje: la mayoría de los problemas fueron del entorno (antivirus, permisos, Windows), no de la IA, y el agente los diagnosticó antes de cambiar nada (paso 42). Pregunta a la clase qué habrían hecho con un PHPUnit "colgado".
+Plan B de la demo: si el agente no responde o tarda, enseña el plan y la PR #24 en GitHub y cuenta el veredicto del ensayo (`CUMPLE`).
+
+## Diapositiva 8. Dos ensayos con datos reales
+
+| Ensayo | Issue | Resultado |
+|---|---|---|
+| Primero: frontend | #10, en ramas locales, sin PR | Plan 40 s; implementador frontend 5,5 min; verificador 40 s (`APROBADO` en la primera vuelta); guardián 25 s (`CUMPLE`); 42 tests de Vitest en verde; pantallas probadas a mano en 3 min |
+| Segundo: backend, con `/orquestar` como comando | #23, PR #24 fusionada | Plan 30 s; implementador backend 2,5 min (95 tests en verde); verificador 20 s (`APROBADO`); guardián 25 s (`CUMPLE`) |
+
+- El primero sumó unos 7 minutos de agentes (435 s); sobra tiempo en el bloque de 30 minutos del lab.
+- El #23 se arregló de verdad: `ApiJsonFormatSubscriber` hace que 404 y 405 de `/api` salgan en `application/problem+json`, con 4 tests nuevos.
+- Las dos veces, el verificador y el guardián dieron luz verde a la primera. Lo interesante no fueron los aciertos.
+
+**Notas del orador:** enseña la PR #24 en GitHub y el diff pequeño. Subraya que el segundo ensayo fue el de verdad: agentes creados sin commit, como se hará hoy. Esto da confianza: sabemos lo que tarda cada pieza.
+
+## Diapositiva 9. Lo que salió mal y lo que aprendimos
+
+Fallos que encontraron los ensayos y cómo se corrigieron (pasos 61 a 63):
+
+1. **Los agentes nuevos tardaron unos 7 minutos en aparecer** en la sesión; el comando, al momento. Ahora el lab pide crearlos al principio y abrir sesión nueva si no salen.
+2. **Los ids de los datos de ejemplo estaban escritos a mano** y la plantilla daba 404. Ahora se leen de cada respuesta.
+3. **El verificador y el guardián miraban `main..HEAD`,** pero el commit llega al final: habrían revisado un diff vacío. Ahora miran también los cambios sin commit.
+4. **El planificador inventó un agente** (`implementador-pruebas`). Ahora solo asigna agentes que existen.
+5. **Los skills terminaban con commit y PR,** y chocaban con agentes que no hacen commits. Ahora el cierre es solo del orquestador.
+6. **Nadie podía actualizar el análisis.** Ahora los implementadores pueden tocar `docs/analisis.md` con `analisis-diseno` si el plan lo pide.
+7. **El skill `api` se contradecía** (decía que no hacía falta un listener). Corregido.
+
+Y de antes, para el recuerdo:
+
+- PHPUnit "colgado" (paso 42): no era un fallo del código, era el disco al 99 % y el antivirus escaneando más de 5.600 ficheros de `vendor/`.
+- El workflow de CI quedó aparcado (paso 52): al token de `gh` le falta el permiso `workflow`. Está en `.github/ci-pendiente.yml`.
+
+**Notas del orador:** esta es la diapositiva más útil de la clase. Mensaje: los agentes fallan en las costuras (permisos, rutas, quién cierra), no en el código; por eso se ensaya antes. Anuncia que hoy quizá les pasen cosas parecidas y que la tabla de planes B del lab ya lo prevé.
+
+## Diapositiva 10. Lo que queda y el paso al lab
+
+- Issues abiertos (5): #10, #11 y #12 (pantallas de Angular), #15 (categorías, v0.2) y #4 (CI aparcada).
+- Tareas pendientes del `CLAUDE.md`: tablero de GitHub Projects (falta el permiso `project` del token), entorno Docker y los CRITERIO de las fases 3, 5 y 6.
+- Firmas pendientes: 9 filas en "Pendientes de firma" (backlog, categorías, RN-18, stack del frontend, #23 y el `405`).
+- Hoy: los agentes del equipo se crean en clase (o se copian de `docs/formacion/agentes-referencia/`) y `/orquestar #10` cierra el primer issue de pantallas.
+- Hay propuestas por si sobra tiempo: 15 agentes en `docs/propuesta-agentes.md` (por ejemplo, `evaluador-agentes`).
+
+**Notas del orador:** cierra la apertura con la transición: "lo que ya hay lo hizo un agente solo con skills; ahora lo repartimos". Abre `docs/formacion/lab-agentes-orquestador.md` y empieza por el bloque 0 (preparación). No entres en detalle de los bloques: se explican durante el lab.
 
 ---
 
-## Demo en vivo (3 a 4 minutos)
+## Cifras que se han comprobado
 
-Desde la raíz del repositorio, en PowerShell:
+| Dato | Valor | Fuente |
+|---|---|---|
+| Pasos de la bitácora | 64 | `docs/bitacora.md` |
+| Issues | 14 en total: 9 cerrados y 5 abiertos | `gh issue list --state all` |
+| PR fusionadas | 10 (#13, #14, #16 a #22 y #24) | `gh pr list --state all` |
+| Tests del backend | 95 (267 aserciones) | Paso 62 |
+| Tests del frontend en `main` | 7 de Vitest | Paso 54 |
+| Tests del frontend en la rama del ensayo | 42 | Paso 61 |
+| Agentes de apoyo / comandos | 7 / 7 | `.claude/agents/`, `.claude/commands/` |
+| Filas en "Pendientes de firma" | 9 | `CLAUDE.md` |
 
-1. Estado y contexto del proyecto en un chat nuevo:
-   ```
-   /bitacora retomar
-   ```
-2. Arrancar el backend (http://127.0.0.1:8000):
-   ```powershell
-   .\scripts\backend-start.ps1
-   ```
-3. Probar la API a mano: crear una tarea semanal y completarla, para ver cómo nace la siguiente ocurrencia:
-   ```powershell
-   curl.exe -i -X POST http://127.0.0.1:8000/api/tasks -H "Content-Type: application/json" -d "{\"title\":\"Regar las plantas\",\"recurrence\":\"weekly\"}"
-   curl.exe -i -X POST http://127.0.0.1:8000/api/tasks/1/complete
-   curl.exe -i http://127.0.0.1:8000/api/tasks/999
-   ```
-   Lo que se debe ver: `201` con `Location`, `200` con la tarea completada y la nueva ocurrencia, y `404` en `application/problem+json`.
-4. Lanzar tests, análisis estático y mapeo de Doctrine:
-   ```powershell
-   .\scripts\backend-test.ps1
-   ```
-5. Parar el servidor:
-   ```powershell
-   .\scripts\backend-stop.ps1
-   ```
-6. Si hay tiempo, abrir el siguiente issue con el orquestador (por ejemplo, las pantallas de tareas):
-   ```
-   /nueva-feature #10
-   ```
-   Para ver solo el plan sin implementar: `/nueva-feature plan #10`.
+## Pendientes y avisos para quien presenta
 
-**Plan B si algo falla:** enseñar el resultado ya fusionado en GitHub (PR #22) y la salida de `.\scripts\backend-test.ps1` grabada de antemano. Recuerda comprobar que el puerto 8000 esté libre y que Defender tenga la exclusión del repositorio.
-
----
-
-## Cierre y preguntas
-
-- Qué nos llevamos: reglas claras (`CLAUDE.md`), especialistas pequeños (skills), tests como freno y personas en los puntos de control.
-- Siguiente paso: pantallas de Angular (#10, #11, #12), categorías de la 0.2 (#15) y activar la CI (#4).
-- Pendiente: la fecha de la clase es el 2026-11-26 y los datos son del 2026-11-25; conviene refrescar las cifras de la diapositiva 9 antes de empezar.
+- (pendiente) Hora exacta de comienzo de cada ensayo: la bitácora solo da duraciones.
+- El guion del lab dice 91 tests del backend en el bloque 0 y en el lab del verificador; desde el #23 hay 95. Conviene decir "95" si se comparan cifras en pantalla.
+- El `README.md` aún dice "El merge lo decide siempre una persona", y el `CLAUDE.md` (paso 47) dice que el agente fusiona con los tests en verde. Vale la pena aclararlo en voz alta si alguien lo pregunta.

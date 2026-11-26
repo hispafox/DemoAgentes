@@ -1067,3 +1067,22 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 - "Pendientes de firma": nueva fila para este cambio del CLAUDE.md.
 
 **Ficheros:** `CLAUDE.md` y `docs/bitacora.md` (modificados).
+
+## Paso 65 — Presentación de la clase con el agente presentador y el skill pptx (2026-11-26)
+
+**Qué hicimos:** preparamos la presentación de apertura de la clase (unos 20 minutos, 10 diapositivas) que desemboca en el lab.
+- El agente `presentador` rehízo el guion con los pasos 1 a 64. El anterior era de una prueba de ayer y llegaba al paso 55.
+- Con el skill `pptx` generamos el PowerPoint.
+
+**Cambios:**
+- `docs/presentaciones/2026-11-26-clase-agentes.md`: guion con diapositivas, notas del orador, una demo corta (`/revisar-candado #24`) y una tabla de cifras con su fuente.
+- `docs/presentaciones/2026-11-26-clase-agentes.pptx`: las 10 diapositivas con las notas del orador.
+  - Se generó con pptxgenjs, instalado con permiso en la carpeta temporal de la sesión, no en el repositorio.
+  - Hubo tres pasadas de revisión visual con subagentes sobre imágenes exportadas desde PowerPoint. Se corrigieron títulos que se montaban, números de Georgia a distinta altura (ahora Cambria), huecos, contraste y textos.
+- Cifras comprobadas contra GitHub y la bitácora: 14 issues (5 abiertos), 10 PR fusionadas, 95 tests y 9 firmas pendientes.
+- Corregido "unos 8 minutos" de agentes del primer ensayo: eran 435 s, unos 7 minutos (guion del lab y presentación).
+- Corregidas dos incoherencias que encontró el presentador: el guion del lab decía 91 tests (son 95) y el `README.md` decía que el merge lo decide una persona (el `CLAUDE.md` dice que lo hace el agente con los tests en verde).
+
+**Licencias:** los skills `docx`, `pdf`, `pptx` y `xlsx` de `.claude/skills/` son de Anthropic, con todos los derechos reservados, y su licencia prohíbe distribuirlos. Siguen sin añadir a Git, porque el repositorio es público. Esta sesión también los tiene como plugin oficial (`anthropic-skills:*`).
+
+**Ficheros:** `docs/presentaciones/2026-11-26-clase-agentes.pptx` (nuevo); `docs/presentaciones/2026-11-26-clase-agentes.md`, `docs/formacion/lab-agentes-orquestador.md`, `README.md` y `docs/bitacora.md` (modificados).
