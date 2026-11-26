@@ -36,3 +36,8 @@ Thumbs.db
 # --- Generador de presentaciones (scripts/presentaciones) ---
 /scripts/presentaciones/node_modules/
 /scripts/presentaciones/edge-profile/
+
+# --- Vista en vivo del orquestador (scripts/orquestador-vivo) ---
+/scripts/orquestador-vivo/estado.json
+/scripts/orquestador-vivo/estado.json.tmp
+/scripts/orquestador-vivo/grabaciones/

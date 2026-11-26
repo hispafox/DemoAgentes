@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Agent|Task|Bash|PowerShell|AskUserQuestion|Skill",
+        "hooks": [{ "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/scripts/orquestador-vivo/hook.js\"", "timeout": 5 }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Agent|Task|Bash|PowerShell|AskUserQuestion|Skill",
+        "hooks": [{ "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/scripts/orquestador-vivo/hook.js\"", "timeout": 5 }]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [{ "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/scripts/orquestador-vivo/hook.js\"", "timeout": 5 }]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [{ "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/scripts/orquestador-vivo/hook.js\"", "timeout": 5 }]
+      }
+    ]
+  }
+}
