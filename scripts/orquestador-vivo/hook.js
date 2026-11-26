@@ -188,7 +188,7 @@ function handle(input) {
       const match = command.match(re);
       if (!match) continue;
       // Subagents also read the issue: the same issue in an unfinished run is not a new run
-      if (node === 'PREP' && sameOpenRun(match[1])) return;
+      if (node === 'PREP' && sameOpenRun(match[1])) continue;
       if (event === 'PreToolUse') {
         if (node === 'PREP') push({ tipo: 'inicio', issue: match[1] });
         push({ nodo: node, estado: 'activo', texto: command.slice(0, 120) });
