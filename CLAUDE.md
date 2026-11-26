@@ -234,6 +234,7 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 | `docs/analisis.md`: categorías (`Category`, `/api/categories`) | 2 | 2026-11-24 |
 | Backlog v0.2: issue #15 y milestone "Bloque C — Categorías" | 3 | 2026-11-24 |
 | `docs/app/lista-de-tareas.md` y `docs/analisis.md`: RN-18 (fecha de la siguiente ocurrencia al crear) | 1 y 2 | 2026-11-25 |
+| `docs/analisis.md`: 404 y 405 en `problem+json` para rutas de `/api` que no existen (#23) | 2 | 2026-11-26 |
 | `CLAUDE.md`: stack del frontend (Angular 22 y Vitest), regla de merge, skills, agentes y comandos | 0.5 | 2026-11-25 |
 
 ### Registro de firmas
