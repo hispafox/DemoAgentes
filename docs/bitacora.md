@@ -1155,6 +1155,24 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 
 **Ficheros:** `frontend/src/app/core/models/task.ts`, `frontend/src/app/core/api/task-api.service.ts` y `.spec.ts`, `frontend/src/app/shared/recurrence-label.pipe.ts` y `.spec.ts`, `frontend/src/app/features/tasks/task-list/*` y `frontend/src/app/features/tasks/task-form/*` (nuevos); `frontend/src/app/app.ts`, `app.html`, `app.css`, `app.routes.ts`, `frontend/src/app/core/messages/message.service.ts`, `frontend/src/styles.css`, `CLAUDE.md` y `docs/bitacora.md` (modificados); `.gitkeep` de `core/api/`, `shared/` y `features/` (eliminados).
 
+## Paso 69 — Prueba E2E del #10 con el MCP de Playwright y guion repetible (2026-11-26)
+
+**Qué hicimos:** comprobamos que el issue #10 está bien cerrado y recorrimos en el navegador, con el MCP de Playwright, sus cinco criterios de aceptación. Pasaron los cinco. Después guardamos la prueba como guion para poder repetirla. Con esto queda hecha la prueba en el navegador que el paso 68 dejaba pendiente; la revisión funcional (CRITERIO de la Fase 6) sigue en manos de la persona.
+
+**Por qué:** lo pidió hispafox para estrenar el MCP de Playwright (`.mcp.json`) y validar las pantallas de verdad, más allá de los tests de Vitest.
+
+**Cambios:**
+- En GitHub, el #10 está `CLOSED` desde las 09:10:05, cerrado por el merge de la PR #25 (09:10:03).
+- En el navegador: lista vacía y con datos; título vacío, que da error y no hace `POST`; completar una repetitiva diaria, que pasa a Completadas sin botón "Completar" y crea la siguiente ocurrencia; eliminar con confirmación; y `/tasks/999/edit`, que responde `404` y muestra "No se ha encontrado el elemento." y "No se ha encontrado la tarea."
+- Dos falsas alarmas descartadas: la nueva ocurrencia tiene la misma fecha que la original porque RN-05 calcula desde el día en que se completa; y el `404` tardó unos segundos en pintarse por la lentitud del equipo, no por el código.
+- `docs/pruebas/e2e-10-pantallas-tareas.md`: guion con preparación, 9 pasos (acción, herramienta MCP y resultado esperado), avisos, limpieza y registro de ejecuciones. Se puede repetir pidiéndoselo a un agente o a mano.
+
+**Decisión:** el guion se escribió como documento en Markdown y no como test de `@playwright/test`. Automatizarlo pide dependencias nuevas y un issue propio.
+
+**Pendiente:** las tareas de prueba 3 (completada) y 4 (en la papelera) siguen en `backend/var/data.db`. Falta firmar el guion.
+
+**Ficheros:** `docs/pruebas/e2e-10-pantallas-tareas.md` (nuevo); `CLAUDE.md` (fila en "Pendientes de firma") y `docs/bitacora.md` (modificados).
+
 ## Paso 70 — Generador de presentaciones en el repositorio (2026-11-26)
 
 **Qué hicimos:** guardamos en el repositorio el generador de diapositivas de los pasos 65 a 67, que estaba en la carpeta temporal de la sesión, para poder regenerar las presentaciones cuando cambie un guion o la bitácora.
@@ -1205,3 +1223,13 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 **Pendiente:** revisar el plan y responder las tres preguntas antes de implementar el #11.
 
 **Ficheros:** `.claude/agents/planificador.md`, `.claude/commands/planificar.md`, `docs/planes/plan-11-pantalla-papelera-tareas.md` (nuevos); `CLAUDE.md` y `docs/bitacora.md` (modificados).
+
+## Paso 72 — Skills de documentos y guía del MCP de Playwright, sin registrar hasta ahora (2026-11-26)
+
+**Qué hicimos:** registramos y commiteamos varios ficheros que estaban en el repositorio sin aparecer en ningún paso, junto con lo que el paso 69 dejó sin commitear (`docs/pruebas/` y `.mcp.json`).
+
+**Cambios:**
+- `.claude/skills/docx`, `pdf`, `pptx` y `xlsx`: skills de documentos de Anthropic copiados en el repositorio (licencia propietaria, en el `LICENSE.txt` de cada uno). El `presentador` usa `pptx` para las diapositivas; los demás sirven para generar material de la clase.
+- `docs/herramientas-mcp-playwright.docx`: guía en Word de las herramientas del MCP de Playwright (`@playwright/mcp` 0.0.86) y de cómo usarlas para probar la Lista de Tareas. Complementa el paso 69.
+
+**Ficheros:** `.claude/skills/docx/`, `.claude/skills/pdf/`, `.claude/skills/pptx/`, `.claude/skills/xlsx/`, `docs/herramientas-mcp-playwright.docx` (nuevos); `docs/bitacora.md` (modificado).

@@ -238,6 +238,7 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 | `CLAUDE.md`: stack del frontend (Angular 22 y Vitest), regla de merge, skills, agentes y comandos | 0.5 | 2026-11-25 |
 | `CLAUDE.md`: código `405` en las convenciones de la API (#23) | 0.5 | 2026-11-26 |
 | `docs/diseno/pantallas-tareas.md`: diseño de las pantallas de tareas (#10) | 6 | 2026-11-26 |
+| `docs/pruebas/e2e-10-pantallas-tareas.md`: guion de prueba E2E con Playwright (#10) | 6 | 2026-11-26 |
 
 ### Registro de firmas
 
