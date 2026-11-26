@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orquestador en vivo · DemoAgentes</title>
+<style>
+  :root {
+    --bg: #f7f7f8; --panel: #ffffff; --text: #18181b; --muted: #71717a; --line: #e4e4e7;
+    --blue: #2563eb; --green: #16a34a; --red: #dc2626; --grey: #a1a1aa;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f0f11; --panel: #18181b; --text: #f4f4f5; --muted: #a1a1aa; --line: #2e2e33; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+  header { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; padding: .9rem 1.5rem; border-bottom: 1px solid var(--line); background: var(--panel); }
+  h1 { font-size: 1.1rem; margin: 0; font-weight: 650; }
+  .dato { display: flex; flex-direction: column; }
+  .dato span:first-child { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .dato span:last-child { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .espacio { flex: 1; }
+  .conexion { font-size: .8rem; color: var(--muted); display: flex; align-items: center; gap: .4rem; }
+  .punto { width: .55rem; height: .55rem; border-radius: 50%; background: var(--grey); }
+  .punto.vivo { background: var(--green); }
+  select { font: inherit; font-size: .85rem; padding: .3rem .5rem; border-radius: .4rem; border: 1px solid var(--line); background: var(--panel); color: var(--text); max-width: 16rem; }
+  button { font: inherit; font-size: .85rem; padding: .35rem .8rem; border-radius: .4rem; border: 1px solid var(--line); background: var(--panel); color: var(--text); cursor: pointer; }
+  button:hover { border-color: var(--muted); }
+  main { display: grid; grid-template-columns: 1fr 340px; gap: 1rem; padding: 1rem 1.5rem; height: calc(100vh - 66px); }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: .6rem; overflow: auto; }
+  #diagrama { display: flex; align-items: center; justify-content: center; padding: 1rem; }
+  #diagrama svg { width: auto; height: calc(100vh - 110px); max-width: 100% !important; }
+  aside h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0; padding: .8rem 1rem; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--panel); }
+  ol { list-style: none; margin: 0; padding: 0; }
+  li { padding: .55rem 1rem; border-bottom: 1px solid var(--line); font-size: .85rem; }
+  li .cab { display: flex; gap: .5rem; align-items: baseline; }
+  li time { color: var(--muted); font-variant-numeric: tabular-nums; font-size: .78rem; }
+  li .txt { color: var(--muted); word-break: break-word; }
+  .marca { font-size: .7rem; font-weight: 650; padding: .05rem .4rem; border-radius: .25rem; color: #fff; }
+  .marca.activo { background: var(--blue); } .marca.ok { background: var(--green); } .marca.fallo { background: var(--red); } .marca.inicio { background: var(--muted); }
+  .vacio { padding: 1rem; color: var(--muted); font-size: .85rem; }
+  .leyenda { display: flex; flex-wrap: wrap; gap: .4rem .9rem; margin-top: .45rem; font-size: .75rem; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--muted); }
+  .leyenda i { display: inline-block; width: .7rem; height: .7rem; border-radius: .15rem; margin-right: .3rem; vertical-align: -1px; border: 2px solid; }
+  /* running nodes pulse */
+  #diagrama .node.activo rect, #diagrama .node.activo polygon, #diagrama .node.activo circle { animation: latido 1.2s ease-in-out infinite; }
+  @keyframes latido { 50% { stroke-width: 6px; stroke-opacity: .45; } }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; height: auto; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Orquestador en vivo</h1>
+  <div class="dato"><span>Issue</span><span id="issue">—</span></div>
+  <div class="dato"><span>Estado</span><span id="estado">Esperando</span></div>
+  <div class="dato"><span>Vuelta del verificador</span><span id="vuelta">0 / 3</span></div>
+  <div class="dato"><span>Tiempo</span><span id="tiempo">—</span></div>
+  <div class="espacio"></div>
+  <span class="conexion"><span class="punto" id="punto"></span><span id="conexion">sin conexión</span></span>
+  <select id="grabaciones" title="Flujos grabados en scripts/orquestador-vivo/grabaciones/"><option value="">Grabaciones…</option></select>
+  <button id="reproducir" title="Reproduce la grabación elegida">Reproducir</button>
+  <button id="simular" title="Reproduce un recorrido de ejemplo sin lanzar agentes">Simular</button>
+  <button id="limpiar" title="Borra los eventos registrados">Limpiar</button>
+</header>
+<main>
+  <section class="panel" id="diagrama"></section>
+  <aside class="panel">
+    <h2>Eventos
+      <span class="leyenda">
+        <span><i style="border-color:var(--grey)"></i>pendiente</span>
+        <span><i style="border-color:var(--blue)"></i>en marcha</span>
+        <span><i style="border-color:var(--green)"></i>hecho</span>
+        <span><i style="border-color:var(--red)"></i>revisar</span>
+      </span>
+    </h2>
+    <ol id="eventos"><li class="vacio">Lanza <code>claude --agent orquestador</code> con un issue y verás aquí cada paso.</li></ol>
+  </aside>
+</main>
+
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'default', themeVariables: { fontSize: '17px' }, flowchart: { curve: 'basis', htmlLabels: true, nodeSpacing: 40, rankSpacing: 26, padding: 10 } });
+
+const NAMES = {
+  PREP: 'Preparar', PLAN: 'Planificador', CRIT: 'CRITERIO', BACK: 'Implementador backend',
+  FRONT: 'Implementador frontend', VERIF: 'Verificador', GUARD: 'Guardián del candado',
+  BITA: 'Bitácora', COMMIT: 'Commit', PR: 'Pull Request', MERGE: 'Merge',
+};
+
+// Flow of .claude/agents/orquestador.md. Edge order matters for linkStyle (6 = REVISAR, 8 = NO CUMPLE).
+function diagram(s) {
+  const vuelta = s.vuelta ? `vuelta ${s.vuelta}/3` : 'máx. 3 vueltas';
+  const lines = [
+    'flowchart TB',
+    '  U([Persona · issue]) --> PREP',
+    '  PREP["1 · Preparar<br/>gh issue view y rama"] --> PLAN',
+    '  PLAN["2 · Planificador<br/>docs/planes/plan-*.md"] --> CRIT',
+    '  CRIT{{"CRITERIO<br/>preguntas abiertas"}} --> BACK',
+    '  BACK["3 · Implementador backend"] --> FRONT',
+    '  FRONT["3 · Implementador frontend"] --> VERIF',
+    `  VERIF{"4 · Verificador<br/>${vuelta}"} -- REVISAR --> BACK`,
+    '  VERIF -- APROBADO --> GUARD',
+    '  GUARD{"5 · Guardián del candado"} -- NO CUMPLE --> BACK',
+    '  GUARD -- CUMPLE --> BITA',
+    '  BITA["6 · Bitácora"] --> COMMIT["Commit"]',
+    '  COMMIT --> PR["Pull Request"]',
+    '  PR --> MERGE["Merge"]',
+    '  MERGE --> FIN([Fin])',
+    '  classDef pendiente fill:#f4f4f5,stroke:#a1a1aa,color:#52525b',
+    '  classDef activo fill:#dbeafe,stroke:#2563eb,stroke-width:3px,color:#1e3a8a',
+    '  classDef ok fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#14532d',
+    '  classDef fallo fill:#fee2e2,stroke:#dc2626,stroke-width:3px,color:#7f1d1d',
+  ];
+  for (const id of Object.keys(NAMES)) lines.push(`  class ${id} ${s.nodos[id] || 'pendiente'}`);
+  if (s.revisar) lines.push('  linkStyle 6 stroke:#dc2626,stroke-width:3px');
+  if (s.noCumple) lines.push('  linkStyle 8 stroke:#dc2626,stroke-width:3px');
+  return lines.join('\n');
+}
+
+// Current run state, derived from the events after the last "inicio"
+function derive(events) {
+  let start = 0;
+  events.forEach((e, i) => { if (e.tipo === 'inicio') start = i; });
+  const run = events.slice(start);
+  const s = { issue: null, nodos: {}, vuelta: 0, revisar: false, noCumple: false, desde: run[0]?.t, run };
+  for (const e of run) {
+    if (e.tipo === 'inicio') { s.issue = e.issue; continue; }
+    if (!e.nodo) continue;
+    if (e.nodo === 'VERIF' && e.estado === 'activo' && s.nodos.VERIF !== 'activo') s.vuelta++;
+    if (e.nodo === 'VERIF' && e.estado === 'fallo') s.revisar = true;
+    if (e.nodo === 'GUARD' && e.estado === 'fallo') s.noCumple = true;
+    s.nodos[e.nodo] = e.estado;
+  }
+  return s;
+}
+
+function overall(s) {
+  if (s.nodos.MERGE === 'ok') return 'Terminado ✔';
+  const running = Object.keys(s.nodos).filter((n) => s.nodos[n] === 'activo');
+  if (running.length) return 'En marcha: ' + running.map((n) => NAMES[n]).join(', ');
+  if (s.vuelta >= 3 && (s.nodos.VERIF === 'fallo' || s.nodos.GUARD === 'fallo')) return 'Bloqueado tras 3 vueltas';
+  if (!s.run.length) return 'Esperando';
+  return 'En pausa';
+}
+
+const $ = (id) => document.getElementById(id);
+let lastDiagram = '';
+let renderCount = 0;
+let current = { run: [] };
+
+async function paint(events) {
+  const s = derive(events);
+  current = s;
+  const text = diagram(s);
+  if (text !== lastDiagram) {
+    lastDiagram = text;
+    const { svg } = await mermaid.render('mmd' + ++renderCount, text);
+    $('diagrama').innerHTML = svg;
+  }
+  $('issue').textContent = s.issue ? '#' + s.issue : '—';
+  $('estado').textContent = overall(s);
+  $('vuelta').textContent = `${s.vuelta} / 3`;
+  const list = s.run.slice().reverse().map((e) => {
+    const hour = new Date(e.t).toLocaleTimeString('es-ES');
+    const tag = e.tipo === 'inicio' ? 'inicio' : e.estado;
+    const label = { activo: 'en marcha', ok: 'hecho', fallo: 'revisar', inicio: 'inicio' }[tag] || tag;
+    const title = e.tipo === 'inicio' ? `Issue #${e.issue}` : NAMES[e.nodo] || e.nodo;
+    const li = document.createElement('li');
+    li.innerHTML = `<div class="cab"><time></time><span class="marca ${tag}"></span><strong></strong></div><div class="txt"></div>`;
+    li.querySelector('time').textContent = hour;
+    li.querySelector('.marca').textContent = label;
+    li.querySelector('strong').textContent = title;
+    li.querySelector('.txt').textContent = e.texto || '';
+    return li;
+  });
+  if (list.length) $('eventos').replaceChildren(...list);
+}
+
+function tick() {
+  if (!current.desde) { $('tiempo').textContent = '—'; return; }
+  const end = current.nodos?.MERGE === 'ok' || replaying ? new Date(current.run.at(-1).t) : new Date();
+  const sec = Math.max(0, Math.round((end - new Date(current.desde)) / 1000));
+  $('tiempo').textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+}
+
+// Live mode: poll estado.json every second
+let simulating = false;
+async function poll() {
+  if (simulating) return;
+  try {
+    const res = await fetch('estado.json', { cache: 'no-store' });
+    const data = await res.json();
+    $('punto').classList.add('vivo');
+    $('conexion').textContent = 'en vivo';
+    await paint(data.eventos || []);
+  } catch {
+    $('punto').classList.remove('vivo');
+    $('conexion').textContent = 'sin conexión';
+  }
+}
+
+// Demo run (does not touch estado.json)
+const DEMO = [
+  { tipo: 'inicio', issue: '11' },
+  { nodo: 'PREP', estado: 'activo', texto: 'gh issue view 11' }, { nodo: 'PREP', estado: 'ok', texto: 'rama feature/11-pantalla-papelera-tareas' },
+  { nodo: 'PLAN', estado: 'activo', texto: 'Plan del issue #11' }, { nodo: 'PLAN', estado: 'ok', texto: 'docs/planes/plan-11-papelera.md' },
+  { nodo: 'CRIT', estado: 'activo', texto: 'pregunta a la persona' }, { nodo: 'CRIT', estado: 'ok', texto: 'respuestas guardadas' },
+  { nodo: 'FRONT', estado: 'activo', texto: 'Pantalla de papelera' }, { nodo: 'FRONT', estado: 'ok', texto: 'terminado' },
+  { nodo: 'VERIF', estado: 'activo', texto: 'Verificar plan #11' }, { nodo: 'VERIF', estado: 'fallo', texto: 'Veredicto: REVISAR (falta el test de restaurar)' },
+  { nodo: 'FRONT', estado: 'activo', texto: 'Corrección: test de restaurar' }, { nodo: 'FRONT', estado: 'ok', texto: 'terminado' },
+  { nodo: 'VERIF', estado: 'activo', texto: 'Verificar plan #11' }, { nodo: 'VERIF', estado: 'ok', texto: 'Veredicto: APROBADO' },
+  { nodo: 'GUARD', estado: 'activo', texto: 'Revisar el candado' }, { nodo: 'GUARD', estado: 'ok', texto: 'Veredicto: CUMPLE' },
+  { nodo: 'BITA', estado: 'activo', texto: 'skill bitacora' }, { nodo: 'BITA', estado: 'ok', texto: 'skill bitacora' },
+  { nodo: 'COMMIT', estado: 'activo', texto: 'git commit' }, { nodo: 'COMMIT', estado: 'ok', texto: 'feat: papelera (#11)' },
+  { nodo: 'PR', estado: 'activo', texto: 'gh pr create' }, { nodo: 'PR', estado: 'ok', texto: 'PR abierta' },
+  { nodo: 'MERGE', estado: 'activo', texto: 'gh pr merge --merge --delete-branch' }, { nodo: 'MERGE', estado: 'ok', texto: 'fusionada' },
+];
+// Plays a list of events step by step; then goes back to live mode
+let replaying = false;
+async function play(events, label, delay) {
+  if (simulating) return;
+  simulating = true;
+  $('conexion').textContent = label;
+  const shown = [];
+  for (let i = 0; i < events.length; i++) {
+    shown.push(events[i]);
+    await paint(shown);
+    if (i < events.length - 1) await new Promise((r) => setTimeout(r, delay(events[i], events[i + 1])));
+  }
+  setTimeout(() => { simulating = false; replaying = false; lastDiagram = ''; poll(); }, 5000);
+}
+
+$('simular').onclick = () => {
+  const now = Date.now();
+  let offset = 0;
+  const events = DEMO.map((e) => {
+    offset += e.estado === 'activo' ? 600 : 1400;
+    return { t: new Date(now + offset).toISOString(), ...e };
+  });
+  play(events, 'simulación', (a, b) => new Date(b.t) - new Date(a.t));
+};
+
+// Recordings: one file per run, saved by hook.js. Gaps are compressed (0.3 s to 1.5 s).
+async function loadRecordings() {
+  try {
+    const list = await (await fetch('grabaciones', { cache: 'no-store' })).json();
+    const select = $('grabaciones');
+    const chosen = select.value;
+    select.replaceChildren(new Option('Grabaciones…', ''), ...list.map((g) =>
+      new Option(`#${g.issue} · ${new Date(g.inicio).toLocaleString('es-ES')} · ${g.eventos} eventos`, g.nombre)));
+    select.value = chosen;
+  } catch {
+    // server without recordings
+  }
+}
+$('grabaciones').onfocus = loadRecordings;
+$('reproducir').onclick = async () => {
+  const name = $('grabaciones').value;
+  if (!name) return;
+  const data = await (await fetch('grabaciones/' + encodeURIComponent(name), { cache: 'no-store' })).json();
+  replaying = true;
+  play(data.eventos || [], 'grabación', (a, b) => Math.min(1500, Math.max(300, new Date(b.t) - new Date(a.t))));
+};
+loadRecordings();
+$('limpiar').onclick = async () => {
+  await fetch('reiniciar', { method: 'POST' }).catch(() => {});
+  lastDiagram = '';
+  $('eventos').innerHTML = '<li class="vacio">Sin eventos.</li>';
+  poll();
+};
+
+await paint([]);
+poll();
+setInterval(poll, 1000);
+setInterval(tick, 1000);
+</script>
+</body>
+</html>

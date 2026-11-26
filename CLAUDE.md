@@ -274,6 +274,7 @@ Scripts de PowerShell en `scripts/` (desde la raíz del repositorio):
 .\scripts\frontend-setup.ps1   # npm install
 .\scripts\frontend-start.ps1   # http://localhost:4200 con proxy de /api al backend
 .\scripts\frontend-test.ps1    # Tests de Vitest y build
+.\scripts\orquestador-vivo.ps1 # Vista en vivo del orquestador (diagrama Mermaid y grabaciones) en :4300
 ```
 
 Equivalentes manuales:

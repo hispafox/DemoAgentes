@@ -1343,3 +1343,26 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 **Pendiente:** revisión funcional de la pantalla `/tasks/trash` (ya se probó con Playwright en el paso 74).
 
 **Ficheros:** `docs/bitacora.md` (modificado).
+
+## Paso 79 — Vista en vivo del orquestador con hooks y grabaciones (2026-11-26)
+
+**Qué hicimos:** montamos una página HTML que dibuja con Mermaid el flujo del orquestador y lo colorea en tiempo real (agente en marcha, hecho, REVISAR o NO CUMPLE, vuelta del verificador). Cada flujo queda grabado y se puede reproducir después. Escribimos también un documento Word que explica el proceso y la base de los hooks de Claude Code.
+
+**Por qué:** hispafox quería ver en marcha el diagrama del orquestador durante la clase, en lugar de seguir solo los mensajes de la terminal.
+
+**Cambios:**
+- `.claude/settings.json` (nuevo, del proyecto): hooks `PreToolUse` y `PostToolUse` (matcher `Agent|Task|Bash|PowerShell|AskUserQuestion|Skill`), `SubagentStart` y `SubagentStop`, todos con `node "$CLAUDE_PROJECT_DIR/scripts/orquestador-vivo/hook.js"`.
+- `hook.js`: traduce cada evento a un nodo del diagrama (subagentes por `subagent_type`; `gh issue view`, `git commit`, `gh pr create` y `gh pr merge` por el texto del comando; `AskUserQuestion` como CRITERIO; skill `bitacora`) y lee la línea `Veredicto:` del verificador y del guardián. Escribe `estado.json` y la grabación del flujo (`grabaciones/<fecha>-issue-<nº>.json`), que se abre con cada `gh issue view`. Siempre sale con 0 para no interferir.
+- `servidor.js`: servidor Node sin dependencias en el puerto 4300 (`/`, `/estado.json`, `/grabaciones`, `/grabaciones/<fichero>`, `/reiniciar`).
+- `index.html`: diagrama Mermaid (CDN) con `classDef` por estado y `linkStyle` en rojo para las vueltas atrás, polling cada segundo, lista de eventos, botón **Simular**, selector de grabaciones con **Reproducir** y botón **Limpiar** (no borra grabaciones).
+- `scripts/orquestador-vivo.ps1`: arranca el servidor y abre el navegador.
+- `docs/formacion/orquestador-en-vivo-hooks.docx`: qué es, la base de los hooks (eventos, niveles de `settings.json`, matcher, JSON por stdin, códigos de salida, seguridad), los hooks del proyecto, la página, las grabaciones, cómo usarlo en clase y limitaciones.
+- `.gitignore`: excluye `estado.json` y `grabaciones/`.
+
+**Decisión:** hooks de Claude Code en vez del Claude Agent SDK (que hispafox preguntó): el orquestador se sigue lanzando igual (`claude --agent orquestador` o `/orquestar`), los CRITERIO se contestan en la terminal y no hay dependencias nuevas. El SDK queda descrito en el documento como alternativa.
+
+**Pruebas:** eventos falsos enviados al hook (inicio, agentes y veredictos), simulación y reproducción de una grabación en el navegador con Playwright. Los hooks se activaron en la propia sesión: un comando que contenía `gh issue view` abrió un flujo de verdad.
+
+**Pendiente:** ver un flujo real del orquestador en la vista (el #11 se cerró a las 12:16, antes de crear los hooks). Comprobar qué campos trae `SubagentStop` en esta versión de Claude Code (2.1.27); el hook tiene respaldos si faltan.
+
+**Ficheros:** `.claude/settings.json`, `scripts/orquestador-vivo/hook.js`, `scripts/orquestador-vivo/servidor.js`, `scripts/orquestador-vivo/index.html`, `scripts/orquestador-vivo.ps1`, `docs/formacion/orquestador-en-vivo-hooks.docx` (nuevos); `.gitignore`, `CLAUDE.md` (comando en "Comandos") y `docs/bitacora.md` (modificados).
