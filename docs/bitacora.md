@@ -1366,3 +1366,30 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 **Pendiente:** ver un flujo real del orquestador en la vista (el #11 se cerró a las 12:16, antes de crear los hooks). Comprobar qué campos trae `SubagentStop` en esta versión de Claude Code (2.1.27); el hook tiene respaldos si faltan.
 
 **Ficheros:** `.claude/settings.json`, `scripts/orquestador-vivo/hook.js`, `scripts/orquestador-vivo/servidor.js`, `scripts/orquestador-vivo/index.html`, `scripts/orquestador-vivo.ps1`, `docs/formacion/orquestador-en-vivo-hooks.docx` (nuevos); `.gitignore`, `CLAUDE.md` (comando en "Comandos") y `docs/bitacora.md` (modificados).
+
+## Paso 80 — Issue #12 cerrado con `/orquestar`: pantallas de plantillas (2026-11-26)
+
+**Qué hicimos:** cerramos el #12 (pantallas de plantillas y crear tarea desde plantilla, F-07 a F-12) con el flujo del orquestador, seguido en directo en la vista del paso 79.
+
+**Cambios:**
+- Preparar: issue abierto; rama `feature/12-pantallas-plantillas` desde `main` actualizado.
+- Planificar: `planificador` → `docs/planes/plan-12-pantallas-plantillas.md`. Solo frontend y pruebas; el backend ya tenía los 6 endpoints de `/api/task-templates`, con `409` (RN-12) e `instantiate` (RN-08).
+- CRITERIO: hispafox aceptó las cinco recomendaciones: estilo de las pantallas de tareas sin `disenador-ui`; tras "Crear tarea" navegar a `/tasks`; `confirm()` nativo al eliminar; texto propio ante el 409 ("Esta plantilla tiene tareas asociadas y no se puede eliminar"); sin pantalla de detalle (F-08 se cubre en el formulario de edición).
+- Implementar: `implementador-frontend` → `TaskTemplateApiService`, modelo `TaskTemplate`, `TemplateList`, `TemplateForm`, rutas perezosas `/templates`, `/templates/new` y `/templates/:id/edit`, enlace "Plantillas" y sus tests.
+- Verificar, vuelta 1: `verificador` → **APROBADO**. Vitest 66/66 en 11 ficheros, build correcto, los 4 criterios con test y contrato correcto.
+- Revisar reglas: `guardian-candado` → **CUMPLE**, sin hallazgos.
+
+**Pendiente:** revisión funcional de `/templates` con el backend levantado. Posible mejora: `TemplateForm` repite casi entero `TaskForm` (validador `notBlank`, `busy` y CSS); se podría sacar a `shared/`.
+
+**Ficheros:** `docs/planes/plan-12-pantallas-plantillas.md`; `CLAUDE.md` (Fase 6 marcada); `frontend/src/app/core/models/task-template.ts`, `frontend/src/app/core/api/task-template-api.service.ts` y su spec, `frontend/src/app/features/task-templates/template-list/*` y `template-form/*` (nuevos); `frontend/src/app/app.routes.ts`, `app.routes.spec.ts`, `app.html` y `app.spec.ts` (modificados); `docs/bitacora.md` (modificado).
+
+## Paso 81 — Correcciones del hook de la vista en vivo (2026-11-26)
+
+**Qué hicimos:** corregimos dos fallos de `scripts/orquestador-vivo/hook.js` que aparecieron al seguir en directo el flujo del #12 (paso 80). Así se resuelve el pendiente del paso 79 de ver un flujo real.
+
+**Cambios:**
+- Los hooks también se disparan dentro de los subagentes: el planificador ejecutó `gh issue view 12` y se abrió un segundo flujo, con la grabación partida en dos. Ahora un `gh issue view` del mismo issue, con el flujo ya pasado de Preparar y sin merge, no abre flujo nuevo.
+- `SubagentStop` también salta cuando un subagente se para a esperar trabajo en segundo plano (tests): el verificador salió como "hecho" a los 3 segundos. Ahora solo cuenta el informe final: `Veredicto:` en el verificador y el guardián, "terminado" o "bloqueado" en los implementadores y la ruta del plan en el planificador.
+- Reparamos a mano la grabación del #12 (un solo flujo, sin los dos "hecho" prematuros).
+
+**Ficheros:** `scripts/orquestador-vivo/hook.js` y `docs/bitacora.md` (modificados).

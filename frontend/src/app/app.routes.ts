@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-// Screens of docs/analisis.md §6. Templates (#12) arrive with their issue.
+// Screens of docs/analisis.md §6: tasks (#10), trash (#11) and templates (#12).
 // 'tasks/trash' is a static path, so it never clashes with 'tasks/:id/edit'.
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'tasks' },
@@ -19,5 +19,20 @@ export const routes: Routes = [
   {
     path: 'tasks/:id/edit',
     loadComponent: () => import('./features/tasks/task-form/task-form').then((m) => m.TaskForm),
+  },
+  {
+    path: 'templates',
+    loadComponent: () =>
+      import('./features/task-templates/template-list/template-list').then((m) => m.TemplateList),
+  },
+  {
+    path: 'templates/new',
+    loadComponent: () =>
+      import('./features/task-templates/template-form/template-form').then((m) => m.TemplateForm),
+  },
+  {
+    path: 'templates/:id/edit',
+    loadComponent: () =>
+      import('./features/task-templates/template-form/template-form').then((m) => m.TemplateForm),
   },
 ];
