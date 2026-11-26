@@ -1041,3 +1041,19 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 - El CLAUDE.md no cita el `405` en su lista de códigos. Es una decisión del candado, así que queda propuesto para que lo apruebe hispafox.
 
 **Ficheros:** `backend/src/EventListener/ApiJsonFormatSubscriber.php`, `docs/planes/plan-23-errores-problem-json.md` (nuevos); `backend/src/Controller/TaskController.php`, `backend/src/Controller/TaskTemplateController.php`, `backend/tests/Functional/ApiErrorFormatTest.php`, `docs/analisis.md`, `CLAUDE.md` y `docs/bitacora.md` (modificados).
+
+## Paso 63 — Correcciones del segundo ensayo y planes B (2026-11-26)
+
+**Qué hicimos:** aplicamos lo aprendido en el segundo ensayo (paso 62) y ordenamos los planes B de la clase.
+
+**Cambios:**
+- **Skills de capa** (antes del ensayo, commit aparte): su apartado "Entrega" ya no cierra por su cuenta cuando los carga un orquestador, para que haya un solo cierre. `nueva-feature` también lo dice en su paso 5. Se quitaron dos restos de la "regla de bloqueo" de firmas, en `analisis-diseno` y `modelo`.
+- **Skill `api`:** explica que `format: 'json'` solo vale cuando la ruta coincide, y que el resto lo cubre `ApiJsonFormatSubscriber` (#23).
+- **Agentes de la solución:** los implementadores pueden tocar `docs/analisis.md` con `analisis-diseno` si el plan lo pide, y el planificador asigna ese paso al implementador, nunca al orquestador. El planificador usa el modo `plan` de `nueva-feature`.
+- **Copia de referencia** de los agentes en `docs/formacion/agentes-referencia/`: ficheros listos para copiar, sincronizados con la solución.
+- **Guion:** sección del segundo ensayo y tabla de **planes B**: la carpeta de referencia, la solución en texto, la rama `ensayo/10-pantallas-tareas` (pantallas ya hechas) y la rama `ensayo/lab-orquestador` (primera versión de los agentes). Se mantienen las dos ramas.
+- Los agentes temporales del ensayo se quitaron de `.claude/agents/` y `.claude/commands/`: siguen sin existir en el repositorio hasta la clase.
+
+**Pendiente:** que hispafox apruebe añadir el `405` a la lista de códigos del CLAUDE.md (candado).
+
+**Ficheros:** `.claude/skills/api/SKILL.md`, `docs/formacion/lab-agentes-orquestador.md`, `docs/formacion/lab-agentes-orquestador-solucion.md`, `docs/formacion/agentes-referencia/` y `docs/bitacora.md` (modificados).

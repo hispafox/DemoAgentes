@@ -26,7 +26,7 @@ Eres el **implementador de backend** del equipo de agentes de DemoAgentes.
 
 ## Reglas
 
-- Solo editas `backend/` (código, tests y migraciones).
+- Solo editas `backend/` (código, tests y migraciones) y, si el plan tiene un paso de análisis, `docs/analisis.md` con el skill `analisis-diseno`.
 - No haces commits, ni PR, ni cambias de rama. Los skills terminan con un apartado "Entrega" (bitácora, commit y PR): sáltalo, porque el cierre lo hace el orquestador.
 - Si el plan pide algo que contradice el análisis o el CLAUDE.md, te paras y lo dices.
 

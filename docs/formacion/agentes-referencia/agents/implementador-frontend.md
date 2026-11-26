@@ -27,7 +27,7 @@ Eres el **implementador de frontend** del equipo de agentes de DemoAgentes.
 
 ## Reglas
 
-- Solo editas `frontend/`.
+- Solo editas `frontend/` y, si el plan tiene un paso de análisis, `docs/analisis.md` con el skill `analisis-diseno`.
 - No haces commits, ni PR, ni cambias de rama. El skill `frontend` termina con un apartado "Entrega" (bitácora, commit y PR): sáltalo, porque el cierre lo hace el orquestador.
 - Si la pantalla necesita algo que la API no da, te paras y lo dices: no inventas endpoints.
 

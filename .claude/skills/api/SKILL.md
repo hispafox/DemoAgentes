@@ -113,7 +113,7 @@ Todas las respuestas de error van en `application/problem+json` (RFC 9457).
                json: ['application/problem+json', 'application/json']
    ```
 
-   Las respuestas correctas no cambian, porque `JsonResponse` fija su propio `application/json`. No hace falta un *listener*. Cada controlador nuevo solo necesita `format: 'json'` en su ruta, y sus tests funcionales comprueban la cabecera con `assertResponseHeaderSame('Content-Type', 'application/problem+json')`.
+   Las respuestas correctas no cambian, porque `JsonResponse` fija su propio `application/json`. El `format: 'json'` solo se aplica cuando la ruta **coincide**; para las peticiones de `/api` que no coinciden con ninguna ruta (id no numérico, ruta inexistente o método no permitido) está `src/EventListener/ApiJsonFormatSubscriber.php`, que fija el formato JSON antes del router (issue #23). Cada controlador nuevo solo necesita `format: 'json'` en su ruta, y sus tests funcionales comprueban la cabecera con `assertResponseHeaderSame('Content-Type', 'application/problem+json')`.
 
 ## Verificación
 

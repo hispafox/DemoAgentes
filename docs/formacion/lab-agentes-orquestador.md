@@ -342,7 +342,27 @@ En total, unos **8 minutos de agentes**: sobra tiempo en el bloque de 30 minutos
 4. **El planificador inventó un agente** (`implementador-pruebas`) para los tests. Ahora solo puede asignar los agentes que existen, y los tests los escribe el implementador de cada capa.
 5. **Los skills `frontend` y `nueva-feature` terminan con bitácora, commit y PR**, lo que choca con los agentes que no hacen commits. Las instrucciones de cada agente dicen ahora que el cierre es del orquestador.
 
-**Si la demo en directo falla**, el resultado del ensayo sirve de plan B: `git diff --stat main ensayo/10-pantallas-tareas` enseña lo que hicieron los agentes y `git switch ensayo/10-pantallas-tareas` permite ver las pantallas.
+### Segundo ensayo: `/orquestar #23` con el backend
+
+Para cubrir lo que el primero no probó, se repitió con los agentes ya corregidos, creados **sin commit** en `.claude/agents/` (como en clase), `/orquestar` lanzado **como comando** y un issue de backend real: el [#23](https://github.com/hispafox/DemoAgentes/issues/23), errores en `problem+json` para rutas de la API que no existen. Esta vez sí acabó en PR fusionada ([#24](https://github.com/hispafox/DemoAgentes/pull/24)).
+
+| Agente | Tiempo | Resultado |
+|---|---|---|
+| planificador | 30 s | Capa `api` y pruebas; frontend descartado |
+| implementador-backend | 2,5 min | Cargó `analisis-diseno`, `api` y `pruebas`; 95 tests en verde |
+| verificador | 20 s | `APROBADO` a la primera |
+| guardian-candado | 25 s | `CUMPLE` |
+
+Lo que salió y se corrigió: **nadie en el equipo podía actualizar el análisis** (el planificador solo escribe planes, el orquestador no edita y el implementador solo tocaba su carpeta). Ahora los implementadores pueden tocar `docs/analisis.md` con el skill `analisis-diseno` cuando el plan lo pide. También se corrigió el skill `api`, que decía que no hacía falta un *listener*.
+
+### Planes B
+
+| Si en clase… | Plan B | Dónde |
+|---|---|---|
+| …no da tiempo a escribir los agentes, o salen mal | Copiar los cinco agentes y el comando ya revisados | [`docs/formacion/agentes-referencia/`](agentes-referencia/README.md), con dos `Copy-Item` |
+| …se quiere leer o comentar el contenido de un agente | La solución en texto, bloque a bloque | [lab-agentes-orquestador-solucion.md](lab-agentes-orquestador-solucion.md) |
+| …la demo `/orquestar #10` falla en directo o se acaba el tiempo | Enseñar las pantallas que ya hicieron los agentes en el primer ensayo | Rama `ensayo/10-pantallas-tareas`: `git diff --stat main ensayo/10-pantallas-tareas` y `git switch ensayo/10-pantallas-tareas` |
+| …se quiere enseñar cómo eran los agentes antes de corregirlos | La primera versión, tal como se ensayó | Rama `ensayo/lab-orquestador` (no se fusiona) |
 
 ---
 

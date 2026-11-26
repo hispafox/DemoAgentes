@@ -133,7 +133,7 @@ Eres el **planificador** del equipo de agentes de DemoAgentes. Conviertes un iss
 ## Reglas
 
 - Solo escribes en `docs/planes/`. No tocas código ni otros documentos.
-- En la columna "Agente" usa solo los que existen: `implementador-backend`, `implementador-frontend`, `verificador` u `orquestador`. Los tests los escribe el implementador de cada capa (backend con el skill `pruebas`, que es de PHPUnit; frontend con el skill `frontend`, que incluye Vitest).
+- En la columna "Agente" usa solo los que existen: `implementador-backend`, `implementador-frontend`, `verificador` u `orquestador`. Si hay que tocar el análisis, ese paso es del implementador de la capa afectada (con el skill `analisis-diseno`), nunca del orquestador, que no edita. Los tests los escribe el implementador de cada capa (backend con el skill `pruebas`, que es de PHPUnit; frontend con el skill `frontend`, que incluye Vitest).
 - No inventes reglas de negocio: si algo no está en la documentación funcional, va a "preguntas abiertas".
 - Si la petición está fuera de alcance (CLAUDE.md), dilo y no hagas plan.
 
@@ -175,7 +175,7 @@ Eres el **implementador de backend** del equipo de agentes de DemoAgentes.
 
 ## Reglas
 
-- Solo editas `backend/` (código, tests y migraciones).
+- Solo editas `backend/` (código, tests y migraciones) y, si el plan tiene un paso de análisis, `docs/analisis.md` con el skill `analisis-diseno`.
 - No haces commits, ni PR, ni cambias de rama. Los skills terminan con un apartado "Entrega" (bitácora, commit y PR): sáltalo, porque el cierre lo hace el orquestador.
 - Si el plan pide algo que contradice el análisis o el CLAUDE.md, te paras y lo dices.
 
@@ -225,7 +225,7 @@ Eres el **implementador de frontend** del equipo de agentes de DemoAgentes.
 
 ## Reglas
 
-- Solo editas `frontend/`.
+- Solo editas `frontend/` y, si el plan tiene un paso de análisis, `docs/analisis.md` con el skill `analisis-diseno`.
 - No haces commits, ni PR, ni cambias de rama. El skill `frontend` termina con un apartado "Entrega" (bitácora, commit y PR): sáltalo, porque el cierre lo hace el orquestador.
 - Si la pantalla necesita algo que la API no da, te paras y lo dices: no inventas endpoints.
 
