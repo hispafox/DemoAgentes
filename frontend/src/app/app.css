@@ -1,31 +1,54 @@
 .header {
-  padding: 1rem 1.5rem;
-  background: #1f2937;
-  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-header-bg);
+  color: var(--color-header-text);
 }
 
 .header h1 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: var(--font-size-title);
+}
+
+.nav {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-size);
+  color: var(--color-header-text);
+  text-decoration: none;
+}
+
+.nav a.active {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
 }
 
 .content {
   max-width: 48rem;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: var(--space-6);
 }
 
 .alert {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  padding: 0.75rem 1rem;
-  border: 1px solid #fca5a5;
-  border-radius: 0.375rem;
-  background: #fef2f2;
-  color: #991b1b;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-danger-border);
+  border-radius: var(--radius);
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
 }
 
 .alert button {
