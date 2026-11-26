@@ -1113,3 +1113,21 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 - Una sustitución de texto en el guion cambió por error cinco `: ` entre dos fragmentos de código; se restauraron.
 
 **Ficheros:** `docs/presentaciones/2026-11-26-clase-agentes-extendida.md`, `docs/presentaciones/2026-11-26-clase-agentes-extendida.pptx`, `docs/presentaciones/img/captura-lista.png` y `docs/presentaciones/img/captura-formulario.png` (nuevos); `docs/bitacora.md` (modificado).
+
+## Paso 67 — Presentación de toda la bitácora (2026-11-26)
+
+**Qué hicimos:** preparamos una presentación que cuenta la bitácora completa, agrupada por etapas, con un anexo que lista todos los pasos.
+
+**Cambios:**
+- `docs/presentaciones/2026-11-26-bitacora.md`: guion del agente `presentador`, unos 25 minutos.
+  - 26 diapositivas en 9 secciones: tres días en cifras, línea de tiempo y ocho etapas (pasos 1 a 15, 16 a 24, 25 a 33, 34 a 38, 39 a 52, 53 a 55, 56 a 58 y 59 a 66).
+  - Cada paso cae en una sola etapa.
+  - Lleva extractos reales de `mensaje-commit`, `framework.yaml`, `ApiJsonFormatSubscriber` y el skill `bitacora`.
+  - Cierra con "lo que nos enseñó la bitácora" y cómo se lleva.
+- `docs/presentaciones/2026-11-26-bitacora.pptx`: el PowerPoint, generado con el skill `pptx`.
+  - El generador de la versión extendida se hizo genérico: portada configurable, número de secciones calculado a partir del guion y un anexo automático.
+  - El anexo lee las cabeceras `## Paso N — título (fecha)` de `docs/bitacora.md` y crea una tabla de 11 pasos por diapositiva. Si la bitácora crece, el anexo se regenera solo.
+- Cifras comprobadas contra la bitácora y GitHub, entre ellas los tests acumulados por issue: 53, 67, 86 y 91 (pasos 48 a 51).
+- Revisión visual con un subagente: se unificó la cuenta a 67 pasos (el guion decía 66 y dejaba fuera este mismo paso), se corrigió "cuatro" por "cinco" cambios de diseño y el rango de pasos de cada separadora pasó a la etiqueta superior para que el título no se partiera.
+
+**Ficheros:** `docs/presentaciones/2026-11-26-bitacora.md` y `docs/presentaciones/2026-11-26-bitacora.pptx` (nuevos); `docs/bitacora.md` (modificado).
