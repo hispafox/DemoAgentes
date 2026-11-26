@@ -19,6 +19,14 @@ describe('App', () => {
     expect(compiled.querySelector('h1')?.textContent).toContain('Lista de tareas');
   });
 
+  it('should link to the trash in the main navigation', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    const link = (fixture.nativeElement as HTMLElement).querySelector('nav a[href="/tasks/trash"]');
+    expect(link?.textContent?.trim()).toBe('Papelera');
+  });
+
   it('should show the last error and hide it when closed', async () => {
     const fixture = TestBed.createComponent(App);
     TestBed.inject(MessageService).showError('No se ha encontrado el elemento.');

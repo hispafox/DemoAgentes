@@ -1,7 +1,10 @@
 <header class="header">
   <h1>Lista de tareas</h1>
   <nav aria-label="Principal">
-    <a routerLink="/tasks" routerLinkActive="active" ariaCurrentWhenActive="page">Tareas</a>
+    <a routerLink="/tasks" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">
+      Tareas
+    </a>
+    <a routerLink="/tasks/trash" routerLinkActive="active" ariaCurrentWhenActive="page">Papelera</a>
   </nav>
 </header>
 
