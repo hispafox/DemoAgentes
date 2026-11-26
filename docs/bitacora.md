@@ -1054,6 +1054,16 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 - **Guion:** sección del segundo ensayo y tabla de **planes B**: la carpeta de referencia, la solución en texto, la rama `ensayo/10-pantallas-tareas` (pantallas ya hechas) y la rama `ensayo/lab-orquestador` (primera versión de los agentes). Se mantienen las dos ramas.
 - Los agentes temporales del ensayo se quitaron de `.claude/agents/` y `.claude/commands/`: siguen sin existir en el repositorio hasta la clase.
 
-**Pendiente:** que hispafox apruebe añadir el `405` a la lista de códigos del CLAUDE.md (candado).
+**Pendiente:** que hispafox apruebe añadir el `405` a la lista de códigos del CLAUDE.md (candado). Lo aprobó y se hizo en el paso 64.
 
 **Ficheros:** `.claude/skills/api/SKILL.md`, `docs/formacion/lab-agentes-orquestador.md`, `docs/formacion/lab-agentes-orquestador-solucion.md`, `docs/formacion/agentes-referencia/` y `docs/bitacora.md` (modificados).
+
+## Paso 64 — Código 405 en las convenciones de la API del CLAUDE.md (2026-11-26)
+
+**Qué hicimos:** con la aprobación de hispafox, añadimos el `405` (método no permitido, con cabecera `Allow`) a la lista de códigos de la sección "API REST" del CLAUDE.md. El código ya lo devolvía Symfony y desde el #23 sale en `problem+json`; el análisis lo documentaba desde el paso 62, pero el candado no lo citaba.
+
+**Cambios:**
+- `CLAUDE.md`, "API REST": `405` en la lista de códigos.
+- "Pendientes de firma": nueva fila para este cambio del CLAUDE.md.
+
+**Ficheros:** `CLAUDE.md` y `docs/bitacora.md` (modificados).

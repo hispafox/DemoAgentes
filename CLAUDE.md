@@ -41,7 +41,7 @@ Si este CLAUDE.md y esos documentos se contradicen, manda el documento firmado m
 **API REST:**
 - Prefijo `/api`, recursos en plural y en inglés (`/api/tasks`, `/api/task-templates`); acciones con efectos como subrecurso `POST` (`/complete`, `/restore`, `/instantiate`).
 - JSON con propiedades en `camelCase`; fechas ISO 8601.
-- Códigos: `200`, `201` (+ `Location`), `204`, `400` (JSON mal formado), `404`, `409` (estado no permite la acción), `422` (validación).
+- Códigos: `200`, `201` (+ `Location`), `204`, `400` (JSON mal formado), `404`, `405` (método no permitido, con cabecera `Allow`), `409` (estado no permite la acción), `422` (validación).
 - Errores siempre en `application/problem+json` (RFC 9457).
 
 **Nombres:** código, tablas y rutas en inglés (ADR-0002). Clases en `PascalCase`, métodos y propiedades en `camelCase`, tablas y columnas en `snake_case`. Tests: `<Clase>Test`, un método `test<Comportamiento>` por caso.
@@ -236,6 +236,7 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 | `docs/app/lista-de-tareas.md` y `docs/analisis.md`: RN-18 (fecha de la siguiente ocurrencia al crear) | 1 y 2 | 2026-11-25 |
 | `docs/analisis.md`: 404 y 405 en `problem+json` para rutas de `/api` que no existen (#23) | 2 | 2026-11-26 |
 | `CLAUDE.md`: stack del frontend (Angular 22 y Vitest), regla de merge, skills, agentes y comandos | 0.5 | 2026-11-25 |
+| `CLAUDE.md`: código `405` en las convenciones de la API (#23) | 0.5 | 2026-11-26 |
 
 ### Registro de firmas
 
