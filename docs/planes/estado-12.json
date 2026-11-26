@@ -1,0 +1,146 @@
+{
+  "issue": 12,
+  "titulo": "Pantallas de plantillas y crear tarea desde plantilla",
+  "rama": "feature/12-pantallas-plantillas",
+  "plan": "docs/planes/plan-12-pantallas-plantillas.md",
+  "creado": "2026-11-26T12:09:57.171Z",
+  "actualizado": "2026-11-26T12:10:12.430Z",
+  "vuelta": 0,
+  "final": "FUSIONADO",
+  "pasos": {
+    "1_preparar": {
+      "estado": "hecho",
+      "prueba": "issue #12 CLOSED; la rama feature/12-pantallas-plantillas tiene PR",
+      "fecha": "2026-11-26T12:09:59.763Z"
+    },
+    "2_planificar": {
+      "estado": "hecho",
+      "prueba": "docs/planes/plan-12-pantallas-plantillas.md",
+      "fecha": "2026-11-26T12:09:59.942Z"
+    },
+    "2a_criterio": {
+      "estado": "hecho",
+      "dijo": "acepta las 5 recomendaciones del plan (estilo de tareas, navegar a /tasks, confirm(), texto propio para el 409, sin detalle aparte)",
+      "fecha": "2026-11-26T12:10:00.106Z"
+    },
+    "3a_backend": {
+      "estado": "no_aplica",
+      "motivo": "el plan no tiene pasos de backend",
+      "fecha": "2026-11-26T12:10:00.263Z"
+    },
+    "3b_frontend": {
+      "estado": "hecho",
+      "prueba": "15 ficheros de frontend/",
+      "fecha": "2026-11-26T12:10:04.063Z"
+    },
+    "4_verificar": {
+      "estado": "hecho",
+      "prueba": "Veredicto: APROBADO · Vitest 66/66 en 11 ficheros, build OK",
+      "fecha": "2026-11-26T12:10:04.304Z",
+      "veredicto": "APROBADO"
+    },
+    "5_guardian": {
+      "estado": "hecho",
+      "prueba": "Veredicto: CUMPLE",
+      "fecha": "2026-11-26T12:10:04.564Z",
+      "veredicto": "CUMPLE"
+    },
+    "6a_bitacora": {
+      "estado": "hecho",
+      "prueba": "docs/bitacora.md con el #12",
+      "fecha": "2026-11-26T12:10:06.757Z"
+    },
+    "6b_commit": {
+      "estado": "hecho",
+      "prueba": "fe06548 feat: pantallas de plantillas y crear tarea desde plantilla (#12)",
+      "fecha": "2026-11-26T12:10:08.760Z"
+    },
+    "6c_pr": {
+      "estado": "hecho",
+      "prueba": "https://github.com/hispafox/DemoAgentes/pull/28",
+      "fecha": "2026-11-26T12:10:10.122Z"
+    },
+    "6d_merge": {
+      "estado": "hecho",
+      "prueba": "PR #28 fusionada el 2026-11-26T11:52:49Z · frontend-test.ps1 en main: todo en verde",
+      "fecha": "2026-11-26T12:10:12.428Z"
+    },
+    "7_revision_funcional": {
+      "estado": "pendiente"
+    }
+  },
+  "historial": [
+    {
+      "t": "2026-11-26T12:09:57.173Z",
+      "paso": "crear",
+      "estado": "hecho",
+      "detalle": "#12 Pantallas de plantillas y crear tarea desde plantilla"
+    },
+    {
+      "t": "2026-11-26T12:09:59.765Z",
+      "paso": "1_preparar",
+      "estado": "hecho",
+      "detalle": "issue #12 CLOSED; la rama feature/12-pantallas-plantillas tiene PR"
+    },
+    {
+      "t": "2026-11-26T12:09:59.945Z",
+      "paso": "2_planificar",
+      "estado": "hecho",
+      "detalle": "docs/planes/plan-12-pantallas-plantillas.md"
+    },
+    {
+      "t": "2026-11-26T12:10:00.108Z",
+      "paso": "2a_criterio",
+      "estado": "hecho",
+      "detalle": "la persona: acepta las 5 recomendaciones del plan (estilo de tareas, navegar a /tasks, confirm(), texto propio para el 409, sin detalle aparte)"
+    },
+    {
+      "t": "2026-11-26T12:10:00.265Z",
+      "paso": "3a_backend",
+      "estado": "no_aplica",
+      "detalle": "el plan no tiene pasos de backend"
+    },
+    {
+      "t": "2026-11-26T12:10:04.068Z",
+      "paso": "3b_frontend",
+      "estado": "hecho",
+      "detalle": "15 ficheros de frontend/"
+    },
+    {
+      "t": "2026-11-26T12:10:04.307Z",
+      "paso": "4_verificar",
+      "estado": "hecho",
+      "detalle": "Veredicto: APROBADO · Vitest 66/66 en 11 ficheros, build OK"
+    },
+    {
+      "t": "2026-11-26T12:10:04.567Z",
+      "paso": "5_guardian",
+      "estado": "hecho",
+      "detalle": "Veredicto: CUMPLE"
+    },
+    {
+      "t": "2026-11-26T12:10:06.758Z",
+      "paso": "6a_bitacora",
+      "estado": "hecho",
+      "detalle": "docs/bitacora.md con el #12"
+    },
+    {
+      "t": "2026-11-26T12:10:08.762Z",
+      "paso": "6b_commit",
+      "estado": "hecho",
+      "detalle": "fe06548 feat: pantallas de plantillas y crear tarea desde plantilla (#12)"
+    },
+    {
+      "t": "2026-11-26T12:10:10.124Z",
+      "paso": "6c_pr",
+      "estado": "hecho",
+      "detalle": "https://github.com/hispafox/DemoAgentes/pull/28"
+    },
+    {
+      "t": "2026-11-26T12:10:12.429Z",
+      "paso": "6d_merge",
+      "estado": "hecho",
+      "detalle": "PR #28 fusionada el 2026-11-26T11:52:49Z · frontend-test.ps1 en main: todo en verde"
+    }
+  ]
+}

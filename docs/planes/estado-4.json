@@ -1,0 +1,66 @@
+{
+  "issue": 4,
+  "titulo": "CI con GitHub Actions y plantilla de PR",
+  "rama": "feature/4-ci-con-github-actions",
+  "plan": null,
+  "creado": "2026-11-26T12:10:55.213Z",
+  "actualizado": "2026-11-26T12:10:55.216Z",
+  "vuelta": 0,
+  "final": "APARCADO",
+  "pasos": {
+    "1_preparar": {
+      "estado": "pendiente"
+    },
+    "2_planificar": {
+      "estado": "pendiente"
+    },
+    "2a_criterio": {
+      "estado": "pendiente"
+    },
+    "3a_backend": {
+      "estado": "pendiente"
+    },
+    "3b_frontend": {
+      "estado": "pendiente"
+    },
+    "4_verificar": {
+      "estado": "pendiente"
+    },
+    "5_guardian": {
+      "estado": "pendiente"
+    },
+    "6a_bitacora": {
+      "estado": "pendiente"
+    },
+    "6b_commit": {
+      "estado": "pendiente"
+    },
+    "6c_pr": {
+      "estado": "pendiente"
+    },
+    "6d_merge": {
+      "estado": "pendiente"
+    },
+    "7_revision_funcional": {
+      "estado": "pendiente"
+    }
+  },
+  "historial": [
+    {
+      "t": "2026-11-26T12:10:55.214Z",
+      "paso": "crear",
+      "estado": "hecho",
+      "detalle": "#4 CI con GitHub Actions y plantilla de PR"
+    },
+    {
+      "t": "2026-11-26T12:10:55.216Z",
+      "paso": "aparcar",
+      "estado": "aparcado",
+      "detalle": "falta el permiso workflow del token (gh auth refresh -s workflow); la CI está en .github/ci-pendiente.yml"
+    }
+  ],
+  "aparcado": {
+    "motivo": "falta el permiso workflow del token (gh auth refresh -s workflow); la CI está en .github/ci-pendiente.yml",
+    "fecha": "2026-11-26T12:10:55.216Z"
+  }
+}
