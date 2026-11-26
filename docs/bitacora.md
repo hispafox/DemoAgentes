@@ -1131,3 +1131,26 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 - Revisión visual con un subagente: se unificó la cuenta a 67 pasos (el guion decía 66 y dejaba fuera este mismo paso), se corrigió "cuatro" por "cinco" cambios de diseño y el rango de pasos de cada separadora pasó a la etiqueta superior para que el título no se partiera.
 
 **Ficheros:** `docs/presentaciones/2026-11-26-bitacora.md` y `docs/presentaciones/2026-11-26-bitacora.pptx` (nuevos); `docs/bitacora.md` (modificado).
+
+## Paso 68 — Pantallas de tareas en Angular: lista, formulario y completar (#10) (2026-11-26)
+
+**Qué hicimos:** implementamos el issue #10 con el orquestador `/nueva-feature`: la lista `/tasks` (pendientes y completadas, completar y eliminar) y el formulario `/tasks/new` y `/tasks/:id/edit`, con su servicio HTTP, el pipe `recurrenceLabel` y 26 tests nuevos de Vitest (33 en total).
+
+**Por qué:** era el siguiente issue de la v0.1; la API de `/api/tasks` ya estaba fusionada (#5 a #9).
+
+**Cambios:**
+- Alcance detectado: solo la capa `frontend`. Se descartaron `analisis-diseno`, `modelo`, `dto`, `servicio` y `api` porque §4 y §6 del análisis ya cubrían el issue y el backend no cambia.
+- `core/models/task.ts` copia `TaskOutput` y `CompleteTaskOutput`; `TaskApiService` tiene un método por cada uno de los 8 endpoints de `/api/tasks` (también `trash()` y `restore()`, que usará #11).
+- `TaskList`: estados cargando, vacío, error de carga con "Reintentar" y botones deshabilitados mientras hay una acción en curso. La siguiente ocurrencia se toma de la respuesta de `/complete` (RN-05); el frontend no calcula fechas.
+- `TaskForm`: formulario reactivo tipado; título obligatorio, sin contar los espacios (como `NotBlank`), y de 255 caracteres como máximo; "Semanal" preseleccionado al marcar "repetitiva" (RN-03) y `recurrence: null` al desmarcarlo. En edición, un `404` muestra "No se ha encontrado la tarea."
+- `MessageService` gana `status` y `announce()`: una región `role="status"` oculta anuncia "Tarea completada.", "Tarea movida a la papelera.", etc.
+- `styles.css` recoge las variables y los componentes base de `docs/diseno/pantallas-tareas.md`; `app.css` pasa a usar variables y la cabecera tiene la navegación (solo "Tareas"; los enlaces de "Papelera" y "Plantillas" llegan con sus issues).
+- Rutas perezosas (`loadComponent`) y `''` redirigida a `/tasks`.
+- Los tests de componentes usan `HttpTestingController` con el interceptor real, así el criterio "se muestra el mensaje de la API" se prueba de punta a punta.
+- Verificación: `frontend-test.ps1` (33 tests y build) y `backend-test.ps1` (95 tests) en verde. Prueba de humo con backend y `ng serve`: por el proxy, crear, completar una repetitiva (devuelve `nextOccurrence`), `409` y `422` en `problem+json`. Las 2 tareas de prueba se borraron de la base de datos de desarrollo.
+
+**Decisión:** para las preguntas abiertas del diseño se aplicó lo que proponía la especificación: anuncio de éxito en `role="status"`, `confirm` nativo antes de eliminar y el orden que da la API. El selector de categoría (F-19) queda para #15.
+
+**Pendiente:** revisión funcional de las pantallas (CRITERIO de la Fase 6) y firma de `docs/diseno/pantallas-tareas.md`. La prueba manual en el navegador la hace la persona.
+
+**Ficheros:** `frontend/src/app/core/models/task.ts`, `frontend/src/app/core/api/task-api.service.ts` y `.spec.ts`, `frontend/src/app/shared/recurrence-label.pipe.ts` y `.spec.ts`, `frontend/src/app/features/tasks/task-list/*` y `frontend/src/app/features/tasks/task-form/*` (nuevos); `frontend/src/app/app.ts`, `app.html`, `app.css`, `app.routes.ts`, `frontend/src/app/core/messages/message.service.ts`, `frontend/src/styles.css`, `CLAUDE.md` y `docs/bitacora.md` (modificados); `.gitkeep` de `core/api/`, `shared/` y `features/` (eliminados).

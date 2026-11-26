@@ -180,9 +180,9 @@ DOC de la APP ──MCP──► GITHUB ISSUES (historias/tareas) ──MCP─�
 
 ### Fase 6 — Frontend Angular
 - [x] Crear proyecto Angular en `frontend/`
-- [ ] Servicios HTTP contra la API del backend — con las pantallas (#10, #11 y #12); el proxy y el interceptor de errores ya están (#3)
-- [ ] Componentes y rutas según las pantallas del análisis
-- [ ] Tests de componentes y servicios — hay tests del interceptor y del componente raíz; faltan los de las pantallas
+- [ ] Servicios HTTP contra la API del backend — `TaskApiService` hecho (#10); falta `TaskTemplateApiService` (#12). El proxy y el interceptor de errores ya están (#3)
+- [ ] Componentes y rutas según las pantallas del análisis — lista y formulario de tareas hechos (#10); faltan papelera (#11) y plantillas (#12)
+- [ ] Tests de componentes y servicios — interceptor, componente raíz, `TaskApiService`, `recurrenceLabel`, lista y formulario de tareas (33 tests); faltan los de #11 y #12
 - [ ] **CRITERIO:** revisión funcional de las pantallas
 
 ### Fase 7 — Git y Pull Request (②)
@@ -237,6 +237,7 @@ Si un documento firmado cambia después, pierde la firma (`Estado: pendiente de 
 | `docs/analisis.md`: 404 y 405 en `problem+json` para rutas de `/api` que no existen (#23) | 2 | 2026-11-26 |
 | `CLAUDE.md`: stack del frontend (Angular 22 y Vitest), regla de merge, skills, agentes y comandos | 0.5 | 2026-11-25 |
 | `CLAUDE.md`: código `405` en las convenciones de la API (#23) | 0.5 | 2026-11-26 |
+| `docs/diseno/pantallas-tareas.md`: diseño de las pantallas de tareas (#10) | 6 | 2026-11-26 |
 
 ### Registro de firmas
 
