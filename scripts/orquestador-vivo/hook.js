@@ -37,6 +37,8 @@ function readState() {
 
 function push(event) {
   const state = readState();
+  // A merged run is closed: only a new "inicio" opens the next one
+  if (event.tipo !== 'inicio' && runMerged(state.eventos)) return;
   state.eventos.push({ t: new Date().toISOString(), ...event });
   if (state.eventos.length > MAX_EVENTS) {
     state.eventos = state.eventos.slice(-MAX_EVENTS);
@@ -71,6 +73,12 @@ function lastRunningAgentNode() {
   const agentNodes = Object.values(AGENT_NODES);
   const running = Object.keys(status).filter((n) => status[n] === 'activo' && agentNodes.includes(n));
   return running.pop() || null;
+}
+
+function runMerged(events) {
+  let start = 0;
+  events.forEach((e, i) => { if (e.tipo === 'inicio') start = i; });
+  return events.slice(start).some((e) => e.nodo === 'MERGE' && e.estado === 'ok');
 }
 
 // True when the current run is for this issue, has gone past PREP and has not been merged yet
