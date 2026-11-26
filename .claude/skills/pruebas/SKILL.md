@@ -119,6 +119,8 @@ php bin/phpunit --filter TaskServiceTest     # una clase o un método
 
 ## Entrega
 
+> **Si te ha cargado un orquestador** (el skill `nueva-feature` o un agente), devuelve solo los puntos de resumen: la bitácora, el commit y la PR los hace quien orquesta, una sola vez al final. Los pasos de bitácora, commit y PR de abajo son para cuando el skill trabaja solo.
+
 1. Tabla criterio de aceptación / regla RN → test, y el resultado de las dos suites (número de tests y tiempo).
 2. Si un test descubrió un fallo del código, explícalo y di con qué skill se arregla.
 3. Registra el paso con `bitacora` y haz commit con `mensaje-commit` (`test: … (#<nº>)`). Con todo en verde, la PR puede abrirse con `Closes #<nº>` y el resumen de tests.

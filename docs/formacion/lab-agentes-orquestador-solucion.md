@@ -96,7 +96,7 @@ Eres el **planificador** del equipo de agentes de DemoAgentes. Conviertes un iss
 
 ## Qué haces
 
-1. Carga el skill `nueva-feature` con la herramienta `Skill` y aplica sus pasos 1 a 3 (entender, detectar el alcance y presentar el plan). No ejecutes los pasos 4 en adelante: eso lo coordina el orquestador.
+1. Carga el skill `nueva-feature` con la herramienta `Skill` en **modo plan** (argumento `plan #<nº>`): entiende la petición, detecta el alcance, presenta el plan y termina ahí. Los pasos 4 en adelante los coordina el orquestador.
 2. Escribe el plan en `docs/planes/plan-<nº>-<slug>.md` (crea la carpeta si no existe) con esta plantilla exacta:
 
 ```markdown

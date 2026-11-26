@@ -79,7 +79,7 @@ Para cualquier cambio del modelo: un campo nuevo, un tipo distinto, una relació
    - **Ya está en el análisis** (el código va por detrás): ve directamente al paso 4.
    - **No está en el análisis:** es un cambio de diseño. Sigue con el paso 2.
 2. **Impacto funcional.** Si el cambio altera una regla de negocio o una funcionalidad de `docs/app/lista-de-tareas.md`, eso lo decide el PO: detente y pregunta antes de seguir.
-3. **Actualiza primero el análisis** (sección 3 y, si aplica, las secciones 4, 5, 8 y 9). Si el cambio contradice una decisión registrada, propón un ADR nuevo en `docs/decisiones/` en lugar de editar el antiguo. Un análisis firmado que cambia **pierde la firma**: pon su cabecera en `Estado: pendiente de nueva firma` y avisa al usuario. Si la regla de bloqueo está activa, espera la nueva firma antes de tocar el código.
+3. **Actualiza primero el análisis** (sección 3 y, si aplica, las secciones 4, 5, 8 y 9). Si el cambio contradice una decisión registrada, propón un ADR nuevo en `docs/decisiones/` en lugar de editar el antiguo. Un análisis firmado que cambia **pierde la firma**: pon su cabecera en `Estado: pendiente de nueva firma` y avisa al usuario. Las firmas están en modo aviso: anota el análisis en "Pendientes de firma" y sigue con el código.
 4. **Aplica el cambio en el código:** entidad, enum, repositorio y DTO afectados. Busca todos los usos (`grep -rn "<campo>" backend/src backend/tests`) para no dejar nada roto.
 5. **Migración nueva** (ver "Migraciones"). Nunca edites una migración que ya esté en `main`.
 6. **Tests:** ajusta los existentes y añade uno por cada regla nueva o modificada.
@@ -181,6 +181,8 @@ php bin/console doctrine:migrations:status        # sin migraciones pendientes
 No des el modelo por terminado si alguna de estas comprobaciones falla.
 
 ## Entrega
+
+> **Si te ha cargado un orquestador** (el skill `nueva-feature` o un agente), devuelve solo los puntos de resumen: la bitácora, el commit y la PR los hace quien orquesta, una sola vez al final. Los pasos de bitácora, commit y PR de abajo son para cuando el skill trabaja solo.
 
 1. Resume qué entidades, campos, relaciones y migraciones se crearon o cambiaron, y qué reglas (RN) cubre cada test.
 2. Si cambió el análisis, dilo de forma explícita: ha perdido la firma.

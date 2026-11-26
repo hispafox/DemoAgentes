@@ -108,6 +108,8 @@ php bin/console debug:container 'App\Service\<Servicio>'   # se registra con aut
 
 ## Entrega
 
+> **Si te ha cargado un orquestador** (el skill `nueva-feature` o un agente), devuelve solo los puntos de resumen: la bitácora, el commit y la PR los hace quien orquesta, una sola vez al final. Los pasos de bitácora, commit y PR de abajo son para cuando el skill trabaja solo.
+
 1. Tabla de métodos creados o cambiados: regla (RN-xx), excepción que lanza y código HTTP que le corresponderá.
 2. Si cambió el análisis, dilo: ha perdido la firma.
 3. Siguiente tramo: `api`.

@@ -199,6 +199,8 @@ Prueba manual: `.\scripts\backend-start.ps1` y `npm start`. Recorre en `http://l
 
 ## Entrega
 
+> **Si te ha cargado un orquestador** (el skill `nueva-feature` o un agente), devuelve solo los puntos de resumen: la bitácora, el commit y la PR los hace quien orquesta, una sola vez al final. Los pasos de bitácora, commit y PR de abajo son para cuando el skill trabaja solo.
+
 1. Tabla ruta → componente → endpoints → funcionalidad (F-xx), y el resultado de `npm test` y de la prueba manual.
 2. Si cambió el análisis, dilo: ha perdido la firma.
 3. El CRITERIO de la Fase 6 es la **revisión funcional de las pantallas**: deja a la persona los pasos para verlas.

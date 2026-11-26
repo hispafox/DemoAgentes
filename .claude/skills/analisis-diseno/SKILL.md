@@ -89,7 +89,7 @@ Para cualquier cambio del análisis: una regla nueva o modificada, un campo, un 
    - ADR: propón un ADR nuevo que sustituya al anterior; no edites el antiguo salvo su estado (`sustituido por ADR-000N`).
    - CLAUDE.md: es el candado. Propón el cambio y espera la aprobación del usuario antes de tocarlo.
 3. **Aplica el cambio en todas las secciones afectadas.** Un campo nuevo suele tocar §3 (modelo y diagrama), §4 (DTO), §5 (validación), §6 (formulario) y §8 (tests). Busca todas las menciones (`grep -n "<campo>\|RN-xx" docs/analisis.md`) para no dejar nada desfasado.
-4. **Firma:** si el análisis estaba firmado y el contenido cambia, pierde la firma: cabecera `Estado: pendiente de nueva firma — firmado por <persona> el <fecha>; cambiado después para <motivo>`. Las erratas que no cambian el contenido no anulan la firma. Si la regla de bloqueo está suspendida, añade la fila en "Pendientes de firma" del CLAUDE.md.
+4. **Firma:** si el análisis estaba firmado y el contenido cambia, pierde la firma: cabecera `Estado: pendiente de nueva firma — firmado por <persona> el <fecha>; cambiado después para <motivo>`. Las erratas que no cambian el contenido no anulan la firma. Añade la fila en "Pendientes de firma" del CLAUDE.md (las firmas están en modo aviso y no bloquean).
 5. **Impacto aguas abajo.** Avisa de lo que queda desfasado: código ya escrito (propón `/modelo revisar` o `/modelo actualizar`), issues cuyos criterios de aceptación cambian y tests afectados.
 6. **Verifica** y **entrega**.
 
@@ -180,6 +180,8 @@ Un ADR se firma como cualquier entregable (estado `aceptado — firmado por <per
 4. Sin contradicciones con el CLAUDE.md ni con los ADR vigentes.
 
 ## Entrega
+
+> **Si te ha cargado un orquestador** (el skill `nueva-feature` o un agente), devuelve solo los puntos de resumen: la bitácora, el commit y la PR los hace quien orquesta, una sola vez al final. Los pasos de bitácora, commit y PR de abajo son para cuando el skill trabaja solo.
 
 1. Resume qué secciones cambiaron y la tabla de trazabilidad (F-xx/RN-xx → sección del análisis → test).
 2. Si el análisis o la documentación funcional cambiaron de contenido, dilo de forma explícita: han perdido la firma.

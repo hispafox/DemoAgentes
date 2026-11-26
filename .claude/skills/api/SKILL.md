@@ -130,6 +130,8 @@ Prueba manual con el servidor (`.\scripts\backend-start.ps1`) y `curl` o `Invoke
 
 ## Entrega
 
+> **Si te ha cargado un orquestador** (el skill `nueva-feature` o un agente), devuelve solo los puntos de resumen: la bitácora, el commit y la PR los hace quien orquesta, una sola vez al final. Los pasos de bitácora, commit y PR de abajo son para cuando el skill trabaja solo.
+
 1. Tabla de endpoints creados o cambiados: verbo, ruta, método del servicio, códigos y funcionalidad (F-xx), y el resultado de la prueba manual.
 2. Si cambió el análisis, dilo: ha perdido la firma.
 3. Siguiente tramo: `frontend` (servicios HTTP y pantallas) o la PR del issue.

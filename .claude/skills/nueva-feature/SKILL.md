@@ -106,7 +106,7 @@ Con `/nueva-feature plan …` el skill termina aquí.
 
 Para cada fila del plan, en orden:
 
-1. **Carga el skill** con la herramienta `Skill` (por ejemplo, `Skill(modelo, "actualizar campo priority en Task")`) y sigue sus instrucciones completas, incluido su paso 0 y su verificación.
+1. **Carga el skill** con la herramienta `Skill` (por ejemplo, `Skill(modelo, "actualizar campo priority en Task")`) y sigue sus instrucciones completas, incluido su paso 0 y su verificación, **salvo** la bitácora, el commit y la PR de su apartado "Entrega": de ese apartado te quedas con el resumen, porque el cierre se hace una sola vez en el paso 7.
 2. **Comprueba su entregable** antes de pasar al siguiente: si la verificación del skill falla, se arregla en esa misma capa. No se avanza con una capa en rojo.
 3. **Si un skill se detiene** (falta un prerrequisito, una regla ambigua, una contradicción con un ADR), el orquestador también se detiene: explica qué falta y qué propone.
 4. **Anota** en una lista lo que hizo cada skill (ficheros y decisiones), para el resumen final y la bitácora.
