@@ -1447,3 +1447,9 @@ Primero los probamos con subagentes genéricos que leían cada fichero de agente
 - La vista lo pinta en discontinuo, y el skill `loop-orquestador` lo documenta.
 
 **Ficheros:** `scripts/orq/loop.js`, `scripts/orquestador-vivo/index.html`, `.claude/skills/loop-orquestador/SKILL.md` y `docs/bitacora.md` (modificados).
+
+## Paso 85 — Hoja de recursos: dónde encontrar skills de ejemplo (2026-11-27)
+
+**Qué hicimos:** subimos `docs/repositorios-skills.md`, la hoja de recursos del curso sobre skills (`SKILL.md`). Recoge repositorios oficiales y colecciones curadas, buscadores, los CLI `npx skills` y `gh skill`, recursos en español, el aviso de seguridad (inspeccionar antes de instalar) y las rutas donde van las skills.
+
+**Ficheros:** `docs/repositorios-skills.md` (nuevo) y `docs/bitacora.md` (modificado).
